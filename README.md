@@ -62,7 +62,11 @@ The initial foundation provides smooth seeded hills, streamed terrain/collision,
 | `WORLD/Terrain/Integration/voxel_terrain.tscn` | Native Voxel Tools nodes, mesher, bounds and LOD |
 | `WORLD/Environment/environment.tscn` | Sky3D and sun/moon lights |
 
-Controls: **arrow keys** move, **Shift** sprint, **RMB** jump, mouse look, **Esc** releases cursor, **LMB** recaptures, **F4** respawns/retries loading. Spawn waits for an actual terrain collider; startup timeout remains safely suspended. The 1024m square test terrain has a 440m playable half-extent with automatic spawn recovery before its edge. F4 does not delete/regenerate the world.
+Controls: **arrow keys** move, **Shift** sprint, **RMB** jump, mouse look, **Esc** releases cursor, **LMB** recaptures, **F4** respawns/retries loading; **F1** opens render debug. Spawn waits for an actual terrain collider; startup timeout remains safely suspended. The 1024m square test terrain has a 440m playable half-extent with automatic spawn recovery before its edge. F4 does not delete/regenerate the world.
+
+## Render debugging
+
+**F1** opens the optional render overlay in test.tscn after spawn. Toggle terrain textures/normal maps, terrain/tree visibility, tree shadows and unshaded firs. Run the five-case same-camera comparison and Copy results to separate ground, tree and shadow costs. The view stays locked during comparison. User reported the initial ground/tree visual test working, with roughly 300 → 125 FPS; the cause is **not measured yet**. See [debug controls and validation](DEBUG/Overlay/README.md).
 
 ## Configuration and architecture
 

@@ -9,3 +9,5 @@ Original imported mesh pivots include Blender display offsets for B (+5m X) and 
 These trees are **visual-only**: no trunk collision, chopping, wind or terrain-edit support. They will not re-ground after future excavation. GroundSink accommodates the small root extension below Blender's zero plane. Check root contact, scale and leaf cutouts locally. Disable/remove this scene to compare terrain alone; removing it is supported by TestWorld's optional reference.
 
 GLB inspection confirmed one LOD1 mesh node per variant and six embedded images per file. This corrects the previous cleanup README's unverified-binary limitation for this subsequent job. Normal/roughness/color textures in the GLBs remain embedded and untouched. The inherited source-pack "1K" label is not used to assert all tree image dimensions.
+
+Optional render debugging: SetDebugRendering controls root visibility, cached mesh shadow flags and shared cloned-material unshaded mode. Later-placed meshes honor the active options. These switches do not alter placement simulation. See ../../../DEBUG/Overlay/README.md.

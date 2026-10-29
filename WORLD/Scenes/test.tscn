@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
 [ext_resource type="Script" path="res://WORLD/Scenes/TestWorld.cs" id="4"]
 [ext_resource type="Resource" path="res://WORLD/Configuration/WorldMaster.tres" id="5"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/TreePreview/TreePreview.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://DEBUG/Overlay/DebugOverlay.tscn" id="7"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -40,3 +41,4 @@ mouse_filter = 2
 [node name="ReadoutTimer" type="Timer" parent="."]
 wait_time = 0.25
 autostart = true
+[node name="DebugOverlay" parent="." instance=ExtResource("7")]

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DebugSettings" load_steps=2 format=3]
+[ext_resource type="Script" path="res://DEBUG/DebugSettings.cs" id="1"]
+[resource]
+script = ExtResource("1")
+Enabled = true
+WarmupSeconds = 2.0
+SampleSeconds = 3.0
+ReadoutInterval = 0.25

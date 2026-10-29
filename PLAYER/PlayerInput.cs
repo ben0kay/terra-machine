@@ -4,7 +4,8 @@ using Godot;
 public partial class PlayerInput : Node
 {
     private bool _jumpQueued;
-    public bool Captured => Input.MouseMode == Input.MouseModeEnum.Captured;
+    public bool Blocked { get; set; }
+    public bool Captured => !Blocked && Input.MouseMode == Input.MouseModeEnum.Captured;
     public Vector2 Movement => Captured ? Input.GetVector("move_left", "move_right", "move_forward", "move_back") : Vector2.Zero;
     public bool Sprinting => Captured && Input.IsActionPressed("sprint");
 
@@ -23,6 +24,7 @@ public partial class PlayerInput : Node
     // Queue a single jump per press and support Escape/click mouse capture.
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (Blocked) return;
         if (@event is InputEventKey key && key.Pressed && !key.Echo && key.Keycode == Key.Escape)
         {
             ReleaseMouse();

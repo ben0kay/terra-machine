@@ -1,9 +1,13 @@
 // The only C# owner of Voxel Tools API calls. Native generation/streaming run in the addon.
 using Godot;
 
-public partial class VoxelTerrainAdapter : Node3D, ITerrainService
+public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug
 {
     private Node3D? _viewer;
+    private Node3D? _terrainNode;
+    private ShaderMaterial? _texturedMaterial;
+    private ShaderMaterial? _simpleMaterial;
+    private ShaderMaterial? _normalMapsOffMaterial;
     private Node3D? _target;
     private int _viewDistance;
     private PhysicsRayQueryParameters3D _groundQuery = null!;
@@ -24,6 +28,12 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService
         }
         var scene = GD.Load<PackedScene>("res://WORLD/Terrain/Integration/voxel_terrain.tscn");
         var terrain = scene.Instantiate<Node3D>();
+        _terrainNode = terrain;
+        _texturedMaterial = (ShaderMaterial)((ShaderMaterial)terrain.Get("material").AsGodotObject()).Duplicate();
+        _normalMapsOffMaterial = (ShaderMaterial)_texturedMaterial.Duplicate();
+        _normalMapsOffMaterial.SetShaderParameter("normal_maps_enabled", false);
+        _simpleMaterial = new ShaderMaterial { Shader = GD.Load<Shader>("res://WORLD/Terrain/Integration/ground_simple.gdshader") };
+        terrain.Set("material", _texturedMaterial);
         _viewDistance = terrain.Get("view_distance").AsInt32();
         AddChild(terrain);
         IsAvailable = true;
@@ -64,6 +74,17 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService
         if (hit.Count == 0) return false;
         ground = hit["position"].AsVector3();
         return true;
+    }
+
+    // =========================================================
+    // Apply only on UI changes. A private material copy protects the saved master resource.
+    public void SetDebugRendering(bool visible, bool textured, bool normalMaps)
+    {
+        if (_terrainNode == null || _texturedMaterial == null || _simpleMaterial == null || _normalMapsOffMaterial == null) return;
+        _terrainNode.Visible = visible;
+        ShaderMaterial selected = textured ? (normalMaps ? _texturedMaterial : _normalMapsOffMaterial) : _simpleMaterial;
+        // Swap cached resources so native chunk material copies refresh on every mode change.
+        _terrainNode.Set("material", selected);
     }
 
     // =========================================================

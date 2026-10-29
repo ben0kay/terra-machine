@@ -9,3 +9,5 @@ The adapter validates native class availability before loading `Integration/voxe
 `Configuration/GroundMaterial.tres` now selects three color/normal/roughness texture sets and controls world-space triplanar material blending. `Integration/ground.gdshader` retains Voxel Tools' MIT Transvoxel transition helpers for LOD seams. Colors do not represent mineable material IDs. Source: https://github.com/Zylann/godot_voxel/blob/master/shaders/dev/transvoxel_minimal.gdshader ; license retained in `addons/zylann.voxel/LICENSE.md`.
 
 Editor terrain preview and live tuning are deferred. Run the test scene to generate terrain. Actual addon/engine compatibility and LOD/collision behavior still require local validation.
+
+Render debug is optional through ITerrainRenderDebug. The adapter owns cached simple/textured/normal-disabled materials and native visibility; collision and streaming continue. Transition code is shared in Integration/transvoxel.gdshaderinc. No debug native calls leak into the overlay.

@@ -8,6 +8,8 @@ public partial class TreePreview : Node3D
     [Export] public TreePreviewSettings Settings { get; set; } = new();
     private ITerrainService? _terrain;
     private readonly Dictionary<Material, Material> _materials = new();
+    private readonly Dictionary<MeshInstance3D, GeometryInstance3D.ShadowCastingSetting> _shadowDefaults = new();
+    private bool _debugShadows = true, _debugUnshaded;
     private bool[] _placed = System.Array.Empty<bool>();
     private Vector2 _center;
     private float _top, _bottom, _elapsed, _untilProbe;
@@ -95,6 +97,21 @@ public partial class TreePreview : Node3D
     }
 
     // =========================================================
+    // Debug visibility is render-only. Cached handles avoid repeated scene-tree searches.
+    public void SetDebugRendering(bool visible, bool shadows, bool unshaded)
+    {
+        Visible = visible;
+        _debugShadows = shadows; _debugUnshaded = unshaded;
+        foreach (var entry in _shadowDefaults)
+            entry.Key.CastShadow = shadows ? entry.Value : GeometryInstance3D.ShadowCastingSetting.Off;
+        foreach (var entry in _materials)
+        {
+            if (entry.Key is StandardMaterial3D source && entry.Value is StandardMaterial3D material)
+                material.ShadingMode = unshaded ? BaseMaterial3D.ShadingModeEnum.Unshaded : source.ShadingMode;
+        }
+    }
+
+    // =========================================================
     // Find the mesh pivot once per placed model; not part of a frame hot path.
     private static MeshInstance3D? FindFirstMesh(Node node)
     {
@@ -113,6 +130,8 @@ public partial class TreePreview : Node3D
     {
         if (node is MeshInstance3D mesh && mesh.Mesh != null)
         {
+            _shadowDefaults.TryAdd(mesh, mesh.CastShadow);
+            mesh.CastShadow = _debugShadows ? _shadowDefaults[mesh] : GeometryInstance3D.ShadowCastingSetting.Off;
             for (int i = 0; i < mesh.Mesh.GetSurfaceCount(); i++)
             {
                 Material original = mesh.GetActiveMaterial(i);
@@ -126,6 +145,7 @@ public partial class TreePreview : Node3D
                         material.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
                         material.AlphaScissorThreshold = Settings.AlphaCutoff;
                     }
+                    if (_debugUnshaded) material.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded;
                     configured = material;
                     _materials.Add(original, configured);
                 }

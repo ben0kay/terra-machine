@@ -1,51 +1,6 @@
 shader_type spatial;
 render_mode cull_back;
-// Transvoxel transition helpers adapted from Zylann/godot_voxel (MIT).
-// See addons/zylann.voxel/LICENSE.md; keep these inside the integration.
-// From Voxel Tools API
-uniform int u_transition_mask;
-
-float get_transvoxel_secondary_factor(int idata) {
-	int transition_mask = u_transition_mask & 0xff;
-
-	int cell_border_mask = idata & 63; // Which sides the cell is touching
-	int vertex_border_mask = (idata >> 8) & 63; // Which sides the vertex is touching
-	// If the vertex is near a side where there is a low-resolution neighbor,
-	// move it to secondary position
-	int m = transition_mask & cell_border_mask;
-	float t = float(m != 0);
-	// If the vertex lies on one or more sides, and at least one side has no low-resolution neighbor,
-	// don't move the vertex.
-	t *= float((vertex_border_mask & ~transition_mask) == 0);
-	
-	// Debugging
-	//t *= 0.5 + 0.5 * sin(TIME * 4.0);
-	//t *= 2.0;
-
-	return t;
-}
-
-vec3 get_transvoxel_position(vec3 vertex_pos, vec4 fdata) {
-	int idata = floatBitsToInt(fdata.a);
-
-	// Move vertices to smooth transitions
-	float secondary_factor = get_transvoxel_secondary_factor(idata);
-	vec3 secondary_position = fdata.xyz;
-	vec3 pos = mix(vertex_pos, secondary_position, secondary_factor);
-
-	// If the mesh combines transitions and the vertex belongs to a transition,
-	// when that transition isn't active we change the position of the vertices so
-	// all triangles will be degenerate and won't be visible.
-	// This is an alternative to rendering them separately,
-	// which has less draw calls and less mesh resources to create in Godot.
-	// Ideally I would tweak the index buffer like LOD does but Godot does not
-	// expose anything to use it that way.
-	int itransition = (idata >> 16) & 0xff; // Is the vertex on a transition mesh?
-	float transition_cull = float(itransition == 0 || (itransition & u_transition_mask) != 0);
-	pos *= transition_cull;
-
-	return pos;
-}
+#include "res://WORLD/Terrain/Integration/transvoxel.gdshaderinc"
 // Material textures stay in world space across chunk boundaries and vertical faces.
 uniform sampler2D forest_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D forest_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -61,6 +16,7 @@ uniform float patch_size_meters : hint_range(2.0, 80.0) = 18.0;
 uniform float grass_coverage : hint_range(0.0, 1.0) = 0.38;
 uniform float rock_slope_start : hint_range(0.0, 1.0) = 0.22;
 uniform float rock_slope_end : hint_range(0.0, 1.0) = 0.48;
+uniform bool normal_maps_enabled = true;
 uniform float normal_strength : hint_range(0.0, 1.5) = 0.65;
 uniform float macro_variation : hint_range(0.0, 0.4) = 0.12;
 varying vec3 world_position;
@@ -119,9 +75,11 @@ void fragment() {
     float gr = triplanar_color(grass_roughness, weights, ux, uy, uz).r;
     float rr = triplanar_color(rock_roughness, weights, ux, uy, uz).r;
     ROUGHNESS = clamp(mix(mix(fr, gr, grass), rr, rock), 0.35, 1.0);
+    if (normal_maps_enabled) {
     vec3 fn = triplanar_normal(forest_normal, n, signs, weights, ux, uy, uz);
     vec3 gn = triplanar_normal(grass_normal, n, signs, weights, ux, uy, uz);
     vec3 rn = triplanar_normal(rock_normal, n, signs, weights, ux, uy, uz);
     vec3 mapped = normalize(mix(mix(fn, gn, grass), rn, rock));
     NORMAL = normalize((VIEW_MATRIX * vec4(mapped, 0.0)).xyz);
+    }
 }

@@ -9,6 +9,7 @@ public partial class TestWorld : Node3D
     private PlayerController _player = null!;
     private ITerrainService _terrain = null!;
     private TreePreview? _trees;
+    private DebugOverlay? _debug;
     private Label _readout = null!;
     private bool _waiting;
     private bool _failed;
@@ -23,6 +24,7 @@ public partial class TestWorld : Node3D
         _terrain = (ITerrainService)GetNode(TerrainPath);
         _readout = GetNode<Label>("TestHUD/Readout");
         _trees = GetNodeOrNull<TreePreview>("TreePreview");
+        _debug = GetNodeOrNull<DebugOverlay>("DebugOverlay");
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
         timer.Timeout += RefreshReadout;
@@ -71,6 +73,7 @@ public partial class TestWorld : Node3D
         _player.SetMovementEnabled(true);
         _waiting = false;
         _trees?.Initialize(_terrain, Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
+        _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
         RefreshReadout();
     }
 
@@ -89,6 +92,6 @@ public partial class TestWorld : Node3D
             _waiting ? "Loading terrain collision..." : "Terrain ready";
         string trees = _trees == null ? "" : $" | Firs: {_trees.PlacedCount}";
         _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}\n" +
-            "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn";
+            "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug";
     }
 }

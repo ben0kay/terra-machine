@@ -8,6 +8,8 @@ public partial class PlayerController : CharacterBody3D
     private Camera3D _camera = null!;
     private bool _movementEnabled = true;
     private float _pitch;
+    public bool MovementEnabled => _movementEnabled;
+    public bool InputBlocked { get => _input.Blocked; set { _input.Blocked = value; _input.ConsumeJump(); } }
 
     #region SetupAndControl
     // =========================================================
