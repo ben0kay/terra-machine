@@ -1,0 +1,172 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Terra Machine authored boulder mesh (Python) v1"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Boulder001_A_LOD2",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Boulder001_A_LOD2",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "name": "Boulder001_albedo",
+      "uri": "../Textures/Boulder001_albedo.png"
+    },
+    {
+      "name": "Boulder001_normal_gl",
+      "uri": "../Textures/Boulder001_normal_gl.png"
+    },
+    {
+      "name": "Boulder001_orm",
+      "uri": "../Textures/Boulder001_orm.png"
+    }
+  ],
+  "textures": [
+    {
+      "source": 0,
+      "sampler": 0
+    },
+    {
+      "source": 1,
+      "sampler": 0
+    },
+    {
+      "source": 2,
+      "sampler": 0
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "materials": [
+    {
+      "name": "Boulder001_MossyGranite",
+      "doubleSided": false,
+      "alphaMode": "OPAQUE",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 2
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 1.0
+      },
+      "normalTexture": {
+        "index": 1,
+        "scale": 0.75
+      }
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "Boulder001_A_LOD2.bin",
+      "byteLength": 36640
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 7980,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 7980,
+      "byteLength": 7980,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15960,
+      "byteLength": 5320,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 21280,
+      "byteLength": 15360,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 665,
+      "type": "VEC3",
+      "min": [
+        -2.7891428470611572,
+        -0.3005262613296509,
+        -2.0870511531829834
+      ],
+      "max": [
+        2.7064614295959473,
+        3.145221471786499,
+        2.2259531021118164
+      ]
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 665,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 665,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 3840,
+      "type": "SCALAR",
+      "min": [
+        0.0
+      ],
+      "max": [
+        664.0
+      ]
+    }
+  ]
+}
