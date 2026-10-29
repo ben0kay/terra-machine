@@ -1,0 +1,163 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Terra Machine MeadowGrass001 procedural authored mesh"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "meadow_grass_001_c_LOD1"
+    }
+  ],
+  "meshes": [
+    {
+      "name": "meadow_grass_001_c_LOD1",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "COLOR_0": 3
+          },
+          "indices": 4,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "MeadowGrass_AlphaCutout",
+      "doubleSided": true,
+      "alphaMode": "MASK",
+      "alphaCutoff": 0.42,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.91
+      }
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "images": [
+    {
+      "uri": "../Textures/meadow_grass_001_albedo_alpha_1k.png"
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 15540,
+      "uri": "meadow_grass_001_c_LOD1.bin"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 3552,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 3552,
+      "byteLength": 3552,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 7104,
+      "byteLength": 2368,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 9472,
+      "byteLength": 4736,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 14208,
+      "byteLength": 1332,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 296,
+      "type": "VEC3",
+      "min": [
+        -0.38661259412765503,
+        0.0,
+        -0.40793320536613464
+      ],
+      "max": [
+        0.4460834860801697,
+        1.1799999475479126,
+        0.30985069274902344
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 296,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 296,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 296,
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5123,
+      "count": 666,
+      "type": "SCALAR"
+    }
+  ],
+  "extras": {
+    "clumpVariant": "C",
+    "authorLODs": true,
+    "approximateReference": "meadow tuft / 0.6-1.2m"
+  }
+}
