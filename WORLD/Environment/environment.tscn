@@ -3,32 +3,58 @@
 [ext_resource type="Script" path="res://addons/sky_3d/src/SkyDome.gd" id="2"]
 [ext_resource type="Script" path="res://addons/sky_3d/src/TimeOfDay.gd" id="3"]
 [sub_resource type="Environment" id="Environment"]
+resource_local_to_scene = true
 background_mode = 2
 ambient_light_source = 3
 ambient_light_sky_contribution = 0.7
 ambient_light_energy = 1.0
 tonemap_mode = 3
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.65, 0.73, 0.8, 1)
+fog_light_energy = 0.8
+fog_sun_scatter = 0.12
+fog_density = 0.32
+fog_depth_curve = 1.6
+fog_depth_begin = 100.0
+fog_depth_end = 450.0
+fog_aerial_perspective = 0.45
+fog_sky_affect = 0.2
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0015
+volumetric_fog_albedo = Color(0.9, 0.94, 1, 1)
+volumetric_fog_anisotropy = 0.65
+volumetric_fog_length = 96.0
+volumetric_fog_detail_spread = 2.0
+volumetric_fog_gi_inject = 0.0
+volumetric_fog_ambient_inject = 0.15
+volumetric_fog_sky_affect = 0.2
+volumetric_fog_temporal_reprojection_enabled = true
+volumetric_fog_temporal_reprojection_amount = 0.85
 [node name="Environment" type="Node3D"]
 [node name="Sky3D" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment")
 script = ExtResource("1")
 editor_time_enabled = false
 game_time_enabled = false
-current_time = 13.0
+current_time = 16.0
 fog_enabled = false
 [node name="SunLight" type="DirectionalLight3D" parent="Sky3D"]
 shadow_enabled = true
 directional_shadow_max_distance = 180.0
+light_volumetric_fog_energy = 1.0
 [node name="MoonLight" type="DirectionalLight3D" parent="Sky3D"]
 shadow_enabled = false
+light_volumetric_fog_energy = 0.0
 [node name="SkyDome" type="Node" parent="Sky3D"]
 script = ExtResource("2")
 sun_light_path = NodePath("../SunLight")
 moon_light_path = NodePath("../MoonLight")
 fog_visible = false
+sun_light_color = Color(1, 0.95, 0.86, 1)
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
 script = ExtResource("3")
 dome_path = NodePath("../SkyDome")
 editor_time_enabled = false
 game_time_enabled = false
-current_time = 13.0
+current_time = 16.0

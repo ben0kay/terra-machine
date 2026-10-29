@@ -12,6 +12,7 @@ public partial class DebugOverlay : CanvasLayer
     private ITerrainRenderDebug? _terrain;
     private TreePreview? _trees;
     private GrassScatter? _grass;
+    private Godot.Environment? _atmosphere;
     private PlayerController _player = null!;
     private PanelContainer _panel = null!;
     private Label _metrics = null!, _results = null!, _progress = null!;
@@ -52,6 +53,7 @@ public partial class DebugOverlay : CanvasLayer
         if (_initialized || !Settings.Enabled) return;
         _terrain = terrain; _trees = trees; _player = player;
         _grass = GetNodeOrNull<GrassScatter>("../GrassScatter");
+        _atmosphere = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D")?.Environment;
         _timer.WaitTime = Mathf.Max(0.1f, Settings.ReadoutInterval);
         BuildControls(GetNode<VBoxContainer>("Panel/Rows"));
         _initialized = true;
@@ -123,6 +125,11 @@ public partial class DebugOverlay : CanvasLayer
         var controls = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         scroll.AddChild(controls);
         AddSection(controls, "ENVIRONMENT");
+        if (_atmosphere != null)
+        {
+            AddToggle(controls, "Distant horizon haze", value => _atmosphere.FogEnabled = value, _atmosphere.FogEnabled);
+            AddToggle(controls, "Volumetric fog / sun shafts", value => _atmosphere.VolumetricFogEnabled = value, _atmosphere.VolumetricFogEnabled);
+        }
         _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
         _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
         _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
@@ -245,6 +252,7 @@ public partial class DebugOverlay : CanvasLayer
         _report.AppendLine("Terra Machine — same-camera rendering comparison");
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
         _report.AppendLine($"Frame graph visible: {GetNodeOrNull<FrameTimeGraph>("FrameTimeGraph")?.Visible ?? false}");
+        _report.AppendLine($"Horizon haze: {_atmosphere?.FogEnabled ?? false}; volumetric fog: {_atmosphere?.VolumetricFogEnabled ?? false}; held across all five cases.");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
