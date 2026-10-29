@@ -1,0 +1,24 @@
+// Small authored tree-adjacent meadow preview settings; not a world vegetation streamer.
+using Godot;
+
+[GlobalClass]
+public partial class MeadowPreviewSettings : Resource
+{
+    [ExportGroup("Assets")]
+    [Export] public Godot.Collections.Array<PackedScene> Variants { get; set; } = new();
+    [Export] public ShaderMaterial? Material { get; set; }
+    [ExportGroup("Composition")]
+    [Export] public int Seed { get; set; } = 906;
+    [Export] public int SamplesPerTree { get; set; } = 72;
+    [Export] public float PatchRadius { get; set; } = 5.5f;
+    [Export] public float TrunkClearance { get; set; } = 1.4f;
+    [Export] public float MinimumScale { get; set; } = 0.8f;
+    [Export] public float MaximumScale { get; set; } = 1.25f;
+    [Export] public float MaximumSlopeDegrees { get; set; } = 32f;
+    [Export] public float GroundSink { get; set; } = 0.02f;
+    [Export] public float DrawDistance { get; set; } = 140f;
+    [ExportGroup("Loading")]
+    [Export] public int QueriesPerPhysicsTick { get; set; } = 40;
+    [Export] public float RetrySeconds { get; set; } = 0.6f;
+    [Export] public float LoadingTimeoutSeconds { get; set; } = 12f;
+}

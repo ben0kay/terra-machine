@@ -10,6 +10,7 @@ public partial class TestWorld : Node3D
     private ITerrainService _terrain = null!;
     private TreePreview? _trees;
     private GrassScatter? _grass;
+    private MeadowPreview? _meadow;
     private DebugOverlay? _debug;
     private Label _readout = null!;
     private bool _waiting;
@@ -26,6 +27,7 @@ public partial class TestWorld : Node3D
         _readout = GetNode<Label>("TestHUD/Readout");
         _trees = GetNodeOrNull<TreePreview>("TreePreview");
         _grass = GetNodeOrNull<GrassScatter>("GrassScatter");
+        _meadow = GetNodeOrNull<MeadowPreview>("MeadowPreview");
         _debug = GetNodeOrNull<DebugOverlay>("DebugOverlay");
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
@@ -76,6 +78,8 @@ public partial class TestWorld : Node3D
         _waiting = false;
         _trees?.Initialize(_terrain, Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _grass?.Initialize(_terrain as ITerrainSurfaceService, _player);
+        _meadow?.Initialize(_terrain as ITerrainSurfaceService, _trees?.Settings.Offsets,
+            Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
         RefreshReadout();
     }
@@ -94,7 +98,8 @@ public partial class TestWorld : Node3D
         string status = !_terrain.IsAvailable ? _terrain.Status : _failed ? "Terrain load timed out — F4 retries" :
             _waiting ? "Loading terrain collision..." : "Terrain ready";
         string trees = _trees == null ? "" : $" | Trees: {_trees.PlacedCount}";
-        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}\n" +
+        string meadow = _meadow == null ? "" : $" | Meadow: {_meadow.PlacedCount}";
+        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}\n" +
             "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug   F2: frame graph";
     }
 }

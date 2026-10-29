@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=6 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_b_LOD1.gltf" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_c_LOD1.gltf" id="4"]
+[ext_resource type="ShaderMaterial" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Materials/MeadowWind.tres" id="5"]
+[resource]
+script = ExtResource("1")
+Variants = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+Material = ExtResource("5")
+Seed = 906
+SamplesPerTree = 72
+PatchRadius = 5.5
+TrunkClearance = 1.4
+MinimumScale = 0.8
+MaximumScale = 1.25
+MaximumSlopeDegrees = 32.0
+GroundSink = 0.02
+DrawDistance = 140.0
+QueriesPerPhysicsTick = 40
+RetrySeconds = 0.6
+LoadingTimeoutSeconds = 12.0
