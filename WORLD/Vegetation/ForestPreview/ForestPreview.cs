@@ -130,8 +130,15 @@ public partial class ForestPreview : Node3D
             if (!_terrain.TryFindSurface(spot.Position, _top, _bottom, out Vector3 ground, out Vector3 normal))
             {
                 spot.Misses++;
-                if (spot.Misses >= Mathf.Max(1, Settings.MaxGroundRetries)) Complete(spot);
-                else spot.RetryAt = now + (ulong)(Mathf.Max(0.5f, Settings.RetrySeconds) * 1000f);
+                // Missing distant terrain is usually streaming, not an invalid tree location.
+                // Only abandon a stubborn query after repeated misses very close to the player.
+                if (spot.Misses >= Mathf.Max(1, Settings.MaxGroundRetries))
+                {
+                    if (WithinRange(spot.Position, 35f)) Complete(spot);
+                    else spot.Misses = 0;
+                }
+                if (!spot.Complete)
+                    spot.RetryAt = now + (ulong)(Mathf.Max(0.5f, Settings.RetrySeconds) * 1000f);
                 continue;
             }
             if (normal.Y >= minUp) AddTree(spot, ground);
@@ -150,12 +157,12 @@ public partial class ForestPreview : Node3D
 
     // =========================================================
     // The test forest is finite, but far-off points should not probe unloaded chunks.
-    private bool WithinRange(Vector2 position)
+    private bool WithinRange(Vector2 position, float rangeOverride = 0f)
     {
         if (_player == null) return false;
         Vector3 player = _player.GlobalPosition;
         float dx = position.X - player.X, dz = position.Y - player.Z;
-        float range = Mathf.Max(35f, Settings.PlacementRange);
+        float range = Mathf.Max(30f, rangeOverride > 0f ? rangeOverride : Settings.PlacementRange);
         return dx * dx + dz * dz <= range * range;
     }
     #endregion
