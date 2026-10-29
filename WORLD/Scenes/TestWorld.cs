@@ -90,7 +90,7 @@ public partial class TestWorld : Node3D
     {
         string status = !_terrain.IsAvailable ? _terrain.Status : _failed ? "Terrain load timed out — F4 retries" :
             _waiting ? "Loading terrain collision..." : "Terrain ready";
-        string trees = _trees == null ? "" : $" | Firs: {_trees.PlacedCount}";
+        string trees = _trees == null ? "" : $" | Trees: {_trees.PlacedCount}";
         _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}\n" +
             "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug";
     }

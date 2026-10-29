@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="TreePreviewSettings" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="TreePreviewSettings" load_steps=6 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/TreePreview/TreePreviewSettings.cs" id="1"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_a_1k.glb" id="2"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_b_1k.glb" id="3"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_c_1k.glb" id="4"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/Models/pine_tree_001_v2_a_LOD1.gltf" id="5"]
 [resource]
 script = ExtResource("1")
-Variants = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
-Offsets = Array[Vector2]([Vector2(-8, -11), Vector2(8, -14), Vector2(-16, -19), Vector2(17, -22), Vector2(-7, -28), Vector2(6, -32), Vector2(-23, -34), Vector2(24, -37), Vector2(-16, -43), Vector2(15, -47), Vector2(-4, -51), Vector2(28, -55)])
+Variants = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("5"), ExtResource("5"), ExtResource("5")])
+Offsets = Array[Vector2]([Vector2(-8, -11), Vector2(8, -14), Vector2(-16, -19), Vector2(17, -22), Vector2(-7, -28), Vector2(6, -32), Vector2(-23, -34), Vector2(24, -37), Vector2(-16, -43), Vector2(15, -47), Vector2(-4, -51), Vector2(28, -55), Vector2(-19, -12), Vector2(22, -17), Vector2(-32, -39), Vector2(36, -48)])
 MinimumScale = 0.9
 MaximumScale = 1.12
 GroundSink = 0.08

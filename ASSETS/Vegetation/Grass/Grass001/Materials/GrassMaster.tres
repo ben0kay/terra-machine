@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3]
+[ext_resource type="Shader" path="res://ASSETS/Vegetation/Grass/Grass001/Materials/grass_cutout.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/Grass001/Textures/grass_bermuda_01_diff.jpg" id="2"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/Grass001/Textures/grass_bermuda_01_alpha_1k.png" id="3"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/Grass001/Textures/grass_bermuda_01_nor_gl.png" id="4"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/Grass001/Textures/grass_bermuda_01_rough.png" id="5"]
+[resource]
+shader = ExtResource("1")
+shader_parameter/grass_color = ExtResource("2")
+shader_parameter/grass_alpha = ExtResource("3")
+shader_parameter/grass_normal = ExtResource("4")
+shader_parameter/grass_roughness = ExtResource("5")
+shader_parameter/alpha_cutoff = 0.4

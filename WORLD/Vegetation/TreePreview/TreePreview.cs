@@ -82,7 +82,7 @@ public partial class TreePreview : Node3D
     private void AddTree(int index, Vector3 ground)
     {
         PackedScene scene = Settings.Variants[index % Settings.Variants.Count];
-        var wrapper = new Node3D { Name = $"Fir_{index + 1:00}" };
+        var wrapper = new Node3D { Name = $"Tree_{index + 1:00}" };
         AddChild(wrapper);
         var model = scene.Instantiate<Node3D>();
         wrapper.AddChild(model);
@@ -140,7 +140,7 @@ public partial class TreePreview : Node3D
                 {
                     var material = (StandardMaterial3D)standard.Duplicate();
                     material.TextureFilter = BaseMaterial3D.TextureFilterEnum.LinearWithMipmapsAnisotropic;
-                    if (material.Transparency != BaseMaterial3D.TransparencyEnum.Disabled)
+                    if (material.Transparency == BaseMaterial3D.TransparencyEnum.Alpha)
                     {
                         material.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
                         material.AlphaScissorThreshold = Settings.AlphaCutoff;

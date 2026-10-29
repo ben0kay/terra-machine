@@ -120,9 +120,9 @@ public partial class DebugOverlay : CanvasLayer
         _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
         _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
         _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
-        _models = AddToggle(controls, "Fir models visible", value => _treesOn = value);
-        _shadows = AddToggle(controls, "Fir shadow casting", value => _shadowsOn = value);
-        _unshaded = AddToggle(controls, "Firs unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
+        _models = AddToggle(controls, "Tree models visible", value => _treesOn = value);
+        _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);
+        _unshaded = AddToggle(controls, "Trees unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
         foreach (NodePath path in ExtraVisualRoots)
         {
             Node3D? root = GetNodeOrNull<Node3D>(path);
@@ -205,7 +205,7 @@ public partial class DebugOverlay : CanvasLayer
         _resultRows.Clear();
         _report.AppendLine("Terra Machine — same-camera rendering comparison");
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
-        _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; firs: {_trees?.PlacedCount ?? 0}");
+        _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
         _stage = 0;
         BeginCase();
