@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TreePreviewSettings" load_steps=5 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/TreePreview/TreePreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_a_1k.glb" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_b_1k.glb" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_c_1k.glb" id="4"]
+[resource]
+script = ExtResource("1")
+Variants = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+Offsets = Array[Vector2]([Vector2(-8, -11), Vector2(8, -14), Vector2(-16, -19), Vector2(17, -22), Vector2(-7, -28), Vector2(6, -32), Vector2(-23, -34), Vector2(24, -37), Vector2(-16, -43), Vector2(15, -47), Vector2(-4, -51), Vector2(28, -55)])
+MinimumScale = 0.9
+MaximumScale = 1.12
+GroundSink = 0.08
+AlphaCutoff = 0.35
+RetryInterval = 0.2
+LoadingTimeout = 40.0
+QueriesPerTick = 4

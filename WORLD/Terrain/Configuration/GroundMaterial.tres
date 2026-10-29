@@ -1,0 +1,29 @@
+[gd_resource type="ShaderMaterial" load_steps=11 format=3]
+[ext_resource type="Shader" path="res://WORLD/Terrain/Integration/ground.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/forest_ground_06_1k.blend/textures/forest_ground_06_diff_1k.jpg" id="2"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/ForestGround06/Normal.png" id="3"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/ForestGround06/Roughness.png" id="4"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/grass_ground_1k.blend/textures/grass_ground_diff_1k.jpg" id="5"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/GrassGround/Normal.png" id="6"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/GrassGround/Roughness.png" id="7"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/gray_rocks_1k.blend/textures/gray_rocks_diff_1k.jpg" id="8"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/GrayRocks/Normal.png" id="9"]
+[ext_resource type="Texture2D" path="res://ASSETS/Terrain/Runtime/GrayRocks/Roughness.png" id="10"]
+[resource]
+shader = ExtResource("1")
+shader_parameter/forest_color = ExtResource("2")
+shader_parameter/forest_normal = ExtResource("3")
+shader_parameter/forest_roughness = ExtResource("4")
+shader_parameter/grass_color = ExtResource("5")
+shader_parameter/grass_normal = ExtResource("6")
+shader_parameter/grass_roughness = ExtResource("7")
+shader_parameter/rock_color = ExtResource("8")
+shader_parameter/rock_normal = ExtResource("9")
+shader_parameter/rock_roughness = ExtResource("10")
+shader_parameter/tile_size_meters = 2.5
+shader_parameter/patch_size_meters = 18.0
+shader_parameter/grass_coverage = 0.38
+shader_parameter/rock_slope_start = 0.22
+shader_parameter/rock_slope_end = 0.48
+shader_parameter/normal_strength = 0.65
+shader_parameter/macro_variation = 0.12

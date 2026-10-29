@@ -52,7 +52,7 @@ These are **planning phases**, not permission to implement them all at once. Kee
 
 **Implemented in source, awaiting local compilation and runtime validation.** Open `WORLD/Scenes/test.tscn` and press F6, or F5 (now the main scene). Use the **Godot .NET editor** and .NET 8 SDK. The project SDK matches War Machine's `Godot.NET.Sdk/4.7.2`; verify your installed editor matches. The bundled Voxel Tools extension declares Godot 4.4.1 minimum; that is not proof of compatibility with every newer engine build.
 
-This pass provides smooth seeded hills with slope-based green/rock shading, streamed terrain/collision, a reusable first-person capsule player, fixed 13:00 Sky3D lighting, a crosshair and FPS/loading text. Terrain is instantiated at runtime through the adapter; opening the test scene in the editor does not yet preview the generated landscape. No digging, saving, trees or gameplay resource materials in this pass.
+The initial foundation provides smooth seeded hills, streamed terrain/collision, a reusable first-person capsule player, fixed 13:00 Sky3D lighting, a crosshair and FPS/loading text. The subsequently authorized [ground-and-fir visual test](WORLD/VISUAL_TEST_PASS.md) adds textured forest floor/grass/rock with normal/roughness maps and a twelve-fir preview ahead of spawn; first-person visual acceptance is pending. Terrain is instantiated at runtime through the adapter; opening the test scene in the editor does not yet preview the generated landscape. No digging, saving, dense grass, tree collision or gameplay resource materials in this pass.
 
 | Scene | Owner |
 | --- | --- |

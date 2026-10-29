@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
 [ext_resource type="Script" path="res://WORLD/Scenes/TestWorld.cs" id="4"]
 [ext_resource type="Resource" path="res://WORLD/Configuration/WorldMaster.tres" id="5"]
+[ext_resource type="PackedScene" path="res://WORLD/Vegetation/TreePreview/TreePreview.tscn" id="6"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -11,6 +12,7 @@ Settings = ExtResource("5")
 [node name="Environment" parent="." instance=ExtResource("2")]
 [node name="Player" parent="." instance=ExtResource("3")]
 position = Vector3(0, 90, 0)
+[node name="TreePreview" parent="." instance=ExtResource("6")]
 [node name="TestHUD" type="CanvasLayer" parent="."]
 [node name="Readout" type="Label" parent="TestHUD"]
 offset_left = 20.0

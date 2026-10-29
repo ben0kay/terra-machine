@@ -6,6 +6,6 @@ The adapter validates native class availability before loading `Integration/voxe
 
 `Integration/TerrainMaster.tres` is a native Noise2D generator producing **SDF voxels**, not a replacement heightmap mesh. Initial surface height is derived from 2D noise, but the terrain volume is suitable for later excavation. No edits/persistence are implemented yet. Bounds/LOD/collision are on `Integration/voxel_terrain.tscn`, viewer distance follows its view_distance. Keep geometry bounds aligned to chunk/LOD sizes; changing the finite extent should also update WorldMaster's playable safety bound.
 
-`Integration/ground.gdshader` uses slope/position to color terrain and includes Voxel Tools' MIT Transvoxel transition helpers for LOD seams. Colors do not represent mineable material IDs. Source: https://github.com/Zylann/godot_voxel/blob/master/shaders/dev/transvoxel_minimal.gdshader ; license retained in `addons/zylann.voxel/LICENSE.md`.
+`Configuration/GroundMaterial.tres` now selects three color/normal/roughness texture sets and controls world-space triplanar material blending. `Integration/ground.gdshader` retains Voxel Tools' MIT Transvoxel transition helpers for LOD seams. Colors do not represent mineable material IDs. Source: https://github.com/Zylann/godot_voxel/blob/master/shaders/dev/transvoxel_minimal.gdshader ; license retained in `addons/zylann.voxel/LICENSE.md`.
 
 Editor terrain preview and live tuning are deferred. Run the test scene to generate terrain. Actual addon/engine compatibility and LOD/collision behavior still require local validation.
