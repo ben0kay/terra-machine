@@ -30,7 +30,7 @@ This pass provides smooth seeded hills with slope-based green/rock shading, stre
 | `WORLD/Terrain/Integration/voxel_terrain.tscn` | Native Voxel Tools nodes, mesher, bounds and LOD |
 | `WORLD/Environment/environment.tscn` | Sky3D and sun/moon lights |
 
-Controls: **arrows or WASD** move, **Shift** sprint, **RMB** jump, mouse look, **Esc** releases cursor, **LMB** recaptures, **F4** respawns/retries loading. Spawn waits for an actual terrain collider; startup timeout remains safely suspended. The 1024m square test terrain has a 440m playable half-extent with automatic spawn recovery before its edge. F4 does not delete/regenerate the world.
+Controls: **arrow keys** move, **Shift** sprint, **RMB** jump, mouse look, **Esc** releases cursor, **LMB** recaptures, **F4** respawns/retries loading. Spawn waits for an actual terrain collider; startup timeout remains safely suspended. The 1024m square test terrain has a 440m playable half-extent with automatic spawn recovery before its edge. F4 does not delete/regenerate the world.
 
 ## Configuration and architecture
 
