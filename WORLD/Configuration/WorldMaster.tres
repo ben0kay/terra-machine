@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WorldSettings" load_steps=2 format=3]
+[ext_resource type="Script" path="res://WORLD/WorldSettings.cs" id="1"]
+[resource]
+script = ExtResource("1")
+SpawnXZ = Vector2(0, 0)
+SpawnProbeTop = 90.0
+SpawnProbeBottom = -100.0
+LoadingTimeoutSeconds = 60.0
+PlayableHalfExtent = 440.0
+KillHeight = -100.0

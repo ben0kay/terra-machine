@@ -1,0 +1,11 @@
+[gd_resource type="VoxelGeneratorNoise2D" load_steps=2 format=3]
+[sub_resource type="FastNoiseLite" id="Noise"]
+seed = 727
+frequency = 0.007
+fractal_octaves = 4
+fractal_gain = 0.45
+[resource]
+channel = 1
+height_start = -12.0
+height_range = 60.0
+noise = SubResource("Noise")

@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://PLAYER/PlayerController.cs" id="1"]
+[ext_resource type="Script" path="res://PLAYER/PlayerInput.cs" id="2"]
+[ext_resource type="Resource" path="res://PLAYER/Configuration/PlayerMaster.tres" id="3"]
+[sub_resource type="CapsuleShape3D" id="Capsule"]
+radius = 0.3
+height = 1.8
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 0.3
+script = ExtResource("1")
+Settings = ExtResource("3")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("Capsule")
+[node name="Head" type="Node3D" parent="."]
+position = Vector3(0, 1.65, 0)
+[node name="Camera3D" type="Camera3D" parent="Head"]
+current = true
+fov = 75.0
+near = 0.05
+far = 1200.0
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("2")
