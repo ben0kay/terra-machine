@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ForestPreviewSettings" load_steps=3 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/ForestPreview/ForestPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/PineTree002.tscn" id="2"]
+[resource]
+script = ExtResource("1")
+PineTree = ExtResource("2")
+Seed = 20261029
+CenterOffset = Vector2(18, -118)
+RadiusX = 82.0
+RadiusZ = 86.0
+TreeCount = 115
+CenterSpacing = 7.5
+EdgeSpacing = 14.0
+OriginalTreeClearance = 8.0
+TrailHalfWidth = 3.0
+MinimumScale = 0.82
+MaximumScale = 1.33
+GroundSink = 0.08
+MaximumSlopeDegrees = 30.0
+NearShadows = true
+ProbeTop = 192.0
+PlacementRange = 140.0
+QueriesPerPhysicsTick = 4
+RetrySeconds = 2.0
+MaxGroundRetries = 18

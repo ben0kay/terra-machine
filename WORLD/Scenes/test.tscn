@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://DEBUG/Overlay/DebugOverlay.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/GrassScatter/GrassScatter.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreview.tscn" id="9"]
+[ext_resource type="PackedScene" path="res://WORLD/Vegetation/ForestPreview/ForestPreview.tscn" id="10"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -44,7 +45,8 @@ mouse_filter = 2
 wait_time = 0.25
 autostart = true
 [node name="DebugOverlay" parent="." instance=ExtResource("7")]
-ExtraVisualRoots = Array[NodePath]([NodePath("../GrassScatter"), NodePath("../MeadowPreview")])
+ExtraVisualRoots = Array[NodePath]([NodePath("../GrassScatter"), NodePath("../MeadowPreview"), NodePath("../ForestPreview")])
 [node name="GrassScatter" parent="." instance=ExtResource("8")]
 
 [node name="MeadowPreview" parent="." instance=ExtResource("9")]
+[node name="ForestPreview" parent="." instance=ExtResource("10")]
