@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://qkeslnf813te"
-path="res://.godot/imported/fir_sapling_medium_b_1k.glb-ceb7f9f2b052c7e1bff491d43fdbd967.scn"
+path="res://.godot/imported/fir_sapling_medium_b_1k.glb-76d2cd13ce1b5ce546c5612633021309.scn"
 
 [deps]
 
-source_file="res://ASSETS/Vegetation/Trees/fir_sapling_medium_1k.blend/fir_sapling_medium_b_1k.glb"
-dest_files=["res://.godot/imported/fir_sapling_medium_b_1k.glb-ceb7f9f2b052c7e1bff491d43fdbd967.scn"]
+source_file="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_b_1k.glb"
+dest_files=["res://.godot/imported/fir_sapling_medium_b_1k.glb-76d2cd13ce1b5ce546c5612633021309.scn"]
 
 [params]
 
@@ -41,5 +41,5 @@ materials/extract_format=0
 materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
-gltf/embedded_image_handling=1
+gltf/embedded_image_handling=2
 gltf/texture_map_mode=1
