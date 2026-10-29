@@ -11,6 +11,7 @@ public partial class DebugOverlay : CanvasLayer
     [Export] public Godot.Collections.Array<NodePath> ExtraVisualRoots { get; set; } = new();
     private ITerrainRenderDebug? _terrain;
     private TreePreview? _trees;
+    private GrassScatter? _grass;
     private PlayerController _player = null!;
     private PanelContainer _panel = null!;
     private Label _metrics = null!, _results = null!, _progress = null!;
@@ -47,6 +48,7 @@ public partial class DebugOverlay : CanvasLayer
     {
         if (_initialized || !Settings.Enabled) return;
         _terrain = terrain; _trees = trees; _player = player;
+        _grass = GetNodeOrNull<GrassScatter>("../GrassScatter");
         _timer.WaitTime = Mathf.Max(0.1f, Settings.ReadoutInterval);
         BuildControls(GetNode<VBoxContainer>("Panel/Rows"));
         _initialized = true;
@@ -195,9 +197,9 @@ public partial class DebugOverlay : CanvasLayer
     private void StartComparison()
     {
         if (_stage >= 0) return;
-        if (_trees != null && _trees.IsPlacing)
+        if ((_trees != null && _trees.IsPlacing) || (_grass != null && _grass.IsPlacing))
         {
-            _results.Text = "Trees are still loading; wait, then retry.";
+            _results.Text = "Vegetation is still loading; wait, then retry.";
             return;
         }
         _saved = new[] { _groundOn, _texturesOn, _normalsOn, _treesOn, _shadowsOn, _unshadedOn };
@@ -205,6 +207,7 @@ public partial class DebugOverlay : CanvasLayer
         _resultRows.Clear();
         _report.AppendLine("Terra Machine — same-camera rendering comparison");
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
+        _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
         _stage = 0;

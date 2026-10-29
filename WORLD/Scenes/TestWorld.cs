@@ -9,6 +9,7 @@ public partial class TestWorld : Node3D
     private PlayerController _player = null!;
     private ITerrainService _terrain = null!;
     private TreePreview? _trees;
+    private GrassScatter? _grass;
     private DebugOverlay? _debug;
     private Label _readout = null!;
     private bool _waiting;
@@ -24,6 +25,7 @@ public partial class TestWorld : Node3D
         _terrain = (ITerrainService)GetNode(TerrainPath);
         _readout = GetNode<Label>("TestHUD/Readout");
         _trees = GetNodeOrNull<TreePreview>("TreePreview");
+        _grass = GetNodeOrNull<GrassScatter>("GrassScatter");
         _debug = GetNodeOrNull<DebugOverlay>("DebugOverlay");
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
@@ -73,6 +75,7 @@ public partial class TestWorld : Node3D
         _player.SetMovementEnabled(true);
         _waiting = false;
         _trees?.Initialize(_terrain, Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
+        _grass?.Initialize(_terrain as ITerrainSurfaceService, _player);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
         RefreshReadout();
     }

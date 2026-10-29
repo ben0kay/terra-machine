@@ -1,3 +1,3 @@
 # Vegetation
 
-`TreePreview/` owns the first twelve-tree visual benchmark composed into test.tscn. Mesh assets stay under ASSETS/Vegetation; world placement/settings belong here. No Voxel Tools calls, per-tree update loops, forest streaming or gameplay simulation. See TreePreview/README.md for ownership and limitations.
+`TreePreview/` owns the bounded twelve-fir/four-pine visual group. `GrassScatter/` owns the player-centred, distance-faded grass trial, batched into nearby tiles. Mesh/texture assets remain under ASSETS/Vegetation; world placement/settings belong here. Both use game-owned terrain interfaces with no Voxel Tools dependencies. Trees sleep after placement; grass runs bounded placement on travel and retains a small crossing timer. See each feature README for lifecycle, tuning and acceptance checks.

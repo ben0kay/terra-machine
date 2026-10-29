@@ -1,7 +1,7 @@
 // The only C# owner of Voxel Tools API calls. Native generation/streaming run in the addon.
 using Godot;
 
-public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug
+public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug, ITerrainSurfaceService
 {
     [Export] public LandscapeSettings Landscape { get; set; } = new();
     private Node3D? _viewer;
@@ -74,13 +74,21 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     // Confirm actual native physics collision, not just visible terrain meshes.
     public bool TryFindGround(Vector2 position, float top, float bottom, out Vector3 ground)
     {
-        ground = Vector3.Zero;
+        return TryFindSurface(position, top, bottom, out ground, out _);
+    }
+
+    // =========================================================
+    // One shared physics ray returns the actual surface normal for grass slope filtering.
+    public bool TryFindSurface(Vector2 position, float top, float bottom, out Vector3 ground, out Vector3 normal)
+    {
+        ground = Vector3.Zero; normal = Vector3.Up;
         if (!IsAvailable || _target == null) return false;
         _groundQuery.From = new Vector3(position.X, top, position.Y);
         _groundQuery.To = new Vector3(position.X, bottom, position.Y);
         var hit = GetWorld3D().DirectSpaceState.IntersectRay(_groundQuery);
         if (hit.Count == 0) return false;
         ground = hit["position"].AsVector3();
+        normal = hit["normal"].AsVector3();
         return true;
     }
 

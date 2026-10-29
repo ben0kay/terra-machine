@@ -1,0 +1,209 @@
+// Streams a bounded ring of deterministic grass batches, using ordinary surface queries.
+// One timer watches tile crossings; physics work sleeps when the placement queue is empty.
+using Godot;
+using System;
+using System.Collections.Generic;
+
+public partial class GrassScatter : Node3D
+{
+    [Export] public GrassScatterSettings Settings { get; set; } = new();
+    private sealed class Tile
+    {
+        public Vector2I Key;
+        public int Cursor, Attempts;
+        public bool CenterChecked, Done;
+        public ulong RetryAt;
+        public readonly List<(int Variant, Transform3D Transform)> Transforms = new();
+        public Node3D? Batch;
+        public RandomNumberGenerator Random = new();
+    }
+    private readonly Dictionary<Vector2I, Tile> _tiles = new();
+    private readonly Queue<Tile> _jobs = new();
+    private readonly List<Mesh> _meshes = new();
+    private readonly List<Vector3> _pivots = new();
+    private ITerrainSurfaceService? _surface;
+    private Node3D? _player;
+    private ShaderMaterial _material = null!;
+    private Timer _timer = null!;
+    private Vector2I _center = new(int.MaxValue, int.MaxValue);
+    private float _size, _range, _minimumUp;
+    private int _candidates;
+    private bool _initialized;
+    public bool IsPlacing
+    {
+        get
+        {
+            if (!IsVisibleInTree()) return false;
+            foreach (Tile tile in _tiles.Values) if (!tile.Done) return true;
+            return false;
+        }
+    }
+
+    // =========================================================
+    // Initialize only after a grounded spawn, with no scene-tree searches during steady play.
+    public override void _Ready()
+    {
+        SetPhysicsProcess(false);
+        _timer = new Timer(); AddChild(_timer);
+        _timer.Timeout += RefreshTiles;
+        VisibilityChanged += UpdateActivity;
+    }
+
+    // =========================================================
+    // Extract selected mesh resources once; ignore Blender's display-layout node translations.
+    public void Initialize(ITerrainSurfaceService? surface, Node3D player)
+    {
+        if (_initialized || surface == null || Settings.Variants == null || Settings.Material == null) return;
+        var source = Settings.Variants.Instantiate<Node3D>();
+        foreach (string name in Settings.MeshNames)
+        {
+            var meshNode = source.FindChild(name, true, false) as MeshInstance3D;
+            if (meshNode?.Mesh == null) continue;
+            Mesh mesh = meshNode.Mesh;
+            Aabb bounds = mesh.GetAabb();
+            _meshes.Add(mesh);
+            _pivots.Add(new Vector3(bounds.GetCenter().X, bounds.Position.Y, bounds.GetCenter().Z));
+        }
+        source.Free();
+        if (_meshes.Count == 0) { GD.PushWarning("Grass preview found no configured variant meshes."); return; }
+        _surface = surface; _player = player; _initialized = true;
+        _size = Mathf.Clamp(Settings.TileSize, 8f, 32f);
+        _range = Mathf.Clamp(Settings.EndDistance, 15f, 80f);
+        _minimumUp = Mathf.Cos(Mathf.DegToRad(Mathf.Clamp(Settings.MaximumSlopeDegrees, 0f, 45f)));
+        _candidates = Mathf.Clamp((int)(_size * _size * Settings.TuftsPerSquareMeter), 1, 2048);
+        _material = (ShaderMaterial)Settings.Material.Duplicate();
+        float dense = Mathf.Clamp(Settings.DenseDistance, 1f, _range - 2f);
+        _material.SetShaderParameter("dense_distance", dense);
+        _material.SetShaderParameter("sparse_distance", Mathf.Clamp(Settings.SparseDistance, dense + 1f, _range - 1f));
+        _material.SetShaderParameter("end_distance", _range);
+        _timer.WaitTime = Mathf.Max(Settings.TileCheckSeconds, 0.1f);
+        UpdateActivity();
+    }
+
+    // =========================================================
+    // Visibility toggles suspend both placement work and the crossing timer, then resume on demand.
+    private void UpdateActivity()
+    {
+        if (!_initialized) return;
+        bool active = IsVisibleInTree();
+        SetPhysicsProcess(active && _jobs.Count > 0);
+        if (active) { _timer.Start(); RefreshTiles(); } else _timer.Stop();
+    }
+
+    // =========================================================
+    // Rebuild a small nearest-first job queue only on tile crossings or bounded collision retries.
+    private void RefreshTiles()
+    {
+        if (_player == null || !IsVisibleInTree()) return;
+        Vector3 p = _player.GlobalPosition;
+        var center = new Vector2I(Mathf.FloorToInt(p.X / _size), Mathf.FloorToInt(p.Z / _size));
+        ulong now = Time.GetTicksMsec();
+        bool changed = center != _center;
+        bool retry = false;
+        foreach (Tile tile in _tiles.Values)
+            if (!tile.Done && tile.RetryAt > 0 && tile.RetryAt <= now) { retry = true; break; }
+        if (!changed && !retry) return;
+        _center = center;
+        int radius = Mathf.CeilToInt(_range / _size) + 1;
+        var wanted = new HashSet<Vector2I>();
+        var ordered = new List<Vector2I>();
+        Vector2 anchor = (new Vector2(center.X, center.Y) + Vector2.One * 0.5f) * _size;
+        for (int z = -radius; z <= radius; z++)
+        for (int x = -radius; x <= radius; x++)
+        {
+            var key = center + new Vector2I(x, z);
+            Vector2 tileCenter = (new Vector2(key.X, key.Y) + Vector2.One * 0.5f) * _size;
+            // Conservative ring includes tile corners and player motion within the current tile.
+            if (tileCenter.DistanceTo(anchor) > _range + _size * 1.42f) continue;
+            wanted.Add(key); ordered.Add(key);
+        }
+        var remove = new List<Vector2I>();
+        foreach (var entry in _tiles)
+            if (!wanted.Contains(entry.Key)) { entry.Value.Batch?.QueueFree(); remove.Add(entry.Key); }
+        foreach (Vector2I key in remove) _tiles.Remove(key);
+        ordered.Sort((a, b) => (a - center).LengthSquared().CompareTo((b - center).LengthSquared()));
+        _jobs.Clear();
+        foreach (Vector2I key in ordered)
+        {
+            if (!_tiles.TryGetValue(key, out Tile? tile))
+            {
+                uint seed = unchecked((uint)(key.X * 73856093 ^ key.Y * 19349663 ^ Settings.Seed));
+                tile = new Tile { Key = key };
+                tile.Random.Seed = seed; _tiles.Add(key, tile);
+            }
+            if (!tile.Done && tile.RetryAt <= now) { tile.RetryAt = 0; _jobs.Enqueue(tile); }
+        }
+        SetPhysicsProcess(_jobs.Count > 0);
+    }
+
+    // =========================================================
+    // Bound startup/travel ray work. Placement never invokes native voxel calls directly.
+    public override void _PhysicsProcess(double delta)
+    {
+        if (_surface == null || _player == null) return;
+        int rays = Mathf.Clamp(Settings.QueriesPerPhysicsTick, 1, 256), visits = 0;
+        while (_jobs.Count > 0 && rays > 0 && visits++ < 512)
+        {
+            Tile tile = _jobs.Peek();
+            Vector2 origin = new(tile.Key.X * _size, tile.Key.Y * _size);
+            float top = _player.GlobalPosition.Y + 96f, bottom = _player.GlobalPosition.Y - 192f;
+            if (!tile.CenterChecked)
+            {
+                rays--;
+                if (!_surface.TryFindSurface(origin + Vector2.One * (_size * 0.5f), top, bottom, out _, out _))
+                {
+                    tile.Attempts++; tile.Done = tile.Attempts >= 4;
+                    tile.RetryAt = Time.GetTicksMsec() + 2000;
+                    _jobs.Dequeue(); continue;
+                }
+                tile.CenterChecked = true;
+                if (rays == 0) break;
+            }
+            float x = origin.X + tile.Random.Randf() * _size, z = origin.Y + tile.Random.Randf() * _size;
+            tile.Cursor++;
+            // Broad patch variation leaves soil gaps; fewer candidates are queried in sparse patches.
+            float patch = 0.5f + 0.3f * Mathf.Sin(x * 0.19f + Mathf.Sin(z * 0.11f)) + 0.2f * Mathf.Sin(z * 0.27f + x * 0.07f);
+            if (tile.Random.Randf() < Mathf.Clamp(patch, 0.1f, 0.9f))
+            {
+                rays--;
+                if (_surface.TryFindSurface(new Vector2(x, z), top, bottom, out Vector3 ground, out Vector3 normal) && normal.Y >= _minimumUp)
+                {
+                    int variant = tile.Random.RandiRange(0, _meshes.Count - 1);
+                    float scale = tile.Random.RandfRange(Mathf.Max(0.1f, Settings.MinimumScale), Mathf.Max(Settings.MinimumScale, Settings.MaximumScale));
+                    Basis basis = new Basis(new Quaternion(Vector3.Up, normal.Normalized())) * new Basis(Vector3.Up, tile.Random.Randf() * Mathf.Tau);
+                    basis = basis.Scaled(Vector3.One * scale);
+                    Vector3 position = ground - Vector3.Up * 0.015f - basis * _pivots[variant];
+                    position -= new Vector3(origin.X, 0f, origin.Y);
+                    tile.Transforms.Add((variant, new Transform3D(basis, position)));
+                }
+            }
+            if (tile.Cursor < _candidates) continue;
+            CompleteTile(tile, origin); _jobs.Dequeue();
+        }
+        if (_jobs.Count == 0) SetPhysicsProcess(false);
+    }
+
+    // =========================================================
+    // One static MultiMesh per variant/tile; mixed variants avoid visible square species patches.
+    private void CompleteTile(Tile tile, Vector2 origin)
+    {
+        tile.Done = true;
+        if (tile.Transforms.Count == 0) return;
+        tile.Batch = new Node3D { Name = $"Grass_{tile.Key.X}_{tile.Key.Y}" };
+        AddChild(tile.Batch); tile.Batch.GlobalPosition = new Vector3(origin.X, 0f, origin.Y);
+        for (int variant = 0; variant < _meshes.Count; variant++)
+        {
+            int count = 0;
+            foreach (var item in tile.Transforms) if (item.Variant == variant) count++;
+            if (count == 0) continue;
+            var multi = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D, Mesh = _meshes[variant], InstanceCount = count };
+            int index = 0;
+            foreach (var item in tile.Transforms)
+                if (item.Variant == variant) multi.SetInstanceTransform(index++, item.Transform);
+            var batch = new MultiMeshInstance3D { Multimesh = multi, MaterialOverride = _material,
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off, VisibilityRangeEnd = _range + _size * 1.5f };
+            tile.Batch.AddChild(batch);
+        }
+        tile.Transforms.Clear();
+    }
+}

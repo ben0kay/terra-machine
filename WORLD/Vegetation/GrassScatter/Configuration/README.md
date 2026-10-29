@@ -1,0 +1,3 @@
+# Grass configuration
+
+`GrassMaster.tres` owns mesh selection, density, distance bands, slope limit, scale, seed and work budgets. Restart the test scene after edits. `TuftsPerSquareMeter` counts candidates before patch/slope rejection; candidates are capped at 2048 per tile. Runtime clamps tile size to 8–32 m and draw range to 15–80 m to keep this trial bounded. Asset cutout/normal/roughness inputs live in ASSETS/Vegetation/Grass/Grass001/Materials/GrassMaster.tres. Start with density and scale before increasing distances.

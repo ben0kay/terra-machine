@@ -20,6 +20,8 @@ The ground is part of the gameplay, not just a visual surface. A player might di
 
 `WORLD/Scenes/test.tscn` now uses a deliberately shaped meadow → broad mountain shoulder → plateau/cliff composition with a mountain backdrop. Initial surface and shared slope map are prepared once; native SDF terrain streaming remains isolated. Tune `WORLD/Terrain/Landscape/Configuration/LandscapeMaster.tres`. See `WORLD/Terrain/Landscape/README.md` for checks and local acceptance still required. This replaces the small noise-hill surface for the test scene; it is not a general world generator.
 
+The test scene also includes a player-centred grass trial with batched tiles and 20/45/60 m density/fade bands. Tune `WORLD/Vegetation/GrassScatter/Configuration/GrassMaster.tres`; F1 includes a grass visibility toggle. Local visual/FPS acceptance is pending.
+
 ## Current direction — VISUAL-FIRST WILDERNESS (priority for Codex)
 
 **This section takes precedence over older speculative survival, mining and feature-phase ideas below.** The next objective is to make the existing test environment **look excellent at player eye level** before designing complex gameplay mechanics around it. Prioritize an Earth-like environment (forests, clearings, rock, hills, caves, natural vegetation and atmospheric lighting), not a hostile alien planet or zombie apocalypse. Mystery/sci-fi elements remain optional, later design choices.

@@ -11,3 +11,5 @@ The adapter validates native class availability before loading `Integration/voxe
 Editor terrain preview and live tuning are deferred. Run the test scene to generate terrain. Actual addon/engine compatibility and LOD/collision behavior still require local validation.
 
 Render debug is optional through ITerrainRenderDebug. The adapter owns cached simple/textured/normal-disabled materials and native visibility; collision and streaming continue. Transition code is shared in Integration/transvoxel.gdshaderinc. No debug native calls leak into the overlay.
+
+`ITerrainSurfaceService` is an optional game-owned ground-position/normal query used by grass slope filtering. The adapter shares the existing physics ray with TryFindGround; no additional per-frame terrain work or native API leakage is introduced.
