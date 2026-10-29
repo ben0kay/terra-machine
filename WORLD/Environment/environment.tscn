@@ -10,8 +10,8 @@ ambient_light_energy = 1.0
 tonemap_mode = 3
 [node name="Environment" type="Node3D"]
 [node name="Sky3D" type="WorldEnvironment" parent="."]
-script = ExtResource("1")
 environment = SubResource("Environment")
+script = ExtResource("1")
 editor_time_enabled = false
 game_time_enabled = false
 current_time = 13.0
