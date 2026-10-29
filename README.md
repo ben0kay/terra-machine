@@ -16,6 +16,10 @@ The player needs freedom **and** meaningful long-term discoveries. No exact lore
 
 The ground is part of the gameplay, not just a visual surface. A player might dig a trench, excavate a hillside shelter, follow an ore vein, open a tunnel into a natural cave, or uncover something artificial far beneath the forest. Terrain changes must eventually be persistent and compatible with nearby structures and world streaming. Smooth/organic surfaces are preferred over visible Minecraft-style cube terrain.
 
+## Latest test-landscape pass
+
+`WORLD/Scenes/test.tscn` now uses a deliberately shaped meadow → winding climb → plateau/cliff composition with a mountain backdrop. Initial surface and soil-route mask are prepared once; native SDF terrain streaming remains isolated. Tune `WORLD/Terrain/Landscape/Configuration/LandscapeMaster.tres`. See `WORLD/Terrain/Landscape/README.md` for checks and local acceptance still required. This replaces the small noise-hill surface for the test scene; it is not a general world generator.
+
 ## Current direction — VISUAL-FIRST WILDERNESS (priority for Codex)
 
 **This section takes precedence over older speculative survival, mining and feature-phase ideas below.** The next objective is to make the existing test environment **look excellent at player eye level** before designing complex gameplay mechanics around it. Prioritize an Earth-like environment (forests, clearings, rock, hills, caves, natural vegetation and atmospheric lighting), not a hostile alien planet or zombie apocalypse. Mystery/sci-fi elements remain optional, later design choices.

@@ -3,6 +3,7 @@ using Godot;
 
 public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug
 {
+    [Export] public LandscapeSettings Landscape { get; set; } = new();
     private Node3D? _viewer;
     private Node3D? _terrainNode;
     private ShaderMaterial? _texturedMaterial;
@@ -20,7 +21,7 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     {
         SetProcess(false);
         _groundQuery = new PhysicsRayQueryParameters3D { CollisionMask = 1, CollideWithAreas = false };
-        if (!ClassDB.ClassExists("VoxelLodTerrain") || !ClassDB.ClassExists("VoxelViewer"))
+        if (!ClassDB.ClassExists("VoxelLodTerrain") || !ClassDB.ClassExists("VoxelViewer") || !ClassDB.ClassExists("VoxelGeneratorImage"))
         {
             Status = "Voxel Tools did not load. Check the Godot extension errors and matching binaries.";
             GD.PushError(Status);
@@ -28,8 +29,15 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         }
         var scene = GD.Load<PackedScene>("res://WORLD/Terrain/Integration/voxel_terrain.tscn");
         var terrain = scene.Instantiate<Node3D>();
+        // Prepare once before adding the native node: worker threads see immutable image data.
+        var surface = TestLandscape.Build(Landscape);
+        Resource generator = ((Resource)terrain.Get("generator").AsGodotObject()).Duplicate();
+        generator.Set("image", surface.Heights);
+        terrain.Set("generator", generator);
         _terrainNode = terrain;
         _texturedMaterial = (ShaderMaterial)((ShaderMaterial)terrain.Get("material").AsGodotObject()).Duplicate();
+        _texturedMaterial.SetShaderParameter("route_mask", ImageTexture.CreateFromImage(surface.RouteMask));
+        _texturedMaterial.SetShaderParameter("route_map_size", (float)TestLandscape.MapSize);
         _normalMapsOffMaterial = (ShaderMaterial)_texturedMaterial.Duplicate();
         _normalMapsOffMaterial.SetShaderParameter("normal_maps_enabled", false);
         _simpleMaterial = new ShaderMaterial { Shader = GD.Load<Shader>("res://WORLD/Terrain/Integration/ground_simple.gdshader") };

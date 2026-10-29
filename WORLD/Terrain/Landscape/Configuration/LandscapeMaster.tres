@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="LandscapeSettings" load_steps=2 format=3]
+[ext_resource type="Script" path="res://WORLD/Terrain/Landscape/LandscapeSettings.cs" id="1"]
+[resource]
+script = ExtResource("1")
+PlateauHeight = 34.0
+PlateauCenter = Vector2(-50, -155)
+PlateauRadius = Vector2(80, 58)
+CliffWidth = 7.0
+MountainHeight = 100.0
+DetailHeight = 0.65
+PathHalfWidth = 3.5
+PathShoulderWidth = 8.0
+Route = PackedVector3Array(0, 0, 0, 20, 2, -30, 50, 7, -55, 60, 14, -85, 35, 22, -110, -5, 29, -125, -42, 34, -150)
