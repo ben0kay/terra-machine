@@ -6,6 +6,32 @@
 
 Read the root `README.md` and `CodePreferences.md` before authoring. The current priority is one attractive first-person wilderness benchmark in `WORLD/Scenes/test.tscn`, **not** a massive procedural generator. Assets should remain usable both in this benchmark and in later deterministic world placement. Visual quality must be judged in Godot from player eye level, not only in Blender.
 
+## Required step — choose and inspect a reference asset FIRST
+
+**Before modelling any new tree, rock, grass, flower or other natural asset, find the closest existing Terra Machine model and study it.** A new asset should belong to the same believable, grounded art family, not start from generic procedural defaults. A written description alone is not enough when actual meshes and textures are available.
+
+| New asset request | Preferred starting reference | What to study |
+| --- | --- | --- |
+| Pine, spruce, fir or other conifer | **`ASSETS/Vegetation/Trees/PineTree002/`** (authored northern pine, `Models/` and `Textures/`) | Tall narrow proportions, open tiered needle sprays, central leader, branch spacing, natural rounded base, 1K materials and near/far LOD construction |
+| Mature broadleaf tree (oak, maple, etc.) | **Mature Oak A V2** from the earlier design iteration **if the model is available**; use a current user-supplied example or reference images otherwise | Broad asymmetric crown, powerful curved limbs, bark mapping and varied leaf cluster depth. Do not reuse pine growth architecture for an oak |
+| Large boulder, rock outcrop or smaller stone | **Boulder001** (our first mossy cover boulder) **when its model is available** | Angular broken stone masses, believable ground contact, low geometry cost, localized moss, colour/normal/roughness mapping and near/far LODs |
+| Grass, small ground plants and similar foliage | **`ASSETS/Vegetation/Grass/Grass001/`** and other existing local plant assets | Low-poly card geometry, masked alpha, shared texture sheets, suitable ground pivot and reusable variation |
+
+**Availability caveat (checked 2026-10-29):** `PineTree002` and `Grass001` are present in this repository. **Boulder001 and Mature Oak A V2 were produced separately during earlier asset-design work; their source model files are not confirmed in the current GitHub tree.** Do not invent paths or claim to have read them. When the owner adds their files to the repo, update this table with the verified directories (suggested boulder home: `ASSETS/Nature/Boulders/Boulder001/`). Until then, request/use their supplied ZIP, glTF/GLB or screenshots as available, and clearly distinguish visual references from inspected geometry.
+
+### Required reference workflow for AI authors
+
+1. **Identify the asset family and target:** species/geology, biome, purpose, target dimensions and intended density/quality tier. Choose the closest reference from the table or a newer owner-designated example. **The owner's specific image/reference takes priority for the requested silhouette**, while the existing asset keeps materials and export quality consistent.
+2. **Open and inspect the actual reference** when accessible: mesh geometry, silhouette from front/side/3/4/top, scale and pivot, triangle counts, material slots, UVs, colour/normal/roughness/alpha maps, foliage construction, and LOD naming. Read its README. If only screenshots are available, say what cannot be verified.
+3. **Explain what carries over and what changes:** e.g. for a new pine retain PineTree002's realistic branch-tier language, material strategy, and ground contact, but create a genuinely new silhouette; for a new rock retain Boulder001's fractured geology and moss placement, but use a distinct shape.
+4. **Keep family resemblance without cloning:** match the grounded level of detail, shader/material behaviour, natural colours, believable scale, and efficient mesh methods. Do **not** copy the reference object's exact branch positions, rock outline or foliage cards blindly. Specific species and rocks must still look physically distinct.
+5. **Compare outputs side by side** at the same human scale, similar view angle and lighting. Check both close-up material quality and a distant silhouette. Report what was improved, what differs and any remaining weaknesses.
+6. **Record reference provenance** in the new asset README: exact reference path or supplied file/image, what was inspected, what was only inferred, plus any third-party material origins and licence. Don't assume references missing from the repo exist on the author's local computer.
+
+**Default rule:** When asked for “another pine,” start by inspecting **PineTree002**, not a generic tree generator. When asked for “another boulder,” start with **Boulder001** if supplied or available, not a random noisy sphere. If the closest asset is inaccessible, state that and use the best actual reference provided—never claim to have inspected a missing file.
+
+---
+
 ## 1. Art direction: the look to keep
 
 **North star:** A believable, atmospheric **northern Canadian / boreal and mixed woodland**—grounded semi-realism, detailed natural materials, recognizable species, and strong silhouettes. Attractive in close-up, readable across a valley, inexpensive enough for repeated use.
