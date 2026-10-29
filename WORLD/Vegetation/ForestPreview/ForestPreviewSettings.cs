@@ -8,7 +8,7 @@ public partial class ForestPreviewSettings : Resource
     [Export] public PackedScene? PineTree { get; set; }
     [ExportGroup("Footprint")]
     [Export] public int Seed { get; set; } = 20261029;
-    [Export] public Vector2 CenterOffset { get; set; } = new(18f, -118f);
+    [Export] public Vector2 CenterOffset { get; set; } = new(18f, 118f);
     [Export] public float RadiusX { get; set; } = 82f;
     [Export] public float RadiusZ { get; set; } = 86f;
     [Export] public int TreeCount { get; set; } = 115;

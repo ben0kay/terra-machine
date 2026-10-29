@@ -65,9 +65,11 @@ public partial class ForestPreview : Node3D
             Vector2 point = center + new Vector2(Mathf.Cos(angle) * radius.X * r, Mathf.Sin(angle) * radius.Y * r);
             float edge = Smooth(0.37f, 1f, r);
             if (random.Randf() > Mathf.Lerp(0.98f, 0.52f, edge)) continue;
-            // A narrow curving gap leads inward from the original tree preview.
-            float progress = Mathf.Clamp((-point.Y - 45f) / 150f, 0f, 1f);
-            float trailX = spawn.X + 9f + 14f * progress + 5f * Mathf.Sin(point.Y * 0.047f);
+            // The walkable gap follows the configured forest direction (positive or negative Z).
+            float direction = Settings.CenterOffset.Y >= 0f ? 1f : -1f;
+            float forwardDistance = (point.Y - spawn.Y) * direction;
+            float progress = Mathf.Clamp((forwardDistance - 25f) / 150f, 0f, 1f);
+            float trailX = spawn.X + 9f + 14f * progress + 5f * Mathf.Sin(forwardDistance * 0.047f);
             if (Mathf.Abs(point.X - trailX) < Mathf.Max(1f, Settings.TrailHalfWidth)) continue;
             float spacing = Mathf.Lerp(Mathf.Max(4f, Settings.CenterSpacing),
                 Mathf.Max(Settings.CenterSpacing, Settings.EdgeSpacing), edge);

@@ -5,7 +5,7 @@
 script = ExtResource("1")
 PineTree = ExtResource("2")
 Seed = 20261029
-CenterOffset = Vector2(18, -118)
+CenterOffset = Vector2(18, 118)
 RadiusX = 82.0
 RadiusZ = 86.0
 TreeCount = 115
