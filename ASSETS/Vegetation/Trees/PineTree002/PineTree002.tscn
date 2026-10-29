@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://WORLD/Vegetation/LOD/AuthoredTreeLod.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/Models/pine_tree_001_v2_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/Models/pine_tree_001_v2_a_LOD2.gltf" id="3"]
+
+[node name="PineTree002" type="Node3D"]
+script = ExtResource("1")
+NearModel = ExtResource("2")
+FarModel = ExtResource("3")
+SwitchDistance = 70.0
+CullDistance = 280.0
+HysteresisMargin = 3.0
