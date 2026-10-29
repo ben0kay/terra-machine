@@ -28,7 +28,8 @@ public partial class GrassScatter : Node3D
     private Timer _timer = null!;
     private Vector2I _center = new(int.MaxValue, int.MaxValue);
     private float _size, _range, _minimumUp, _dense, _sparse;
-    private int _candidates;
+    private int _candidates, _gridSide;
+    private int[] _cellOrder = Array.Empty<int>();
     private bool _initialized;
     public bool IsPlacing
     {
@@ -72,6 +73,15 @@ public partial class GrassScatter : Node3D
         _range = Mathf.Clamp(Settings.EndDistance, 15f, 80f);
         _minimumUp = Mathf.Cos(Mathf.DegToRad(Mathf.Clamp(Settings.MaximumSlopeDegrees, 0f, 45f)));
         _candidates = Mathf.Clamp((int)(_size * _size * Settings.TuftsPerSquareMeter), 1, 8192);
+        _gridSide = Mathf.CeilToInt(Mathf.Sqrt(_candidates));
+        _cellOrder = new int[_gridSide * _gridSide];
+        var cellRandom = new RandomNumberGenerator { Seed = unchecked((uint)Settings.Seed) };
+        for (int i = 0; i < _cellOrder.Length; i++) _cellOrder[i] = i;
+        for (int i = _cellOrder.Length - 1; i > 0; i--)
+        {
+            int other = cellRandom.RandiRange(0, i);
+            (_cellOrder[i], _cellOrder[other]) = (_cellOrder[other], _cellOrder[i]);
+        }
         _material = (ShaderMaterial)Settings.Material.Duplicate();
         _dense = Mathf.Clamp(Settings.DenseDistance, 1f, _range - 2f);
         _sparse = Mathf.Clamp(Settings.SparseDistance, _dense + 1f, _range - 1f);
@@ -161,7 +171,11 @@ public partial class GrassScatter : Node3D
                 tile.CenterChecked = true;
                 if (rays == 0) break;
             }
-            float x = origin.X + tile.Random.Randf() * _size, z = origin.Y + tile.Random.Randf() * _size;
+            // Stratify candidates across the whole tile; jitter preserves a natural layout.
+            // Shared shuffled cell order keeps distance-thinned prefixes distributed.
+            int cell = _cellOrder[tile.Cursor];
+            float x = origin.X + (cell % _gridSide + tile.Random.Randf()) * (_size / _gridSide);
+            float z = origin.Y + (cell / _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             tile.Cursor++;
             // Keep a continuous meadow base; broad variation changes fullness without bare bands.
             float patch = 0.5f + 0.3f * Mathf.Sin(x * 0.19f + Mathf.Sin(z * 0.11f)) + 0.2f * Mathf.Sin(z * 0.27f + x * 0.07f);

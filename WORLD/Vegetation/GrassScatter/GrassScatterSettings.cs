@@ -11,8 +11,8 @@ public partial class GrassScatterSettings : Resource
     [Export] public float TileSize { get; set; } = 16f;
     [Export] public float TuftsPerSquareMeter { get; set; } = 12f;
     [Export] public float DenseDistance { get; set; } = 20f;
-    [Export] public float SparseDistance { get; set; } = 45f;
-    [Export] public float EndDistance { get; set; } = 60f;
+    [Export] public float SparseDistance { get; set; } = 55f;
+    [Export] public float EndDistance { get; set; } = 80f;
     [Export] public float MaximumSlopeDegrees { get; set; } = 35f;
     [Export] public float MinimumScale { get; set; } = 3.0f;
     [Export] public float MaximumScale { get; set; } = 4.5f;

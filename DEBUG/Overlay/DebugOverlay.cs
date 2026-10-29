@@ -122,6 +122,31 @@ public partial class DebugOverlay : CanvasLayer
         rows.AddChild(scroll);
         var controls = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         scroll.AddChild(controls);
+        AddSection(controls, "ENVIRONMENT");
+        _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
+        _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
+        _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
+        AddSection(controls, "FOLIAGE");
+        _models = AddToggle(controls, "Tree models visible", value => _treesOn = value);
+        _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);
+        _unshaded = AddToggle(controls, "Trees unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
+        if (_grass != null)
+        {
+            var grass = new CheckButton { Text = "Grass visible", ButtonPressed = _grass.Visible, FocusMode = Control.FocusModeEnum.None };
+            controls.AddChild(grass);
+            grass.Toggled += value => _grass.Visible = value;
+        }
+        bool extraHeading = false;
+        foreach (NodePath path in ExtraVisualRoots)
+        {
+            Node3D? root = GetNodeOrNull<Node3D>(path);
+            if (root == null || root == _grass) continue;
+            if (!extraHeading) { AddSection(controls, "OTHER MODELS"); extraHeading = true; }
+            var toggle = new CheckButton { Text = $"Visible: {root.Name}", ButtonPressed = root.Visible, FocusMode = Control.FocusModeEnum.None };
+            controls.AddChild(toggle);
+            toggle.Toggled += value => root.Visible = value;
+        }
+        AddSection(controls, "PERFORMANCE");
         var cap = new CheckButton { Text = $"Cap at {Mathf.Clamp(Settings.FpsCap, 30, 240)} FPS", ButtonPressed = Engine.MaxFps > 0, FocusMode = Control.FocusModeEnum.None };
         cap.Toggled += enabled => Engine.MaxFps = enabled ? Mathf.Clamp(Settings.FpsCap, 30, 240) : 0;
         controls.AddChild(cap);
@@ -133,20 +158,7 @@ public partial class DebugOverlay : CanvasLayer
             graph.VisibilityChanged += () => showGraph.SetPressedNoSignal(graph.Visible);
             controls.AddChild(showGraph);
         }
-        _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
-        _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
-        _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
-        _models = AddToggle(controls, "Tree models visible", value => _treesOn = value);
-        _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);
-        _unshaded = AddToggle(controls, "Trees unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
-        foreach (NodePath path in ExtraVisualRoots)
-        {
-            Node3D? root = GetNodeOrNull<Node3D>(path);
-            if (root == null) continue;
-            var toggle = new CheckButton { Text = $"Visible: {root.Name}", ButtonPressed = root.Visible, FocusMode = Control.FocusModeEnum.None };
-            controls.AddChild(toggle);
-            toggle.Toggled += value => root.Visible = value;
-        }
+        AddSection(controls, "COMPARISON");
         var presets = new HBoxContainer(); controls.AddChild(presets);
         AddButton(presets, "Baseline", () => ApplyCase(0));
         AddButton(presets, "Ground only", () => ApplyCase(1));
@@ -161,6 +173,17 @@ public partial class DebugOverlay : CanvasLayer
         AddButton(rows, "Close / resume", () => SetOpen(false));
         if (_terrain == null) { _ground.Disabled = true; _textures.Disabled = true; _normals.Disabled = true; }
         if (_trees == null) { _models.Disabled = true; _shadows.Disabled = true; _unshaded.Disabled = true; }
+    }
+
+    // =========================================================
+    // Named sections are built once and remain inside the existing scrollable panel.
+    private static void AddSection(VBoxContainer rows, string title)
+    {
+        rows.AddChild(new HSeparator());
+        var heading = new Label { Text = title };
+        heading.AddThemeColorOverride("font_color", new Color(0.55f, 0.8f, 0.9f));
+        heading.AddThemeFontSizeOverride("font_size", 15);
+        rows.AddChild(heading);
     }
 
     // =========================================================
