@@ -1,12 +1,12 @@
 # TERRA MACHINE
 
 > **Working title:** Terra Machine  
-> **Direction:** First-person, semi-realistic, voxel-based wilderness survival and anomalous exploration.  
+> **Direction:** Visual-first, first-person exploration of a beautiful, Earth-like procedural wilderness built on smooth editable voxel terrain; survival/crafting systems come later.  
 > **Status (2026-10-29):** Early Godot project / technical foundation. The game vision below is **proposed direction**, not a list of implemented systems or blanket authorization to build them.
 
 ## Read this first — project identity and scope
 
-Terra Machine is a **fresh project**, separate from [War Machine](https://github.com/ben0kay/war-machine). Its defining technical choice is **smooth, volumetric, editable voxel terrain from the beginning**. The player should eventually be able to dig into hills, tunnel beneath the surface, excavate resources, make shelters and find underground cavities. War Machine's heightmap-based world is a reference for design lessons and coding conventions, **not** an architecture to copy into this project.
+Terra Machine is a **fresh project**, separate from [War Machine](https://github.com/ben0kay/war-machine). Its defining technical choice is **smooth, volumetric, editable voxel terrain from the beginning**. The immediate objective is **a beautiful, convincing wilderness test world**, with terrain, lighting, materials and vegetation as the development priority. Some genuine surface excavation, shallow tunnels and caves are important, but this is **not presently intended as a game about digging endlessly downward**. War Machine's heightmap-based world is a reference for design lessons and coding conventions, **not** an architecture to copy into this project.
 
 The intended experience is an atmospheric, player-driven survival sandbox: wake in an unfamiliar, increasingly strange world; scavenge, gather, hunt, repair, explore and gradually become capable of travelling into more dangerous regions. Zombies may inhabit settlements, but the game should **not be defined primarily by zombie combat or gun progression**. Wildlife, weather, underground geology, machines, eerie sites and alien phenomena should give the wilderness purpose.
 
@@ -15,6 +15,38 @@ The player needs freedom **and** meaningful long-term discoveries. No exact lore
 ### Why voxel terrain matters
 
 The ground is part of the gameplay, not just a visual surface. A player might dig a trench, excavate a hillside shelter, follow an ore vein, open a tunnel into a natural cave, or uncover something artificial far beneath the forest. Terrain changes must eventually be persistent and compatible with nearby structures and world streaming. Smooth/organic surfaces are preferred over visible Minecraft-style cube terrain.
+
+## Current direction — VISUAL-FIRST WILDERNESS (priority for Codex)
+
+**This section takes precedence over older speculative survival, mining and feature-phase ideas below.** The next objective is to make the existing test environment **look excellent at player eye level** before designing complex gameplay mechanics around it. Prioritize an Earth-like environment (forests, clearings, rock, hills, caves, natural vegetation and atmospheric lighting), not a hostile alien planet or zombie apocalypse. Mystery/sci-fi elements remain optional, later design choices.
+
+### Immediate test-world target
+
+- Focus on one deliberately polished **approximately 256 × 256 m visual benchmark area** (a target composition, not necessarily a replacement for the current 1024 m terrain bounds). It should feel hand-composed **even if generation is seeded and procedural**.
+- Include varied terrain: a natural hillside, rocky outcrops/cliffs, a small valley or clearing, a densely wooded section and an identifiable cave mouth/underground pocket. Streams or water are optional; do not force them into the first pass.
+- Achieve compelling **near-ground** materials: soil, exposed stone, grassy/mossy ground, sensible slope transitions and convincing scale. Avoid noisy repetitive hills and obvious texture tiling.
+- Build a forest in layers: mature trees with irregular spacing and varying silhouette, saplings/understory, grass/ferns/shrubs, scattered stones, deadwood and forest-floor detail. Prefer mesh assets/instancing for plants and props rather than voxelizing individual trees.
+- Tune Sky3D/sun/shadows/fog to produce attractive atmosphere **without using fog to hide missing geometry**. Forest canopy should create meaningful shade.
+- Judge results by walking the terrain, looking across a valley, entering a cave and viewing terrain close-up—not screenshots from high overhead alone.
+- Establish this quality bar **before** scaling toward a mega-world. Once an attractive patch is validated, turn its design into reproducible biome/placement rules across seamlessly streamed chunks, with LOD and performance checks.
+
+### Excavation scope: real, but modest
+
+Voxel terrain is still a **foundational requirement**, not an optional fake mining interaction. Plan for actual shallow ground removal, diggable hillsides, trenches, short tunnels and small underground shelters, with collision updating and terrain edits eventually persisting across saves. A player should be able to enter excavated space.
+
+**Do not make deep unrestricted mining the initial gameplay objective.** The tentative balancing intention is to make digging **progressively, potentially exponentially, harder with depth**: shallow soil is relatively accessible; denser rock and deeper geology demand dramatically more effort, better tools or special circumstances. Treat this as a **tunable gameplay resistance curve**, not a baked-in voxel-engine limitation or a finalized numeric formula. Surface height versus absolute world elevation needs careful definition; prefer depth below the **original generated terrain surface** where appropriate, and consider rock/material type. Never silently assume a fixed world-Y threshold is the actual depth below ground.
+
+Natural caves, pre-existing mines or other openings can provide deeper exploration **without requiring the player to excavate kilometres downward**. Keep digging costs/materials configurable and isolated from the native Voxel Tools integration. Do not add pickaxe skill trees, metallurgy, large-scale excavation machines, terrain-collapse physics or extensive survival UI now.
+
+### Practical sequencing and guardrails
+
+1. **ENV0 — Visual terrain baseline:** refine hill/valley shape, terrain materials and scale using current working test scene; verify voxel/collision stability.
+2. **ENV1 — Forest composition:** mature canopy trees, understory, ground-cover and rock detail, using instancing/streaming-aware placement.
+3. **ENV2 — Atmosphere:** refine daylight, shadows, haze and visual depth; make the scene attractive from a first-person perspective.
+4. **ENV3 — Caves and excavation proof:** one natural cavity and one bounded digging interaction; verify mesh/collision after edit and basic save/load in a separately authorized phase. Depth resistance can initially be a configuration-only or simple proof.
+5. **ENV4 — Procedural repeatability and performance:** deterministic biome/placement rules, test adjacent chunks, remove seams/pop-in, and profile performance including terrain editing and vegetation.
+
+These are **planning phases**, not permission to implement them all at once. Keep using `WORLD/Scenes/test.tscn`, `PLAYER/player.tscn` and the existing terrain-service/adapter boundary where possible; don't regenerate or replace existing working infrastructure without a specific reason. The existing V0/V1 roadmap farther below describes **technical capabilities**, while ENV stages describe the **current priority order and quality goals**. No enemies, crafting, vehicles, settlements or large-world systems should be built until separately approved.
 
 ## Current test — first pass
 
@@ -45,7 +77,7 @@ See [WORLD/README.md](WORLD/README.md), [PLAYER/README.md](PLAYER/README.md) and
 
 ## Design pillars
 
-1. **Editable world first.** Real digging, terrain collision, caves and saved excavations should be proven before building a large survival game around them.
+1. **Beautiful world first, editable world underneath.** Establish a compelling forested test region before complex mechanics; still verify real shallow digging, caves, collision and eventual persistence before expanding far beyond the benchmark.
 2. **Survival through practical choices.** Shelter, carrying capacity, resources, exposure and travel should create self-directed goals rather than constant quest markers.
 3. **Many viable ways to live.** Scavenge a town, establish a woodland camp, hunt, salvage equipment, gather timber or prospect for minerals. Different paths should complement each other.
 4. **World that feels alive.** Deer flee, bears can threaten, wolves may stalk, robots investigate, and distant strange activity makes the player cautious. Not every encounter must become a firefight.
@@ -111,7 +143,7 @@ Build shared capabilities **in response to concrete needs**, not a sprawling spe
 
 **Grounded semi-realism**, not movie-quality photorealism. Natural-looking smooth terrain; believable ground textures; distinct tree silhouettes and layered forest-floor vegetation; intentional light and shadow; fog and weather that give depth without hiding technical problems. A compact, beautiful test patch is more valuable than a giant empty map. Use reusable procedural art where appropriate and imported GLBs/textures where they clearly improve quality. Maintain practical draw calls, LOD, streaming and sensible GPU budgets.
 
-## Proposed development sequence — not yet authorized for implementation
+## Longer-term technical capability roadmap — not yet authorized for implementation
 
 | Stage | Target outcome | Status |
 | --- | --- | --- |
@@ -123,7 +155,7 @@ Build shared capabilities **in response to concrete needs**, not a sprawling spe
 | **V5 — Survival loop** | One small scavenge/gather/store/use loop; prove different resources serve a purpose | Possible later slice |
 | **V6 — World expansion** | More biomes, authored prefab sites, wildlife, persistence for placed objects, and exploration hooks | Long-term direction |
 
-**First acceptance milestone:** A player walks up to an ordinary-looking hillside, digs a traversable tunnel, exits/reopens the game, and finds the tunnel unchanged. Smooth terrain, correct collision and tested C# interop come before extensive content.
+**Current visual acceptance milestone:** The player can walk through an attractive, varied, natural-looking test wilderness with convincing terrain materials, mature forest layers, realistic scale and lighting; performance and chunk behaviour remain acceptable. **Separate excavation acceptance milestone:** Shallow digging creates a traversable hole or short tunnel, collision updates and the change survives save/reload. Do not gate early landscape/art work on a complete mining system.
 
 ## AI development workflow
 
@@ -135,7 +167,7 @@ Prefer C#, modular directories and local READMEs, inspector-friendly settings, c
 
 ### Immediate next decision
 
-The separately authorized first visual pass is implemented in source. Build and run `WORLD/Scenes/test.tscn` locally to validate C# setup, addon compatibility, terrain collision and lighting. Digging and persistence remain subsequent stages requiring separate approval.
+First validate the existing source implementation locally using `WORLD/Scenes/test.tscn`. Then propose the **ENV0 visual-quality pass** with concrete scene/material/terrain changes and a small screenshot-based review target. Preserve the working Voxel Tools adapter and Sky3D integration. Digging and persistence remain subsequent, separately approved experiments—not reasons to delay improving the test world's appearance.
 
 ---
 
