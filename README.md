@@ -18,7 +18,7 @@ The ground is part of the gameplay, not just a visual surface. A player might di
 
 ## Latest test-landscape pass
 
-`WORLD/Scenes/test.tscn` now uses a deliberately shaped meadow → winding climb → plateau/cliff composition with a mountain backdrop. Initial surface and soil-route mask are prepared once; native SDF terrain streaming remains isolated. Tune `WORLD/Terrain/Landscape/Configuration/LandscapeMaster.tres`. See `WORLD/Terrain/Landscape/README.md` for checks and local acceptance still required. This replaces the small noise-hill surface for the test scene; it is not a general world generator.
+`WORLD/Scenes/test.tscn` now uses a deliberately shaped meadow → broad mountain shoulder → plateau/cliff composition with a mountain backdrop. Initial surface and shared slope map are prepared once; native SDF terrain streaming remains isolated. Tune `WORLD/Terrain/Landscape/Configuration/LandscapeMaster.tres`. See `WORLD/Terrain/Landscape/README.md` for checks and local acceptance still required. This replaces the small noise-hill surface for the test scene; it is not a general world generator.
 
 ## Current direction — VISUAL-FIRST WILDERNESS (priority for Codex)
 

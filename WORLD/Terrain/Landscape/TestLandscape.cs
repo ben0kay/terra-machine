@@ -10,9 +10,8 @@ public static class TestLandscape
 
     // =========================================================
     // Bake at one metre per pixel; no per-frame or per-chunk managed callbacks remain.
-    public static (Image Heights, Image RouteMask) Build(LandscapeSettings settings)
+    public static (Image Heights, Image SlopeMask) Build(LandscapeSettings settings)
     {
-        Vector3[] route = BakeRoute(settings.Route);
         var heights = new float[MapSize * MapSize];
         var mask = new byte[heights.Length];
         for (int z = 0; z < MapSize; z++)
@@ -21,10 +20,19 @@ public static class TestLandscape
             // The native image sampler wraps negative world coordinates into the image.
             float wx = x < MapSize / 2 ? x : x - MapSize;
             float wz = z < MapSize / 2 ? z : z - MapSize;
-            float height = Sample(wx, wz, settings, route, out float path);
+            float height = Sample(wx, wz, settings);
             int index = z * MapSize + x;
             heights[index] = Mathf.Clamp((height - HeightStart) / HeightRange, 0f, 1f);
-            mask[index] = (byte)(Mathf.Clamp(path, 0f, 1f) * 255f);
+
+        }
+        // Central differences use the same full-resolution surface everywhere, including chunk borders.
+        for (int z = 0; z < MapSize; z++)
+        for (int x = 0; x < MapSize; x++)
+        {
+            float dx = (heights[z * MapSize + (x + 1) % MapSize] - heights[z * MapSize + (x + MapSize - 1) % MapSize]) * HeightRange * 0.5f;
+            float dz = (heights[((z + 1) % MapSize) * MapSize + x] - heights[((z + MapSize - 1) % MapSize) * MapSize + x]) * HeightRange * 0.5f;
+            float up = 1f / MathF.Sqrt(1f + dx * dx + dz * dz);
+            mask[z * MapSize + x] = (byte)(up * 255f);
         }
         var bytes = new byte[heights.Length * sizeof(float)];
         Buffer.BlockCopy(heights, 0, bytes, 0, bytes.Length);
@@ -33,56 +41,30 @@ public static class TestLandscape
     }
 
     // =========================================================
-    // Long landforms first; fine variation is suppressed around the meadow and walking bench.
-    public static float Sample(float x, float z, LandscapeSettings s, Vector3[] route, out float path)
+    // Long landforms first; fine variation is suppressed around the meadow.
+    public static float Sample(float x, float z, LandscapeSettings s)
     {
-        float meadow = 1f - Smooth(25f, 75f, MathF.Sqrt(x * x + z * z));
+        float meadow = 1f - Smooth(18f, 110f, MathF.Sqrt(x * x + z * z));
         float baseHeight = -4f + 9f * Bell(x, z, 95f, -110f, 125f, 165f)
             + 7f * Bell(x, z, -160f, -70f, 130f, 150f);
         float dx = (x - s.PlateauCenter.X) / MathF.Max(s.PlateauRadius.X, 1f);
         float dz = (z - s.PlateauCenter.Y) / MathF.Max(s.PlateauRadius.Y, 1f);
-        float radius = MathF.Sqrt(dx * dx + dz * dz);
+        // Uneven perimeter, while retaining a distinct steep western escarpment.
+        float radius = MathF.Sqrt(dx * dx + dz * dz) + 0.035f * MathF.Sin(x / 23f + z / 31f);
         float edge = MathF.Max(s.CliffWidth, 1f) / MathF.Max(MathF.Min(s.PlateauRadius.X, s.PlateauRadius.Y), 1f);
         float plateau = 1f - Smooth(1f - edge, 1f + edge, radius);
         float height = Mathf.Lerp(baseHeight, s.PlateauHeight + 0.8f * MathF.Sin(x / 48f), plateau);
-        // A separate distant ridge provides a backdrop, rather than dozens of small hillocks.
-        float mountain = s.MountainHeight * (Bell(x, z, -100f, -290f, 100f, 72f)
+        // Broad overlapping shoulders form a walkable mountainside, not a cut or flattened track.
+        float approach = s.ApproachHeight * Bell(x, z, s.ApproachCenter.X, s.ApproachCenter.Y,
+            MathF.Max(s.ApproachRadius.X, 1f), MathF.Max(s.ApproachRadius.Y, 1f));
+        approach += 8f * Bell(x, z, 5f, -130f, 75f, 100f);
+        // Smooth maximum joins the shoulder into the plateau without a narrow blending trench.
+        float blend = Mathf.Clamp(0.5f + 0.5f * (height - approach) / 12f, 0f, 1f);
+        height = Mathf.Lerp(approach, height, blend) + 12f * blend * (1f - blend);
+        height += s.MountainHeight * (Bell(x, z, -100f, -290f, 100f, 72f)
             + 0.78f * Bell(x, z, 85f, -315f, 72f, 90f));
-        height += mountain;
-        height += s.DetailHeight * MathF.Sin(x / 8.1f + MathF.Sin(z / 19f)) * MathF.Sin(z / 11.3f) * (1f - meadow);
-        height = Mathf.Lerp(height, 0.15f * MathF.Sin(x / 22f), meadow);
-        float best = float.MaxValue, routeHeight = 0f;
-        for (int i = 0; i + 1 < route.Length; i++)
-        {
-            Vector3 a = route[i], b = route[i + 1];
-            float vx = b.X - a.X, vz = b.Z - a.Z;
-            float t = Mathf.Clamp(((x - a.X) * vx + (z - a.Z) * vz) / MathF.Max(vx * vx + vz * vz, 0.001f), 0f, 1f);
-            float px = x - a.X - vx * t, pz = z - a.Z - vz * t;
-            float distance = px * px + pz * pz;
-            if (distance >= best) continue;
-            best = distance;
-            routeHeight = Mathf.Lerp(a.Y, b.Y, t);
-        }
-        float d = MathF.Sqrt(best);
-        float width = MathF.Max(s.PathHalfWidth, 1f);
-        float shoulder = MathF.Max(s.PathShoulderWidth, 1f);
-        float bench = 1f - Smooth(width, width + shoulder, d);
-        height = Mathf.Lerp(height, routeHeight + 0.025f * MathF.Sin(z / 5f), bench);
-        path = 1f - Smooth(width * 0.55f, width + 1.5f, d);
-        return height;
-    }
-
-    // =========================================================
-    // Smooth authored control points once; sampled segments are shared by height and soil mask.
-    public static Vector3[] BakeRoute(Vector3[] points)
-    {
-        if (points.Length < 2) return Array.Empty<Vector3>();
-        var result = new Vector3[(points.Length - 1) * 8 + 1];
-        for (int i = 0; i + 1 < points.Length; i++)
-        for (int j = 0; j < 8; j++)
-            result[i * 8 + j] = points[i].CubicInterpolate(points[i + 1], points[Math.Max(i - 1, 0)], points[Math.Min(i + 2, points.Length - 1)], j / 8f);
-        result[^1] = points[^1];
-        return result;
+        height += s.DetailHeight * MathF.Sin(x / 12.1f + MathF.Sin(z / 29f)) * MathF.Sin(z / 17.3f) * (1f - meadow);
+        return Mathf.Lerp(height, 0.15f * MathF.Sin(x / 22f), meadow);
     }
 
     // =========================================================

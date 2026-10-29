@@ -36,8 +36,8 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         terrain.Set("generator", generator);
         _terrainNode = terrain;
         _texturedMaterial = (ShaderMaterial)((ShaderMaterial)terrain.Get("material").AsGodotObject()).Duplicate();
-        _texturedMaterial.SetShaderParameter("route_mask", ImageTexture.CreateFromImage(surface.RouteMask));
-        _texturedMaterial.SetShaderParameter("route_map_size", (float)TestLandscape.MapSize);
+        _texturedMaterial.SetShaderParameter("surface_slope", ImageTexture.CreateFromImage(surface.SlopeMask));
+        _texturedMaterial.SetShaderParameter("surface_map_size", (float)TestLandscape.MapSize);
         _normalMapsOffMaterial = (ShaderMaterial)_texturedMaterial.Duplicate();
         _normalMapsOffMaterial.SetShaderParameter("normal_maps_enabled", false);
         _simpleMaterial = new ShaderMaterial { Shader = GD.Load<Shader>("res://WORLD/Terrain/Integration/ground_simple.gdshader") };
