@@ -1,5 +1,5 @@
 // Streams a bounded ring of deterministic grass batches, using ordinary surface queries.
-// One timer watches tile crossings; physics work sleeps when the placement queue is empty.
+// One timer watches tile crossings/draw density; physics sleeps when placement is complete.
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ public partial class GrassScatter : Node3D
         public ulong RetryAt;
         public readonly List<(int Variant, Transform3D Transform)> Transforms = new();
         public Node3D? Batch;
+        public readonly List<MultiMesh> MeshBatches = new();
         public RandomNumberGenerator Random = new();
     }
     private readonly Dictionary<Vector2I, Tile> _tiles = new();
@@ -26,7 +27,7 @@ public partial class GrassScatter : Node3D
     private ShaderMaterial _material = null!;
     private Timer _timer = null!;
     private Vector2I _center = new(int.MaxValue, int.MaxValue);
-    private float _size, _range, _minimumUp;
+    private float _size, _range, _minimumUp, _dense, _sparse;
     private int _candidates;
     private bool _initialized;
     public bool IsPlacing
@@ -70,11 +71,11 @@ public partial class GrassScatter : Node3D
         _size = Mathf.Clamp(Settings.TileSize, 8f, 32f);
         _range = Mathf.Clamp(Settings.EndDistance, 15f, 80f);
         _minimumUp = Mathf.Cos(Mathf.DegToRad(Mathf.Clamp(Settings.MaximumSlopeDegrees, 0f, 45f)));
-        _candidates = Mathf.Clamp((int)(_size * _size * Settings.TuftsPerSquareMeter), 1, 2048);
+        _candidates = Mathf.Clamp((int)(_size * _size * Settings.TuftsPerSquareMeter), 1, 8192);
         _material = (ShaderMaterial)Settings.Material.Duplicate();
-        float dense = Mathf.Clamp(Settings.DenseDistance, 1f, _range - 2f);
-        _material.SetShaderParameter("dense_distance", dense);
-        _material.SetShaderParameter("sparse_distance", Mathf.Clamp(Settings.SparseDistance, dense + 1f, _range - 1f));
+        _dense = Mathf.Clamp(Settings.DenseDistance, 1f, _range - 2f);
+        _sparse = Mathf.Clamp(Settings.SparseDistance, _dense + 1f, _range - 1f);
+        _material.SetShaderParameter("sparse_distance", _sparse);
         _material.SetShaderParameter("end_distance", _range);
         _timer.WaitTime = Mathf.Max(Settings.TileCheckSeconds, 0.1f);
         UpdateActivity();
@@ -96,6 +97,7 @@ public partial class GrassScatter : Node3D
     {
         if (_player == null || !IsVisibleInTree()) return;
         Vector3 p = _player.GlobalPosition;
+        foreach (Tile tile in _tiles.Values) UpdateDensity(tile, p);
         var center = new Vector2I(Mathf.FloorToInt(p.X / _size), Mathf.FloorToInt(p.Z / _size));
         ulong now = Time.GetTicksMsec();
         bool changed = center != _center;
@@ -161,9 +163,9 @@ public partial class GrassScatter : Node3D
             }
             float x = origin.X + tile.Random.Randf() * _size, z = origin.Y + tile.Random.Randf() * _size;
             tile.Cursor++;
-            // Broad patch variation leaves soil gaps; fewer candidates are queried in sparse patches.
+            // Keep a continuous meadow base; broad variation changes fullness without bare bands.
             float patch = 0.5f + 0.3f * Mathf.Sin(x * 0.19f + Mathf.Sin(z * 0.11f)) + 0.2f * Mathf.Sin(z * 0.27f + x * 0.07f);
-            if (tile.Random.Randf() < Mathf.Clamp(patch, 0.1f, 0.9f))
+            if (tile.Random.Randf() < Mathf.Lerp(Mathf.Clamp(Settings.MinimumPatchCoverage, 0.1f, 0.98f), 0.98f, Mathf.Clamp(patch, 0f, 1f)))
             {
                 rays--;
                 if (_surface.TryFindSurface(new Vector2(x, z), top, bottom, out Vector3 ground, out Vector3 normal) && normal.Y >= _minimumUp)
@@ -203,7 +205,29 @@ public partial class GrassScatter : Node3D
             var batch = new MultiMeshInstance3D { Multimesh = multi, MaterialOverride = _material,
                 CastShadow = GeometryInstance3D.ShadowCastingSetting.Off, VisibilityRangeEnd = _range + _size * 1.5f };
             tile.Batch.AddChild(batch);
+            tile.MeshBatches.Add(multi);
         }
         tile.Transforms.Clear();
+        if (_player != null) UpdateDensity(tile, _player.GlobalPosition);
+    }
+    // =========================================================
+    // Reduce submitted instances, not only shader visibility. Random placement order keeps
+    // each retained prefix spatially mixed. Update at 4 Hz, with no per-tuft CPU work.
+    private void UpdateDensity(Tile tile, Vector3 player)
+    {
+        if (tile.MeshBatches.Count == 0) return;
+        float x = tile.Key.X * _size, z = tile.Key.Y * _size;
+        float dx = player.X - Mathf.Clamp(player.X, x, x + _size);
+        float dz = player.Z - Mathf.Clamp(player.Z, z, z + _size);
+        float distance = Mathf.Sqrt(dx * dx + dz * dz);
+        float blend = Mathf.Clamp((distance - _dense) / (_sparse - _dense), 0f, 1f);
+        blend = blend * blend * (3f - 2f * blend);
+        float fraction = Mathf.Lerp(1f, Mathf.Clamp(Settings.DistantDensityFraction, 0.02f, 1f), blend);
+        if (distance >= _range) fraction = 0f;
+        foreach (MultiMesh multi in tile.MeshBatches)
+        {
+            int visible = Mathf.Clamp(Mathf.CeilToInt(multi.InstanceCount * fraction), 0, multi.InstanceCount);
+            if (multi.VisibleInstanceCount != visible) multi.VisibleInstanceCount = visible;
+        }
     }
 }
