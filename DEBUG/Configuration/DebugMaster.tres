@@ -6,3 +6,5 @@ Enabled = true
 WarmupSeconds = 2.0
 SampleSeconds = 3.0
 ReadoutInterval = 0.25
+ShowLagometer = true
+FpsCap = 60

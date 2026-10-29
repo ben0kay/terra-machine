@@ -14,8 +14,8 @@ public partial class GrassScatterSettings : Resource
     [Export] public float SparseDistance { get; set; } = 45f;
     [Export] public float EndDistance { get; set; } = 60f;
     [Export] public float MaximumSlopeDegrees { get; set; } = 35f;
-    [Export] public float MinimumScale { get; set; } = 2.2f;
-    [Export] public float MaximumScale { get; set; } = 3.5f;
+    [Export] public float MinimumScale { get; set; } = 3.0f;
+    [Export] public float MaximumScale { get; set; } = 4.5f;
     [ExportGroup("Work budget")]
     [Export] public int Seed { get; set; } = 727;
     [Export] public int QueriesPerPhysicsTick { get; set; } = 64;

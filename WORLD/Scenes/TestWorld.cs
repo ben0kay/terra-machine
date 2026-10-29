@@ -95,6 +95,6 @@ public partial class TestWorld : Node3D
             _waiting ? "Loading terrain collision..." : "Terrain ready";
         string trees = _trees == null ? "" : $" | Trees: {_trees.PlacedCount}";
         _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}\n" +
-            "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug";
+            "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug   F2: frame graph";
     }
 }

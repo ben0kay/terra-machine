@@ -28,7 +28,7 @@ Interpret differences in milliseconds, using the same view: case 2 minus 1 estim
 
 ## Performance and lifecycle
 
-Closed: no update/physics callbacks or debug timer. Open: a 4Hz readout and event-driven UI; no debug per-frame callback. Only the bounded comparison enables Process to count frames, disabling it on finish, cancellation and scene removal. No native terrain calls outside the adapter, no per-frame material writes, no per-tree scripts/scans. Normal-map mode swaps between cached material resources so native chunk material instances refresh consistently. Terrain shader LOD transitions are shared through Integration/transvoxel.gdshaderinc in both simple and textured shaders.
+Closed panel: no update/physics callbacks or panel timer. The separately controlled FrameTimeGraph remains active while visible/focused; F2 hides it and stops its sampler/timer. Open: a 4Hz readout and event-driven UI; no debug per-frame callback. Only the bounded comparison enables Process to count frames, disabling it on finish, cancellation and scene removal. No native terrain calls outside the adapter, no per-frame material writes, no per-tree scripts/scans. Normal-map mode swaps between cached material resources so native chunk material instances refresh consistently. Terrain shader LOD transitions are shared through Integration/transvoxel.gdshaderinc in both simple and textured shaders.
 
 ## Validation
 
@@ -37,3 +37,5 @@ All 12 project C# scripts compile through Roslyn against .NET 8 reference assemb
 Local: build terra-machine.csproj in the installed Godot .NET editor. Run test.tscn. Open F1 after Trees:16, test every toggle and the restore button; ensure terrain collision remains when hidden. Click outside the panel and verify the view stays locked; close and verify movement/look/RMB jump return. Run comparison, Copy results, then test F1/Escape cancellation and alt-tab cancellation. Close/reopen and stop/reload the scene. In the profiler, debug Process/timer must stop after close. Send the five copied rows to identify where the frame cost lies before optimizing or increasing tree density.
 
 Grass trial: test.tscn assigns GrassScatter through ExtraVisualRoots. Its visibility toggle also suspends/resumes placement and the tile timer. Visible grass must finish placement/bounded retries before comparison. Grass visibility is held constant through the five cases and recorded in their header; the Baseline/Full buttons do not change this independent toggle. Compare grass on/off manually at the same camera for its cost.
+
+Frame pacing: the test defaults to a 60 FPS cap from DebugMaster.tres, adjustable through F1. The bottom-right FrameTimeGraph can be toggled with F2/F1. See ../FrameTime/README.md. Disable the cap (and consider the existing VSync state) before interpreting raw throughput benchmarks; capped cases may all report 60 FPS despite different rendering costs. Graph visibility is recorded in the comparison header.

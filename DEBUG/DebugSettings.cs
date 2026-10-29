@@ -4,6 +4,8 @@ using Godot;
 [GlobalClass]
 public partial class DebugSettings : Resource
 {
+    [Export] public bool ShowLagometer { get; set; } = true;
+    [Export(PropertyHint.Range, "30,240,1")] public int FpsCap { get; set; } = 60;
     [Export] public bool Enabled { get; set; } = true;
     [Export(PropertyHint.Range, "0.5,10,0.5")] public float WarmupSeconds { get; set; } = 2f;
     [Export(PropertyHint.Range, "1,15,0.5")] public float SampleSeconds { get; set; } = 3f;

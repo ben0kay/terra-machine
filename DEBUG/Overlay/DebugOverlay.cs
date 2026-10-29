@@ -1,5 +1,5 @@
 // Optional event-driven render isolation panel and bounded same-camera comparison.
-// Closed idle cost: no Process, physics callback, timer or world scans.
+// Closed panel has no frame/physics/timer work; the optional frame graph owns its own sampling.
 using Godot;
 using System;
 using System.Text;
@@ -17,6 +17,7 @@ public partial class DebugOverlay : CanvasLayer
     private Label _metrics = null!, _results = null!, _progress = null!;
     private Timer _timer = null!;
     private CheckButton _ground = null!, _textures = null!, _normals = null!, _models = null!, _shadows = null!, _unshaded = null!;
+    private int _previousFpsCap;
     private bool _initialized, _open, _restoreMovement, _restoreInputBlocked;
     private Input.MouseModeEnum _restoreMouse;
     private bool _groundOn = true, _texturesOn = true, _normalsOn = true, _treesOn = true, _shadowsOn = true, _unshadedOn;
@@ -34,6 +35,8 @@ public partial class DebugOverlay : CanvasLayer
     // The world initializes this after successful grounded spawn; unavailable before then.
     public override void _Ready()
     {
+        _previousFpsCap = Engine.MaxFps;
+        if (Settings.Enabled) Engine.MaxFps = Mathf.Clamp(Settings.FpsCap, 30, 240);
         _panel = GetNode<PanelContainer>("Panel");
         _progress = GetNode<Label>("Progress");
         _timer = GetNode<Timer>("ReadoutTimer");
@@ -119,6 +122,17 @@ public partial class DebugOverlay : CanvasLayer
         rows.AddChild(scroll);
         var controls = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         scroll.AddChild(controls);
+        var cap = new CheckButton { Text = $"Cap at {Mathf.Clamp(Settings.FpsCap, 30, 240)} FPS", ButtonPressed = Engine.MaxFps > 0, FocusMode = Control.FocusModeEnum.None };
+        cap.Toggled += enabled => Engine.MaxFps = enabled ? Mathf.Clamp(Settings.FpsCap, 30, 240) : 0;
+        controls.AddChild(cap);
+        var graph = GetNodeOrNull<FrameTimeGraph>("FrameTimeGraph");
+        if (graph != null)
+        {
+            var showGraph = new CheckButton { Text = "Frame-time graph (F2)", ButtonPressed = graph.Visible, FocusMode = Control.FocusModeEnum.None };
+            showGraph.Toggled += enabled => graph.Visible = enabled;
+            graph.VisibilityChanged += () => showGraph.SetPressedNoSignal(graph.Visible);
+            controls.AddChild(showGraph);
+        }
         _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
         _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
         _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
@@ -207,6 +221,7 @@ public partial class DebugOverlay : CanvasLayer
         _resultRows.Clear();
         _report.AppendLine("Terra Machine — same-camera rendering comparison");
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
+        _report.AppendLine($"Frame graph visible: {GetNodeOrNull<FrameTimeGraph>("FrameTimeGraph")?.Visible ?? false}");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
@@ -298,6 +313,7 @@ public partial class DebugOverlay : CanvasLayer
     // Release any temporary player lock if this optional scene is removed while open.
     public override void _ExitTree()
     {
+        Engine.MaxFps = _previousFpsCap;
         CancelComparison();
         SetProcess(false);
         if (_timer != null && GodotObject.IsInstanceValid(_timer)) _timer.Stop();
