@@ -1,6 +1,9 @@
+
 [gd_resource type="ShaderMaterial" load_steps=3 format=3]
-[ext_resource type="Shader" path="res://ASSETS/Vegetation/Grass/MeadowGrass001/Materials/meadow_wind.gdshader" id="1"]
-[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/MeadowGrass001/Textures/meadow_grass_001_albedo_alpha_1k.png" id="2"]
+
+[ext_resource type="Shader" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Materials/meadow_wind.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Textures/meadow_grass_001_albedo_alpha_1k.png" id="2"]
+
 [resource]
 shader = ExtResource("1")
 shader_parameter/grass_atlas = ExtResource("2")

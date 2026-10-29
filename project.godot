@@ -70,5 +70,3 @@ jump={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-environment/volumetric_fog/volume_size=64
-environment/volumetric_fog/volume_depth=64
