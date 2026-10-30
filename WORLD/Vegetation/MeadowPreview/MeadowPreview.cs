@@ -99,6 +99,8 @@ public partial class MeadowPreview : Node3D
         var sites = new Godot.Collections.Array<Vector2>();
         var random = new RandomNumberGenerator { Seed = unchecked((uint)Settings.Seed) };
         int target = Mathf.Clamp(Settings.SiteCount, 1, 64);
+        foreach (Vector2 offset in Settings.PreviewOffsets)
+            if (sites.Count < target) sites.Add(offset);
         for (int attempt = 0; attempt < target * 100 && sites.Count < target; attempt++)
         {
             float angle = random.Randf() * Mathf.Tau, r = Mathf.Sqrt(random.Randf());
@@ -197,7 +199,11 @@ public partial class MeadowPreview : Node3D
                 }
             }
             if (budget <= 0) break;
-            if (_sample >= Mathf.Clamp(Settings.SamplesPerTree, 1, 256)) { _active = -1; continue; }
+            if (_sample >= Mathf.Clamp(Settings.SamplesPerTree, 1, 256))
+            {
+                if (Settings.CollectAllMeshes) FlushBatches();
+                _active = -1; continue;
+            }
             int lobe = _sample % _lobes.Length;
             _sample++; budget--;
             float angleLocal = _random.Randf() * Mathf.Tau;
@@ -235,6 +241,14 @@ public partial class MeadowPreview : Node3D
         if (_finished) return;
         _finished = true;
         SetPhysicsProcess(false); _retryTimer.Stop();
+        FlushBatches();
+        GD.Print($"{Name}: placed {PlacedCount} instances across {_offsets?.Count ?? 0} planned sites.");
+    }
+
+    // =========================================================
+    // Publish each completed floor patch immediately, even if other sites await terrain.
+    private void FlushBatches()
+    {
         for (int i = 0; i < _meshes.Count; i++)
         {
             List<Transform3D> transforms = _transforms[i];

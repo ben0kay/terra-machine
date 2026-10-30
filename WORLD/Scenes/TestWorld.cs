@@ -15,6 +15,7 @@ public partial class TestWorld : Node3D
     private ForestPreview? _forest;
     private BoulderPreview? _boulders;
     private DebugOverlay? _debug;
+    private readonly MeadowPreview?[] _floorLayers = new MeadowPreview?[3];
     private Label _readout = null!;
     private bool _waiting;
     private bool _failed;
@@ -35,6 +36,9 @@ public partial class TestWorld : Node3D
         _forest = GetNodeOrNull<ForestPreview>("NatureRoot/Trees/ForestPreview");
         _boulders = GetNodeOrNull<BoulderPreview>("NatureRoot/Rocks/BoulderPreview");
         _debug = GetNodeOrNull<DebugOverlay>("DebugOverlay");
+        string[] floorNames = { "Moss", "Ferns", "Branches" };
+        for (int i = 0; i < floorNames.Length; i++)
+            _floorLayers[i] = GetNodeOrNull<MeadowPreview>($"NatureRoot/Floor/{floorNames[i]}");
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
         timer.Timeout += RefreshReadout;
@@ -91,14 +95,16 @@ public partial class TestWorld : Node3D
         if (_forest != null)
         {
             ForestPreviewSettings footprint = _forest.Settings;
+            (_terrain as ITerrainForestFloor)?.SetForestFloorArea(Settings.SpawnXZ + footprint.CenterOffset,
+                new Vector2(footprint.RadiusX, footprint.RadiusZ));
             _forestMeadow?.Initialize(_terrain as ITerrainSurfaceService, _player,
                 Settings.SpawnXZ + footprint.CenterOffset, new Vector2(footprint.RadiusX, footprint.RadiusZ));
         }
         if (_forest != null)
         {
             ForestPreviewSettings footprint = _forest.Settings;
-            foreach (string name in new[] { "Moss", "Ferns", "Branches" })
-                GetNodeOrNull<MeadowPreview>($"NatureRoot/Floor/{name}")?.InitializeArea(
+            foreach (MeadowPreview? layer in _floorLayers)
+                layer?.InitializeArea(
                     _terrain as ITerrainSurfaceService, Settings.SpawnXZ, footprint.CenterOffset * 0.65f,
                     new Vector2(footprint.RadiusX, footprint.RadiusZ) * 0.7f,
                     Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
@@ -126,7 +132,8 @@ public partial class TestWorld : Node3D
         string meadow = _meadow == null ? "" : $" | Meadow: {_meadow.PlacedCount}";
         string forest = _forest == null ? "" : $" | Forest: {_forest.PlacedCount}/{_forest.PlannedCount}";
         string rocks = _boulders == null ? "" : $" | Boulders: {_boulders.PlacedCount}/{_boulders.PlannedCount}";
-        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}{forest}{rocks}\n" +
+        string floor = $" | Moss: {_floorLayers[0]?.PlacedCount ?? 0} | Ferns: {_floorLayers[1]?.PlacedCount ?? 0} | Branches: {_floorLayers[2]?.PlacedCount ?? 0}";
+        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}{forest}{rocks}{floor}\n" +
             "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug   F2: frame graph";
     }
 }

@@ -1,7 +1,7 @@
 // The only C# owner of Voxel Tools API calls. Native generation/streaming run in the addon.
 using Godot;
 
-public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug, ITerrainSurfaceService
+public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug, ITerrainSurfaceService, ITerrainForestFloor
 {
     [Export] public LandscapeSettings Landscape { get; set; } = new();
     private Node3D? _viewer;
@@ -90,6 +90,18 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         ground = hit["position"].AsVector3();
         normal = hit["normal"].AsVector3();
         return true;
+    }
+
+    // =========================================================
+    // Configure both cached terrain materials once when world composition binds the forest.
+    public void SetForestFloorArea(Vector2 center, Vector2 radii)
+    {
+        foreach (ShaderMaterial? material in new[] { _texturedMaterial, _normalMapsOffMaterial })
+        {
+            if (material == null) continue;
+            material.SetShaderParameter("leaf_area_center", center);
+            material.SetShaderParameter("leaf_area_radii", new Vector2(Mathf.Max(1f, radii.X), Mathf.Max(1f, radii.Y)));
+        }
     }
 
     // =========================================================
