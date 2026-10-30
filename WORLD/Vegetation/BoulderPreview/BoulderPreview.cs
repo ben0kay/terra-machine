@@ -179,7 +179,7 @@ public partial class BoulderPreview : Node3D
                 : GeometryInstance3D.ShadowCastingSetting.Off;
             if (_collision != null)
             {
-                var body = new StaticBody3D { Name = "Collision", CollisionLayer = 1, CollisionMask = 0 };
+                var body = new StaticBody3D { Name = "Collision", CollisionLayer = 4, CollisionMask = 0 };
                 wrapper.AddChild(body);
                 body.GlobalTransform = mesh.GlobalTransform;
                 body.AddChild(new CollisionShape3D { Shape = _collision });
