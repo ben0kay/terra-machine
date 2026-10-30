@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreview.tscn" id="9"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/ForestPreview/ForestPreview.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/BoulderPreview/BoulderPreview.tscn" id="11"]
+[ext_resource type="Resource" path="res://WORLD/Vegetation/GrassScatter/Configuration/ForestMeadowMaster.tres" id="12"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -48,11 +49,13 @@ mouse_filter = 2
 wait_time = 0.25
 autostart = true
 [node name="DebugOverlay" parent="." instance=ExtResource("7")]
-ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/MeadowPreview"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview")])
+ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/MeadowPreview"), NodePath("../NatureRoot/Grass/ForestMeadowScatter"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview")])
 [node name="Grass" type="Node3D" parent="NatureRoot"]
 [node name="GrassScatter" parent="NatureRoot/Grass" instance=ExtResource("8")]
 
 [node name="MeadowPreview" parent="NatureRoot/Grass" instance=ExtResource("9")]
+[node name="ForestMeadowScatter" parent="NatureRoot/Grass" instance=ExtResource("8")]
+Settings = ExtResource("12")
 [node name="ForestPreview" parent="NatureRoot/Trees" instance=ExtResource("10")]
 [node name="Rocks" type="Node3D" parent="NatureRoot"]
 [node name="BoulderPreview" parent="NatureRoot/Rocks" instance=ExtResource("11")]

@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="GrassScatterSettings" load_steps=9 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/GrassScatter/GrassScatterSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_b_LOD1.gltf" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_c_LOD1.gltf" id="4"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_a_LOD2.gltf" id="5"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_b_LOD2.gltf" id="6"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Models/meadow_grass_001_c_LOD2.gltf" id="7"]
+[ext_resource type="ShaderMaterial" path="res://ASSETS/Vegetation/Grass/GrassMeadow001/Materials/ForestMeadowWind.tres" id="8"]
+[resource]
+script = ExtResource("1")
+NearScenes = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+FarScenes = Array[PackedScene]([ExtResource("5"), ExtResource("6"), ExtResource("7")])
+Material = ExtResource("8")
+LodSwitchDistance = 32.0
+HideOutsideArea = true
+TileSize = 16.0
+TuftsPerSquareMeter = 0.26
+DenseDistance = 13.0
+SparseDistance = 40.0
+EndDistance = 65.0
+MaximumSlopeDegrees = 30.0
+MinimumScale = 0.78
+MaximumScale = 1.15
+MinimumPatchCoverage = 0.48
+DistantDensityFraction = 0.18
+Seed = 9876
+QueriesPerPhysicsTick = 32
+TileCheckSeconds = 0.25

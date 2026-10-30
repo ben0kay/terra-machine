@@ -58,3 +58,6 @@ Forest trial: `ForestPreview` appears as a separate F1 → OTHER MODELS visibili
 
 
 The natural scene nodes are nested beneath `NatureRoot/Trees`, `NatureRoot/Grass` and `NatureRoot/Rocks`; F1 resolves the new paths. The original tree controls, separate Bermuda toggle, meadow toggle, forest toggle and new boulder toggle remain independent. Hiding boulder visuals doesn't disable their static colliders. Benchmarking should hold those extra toggles fixed except the content being measured.
+
+
+F1 → OTHER MODELS includes `ForestMeadowScatter` as its own visibility toggle; hiding it also stops its 4 Hz tile timer and placement. Original Bermuda grass retains its dedicated FOLIAGE toggle and 20–80 m thinning/fade, while forest meadow uses separate 13–40–65 m density/fade and native authored near/far mesh LODs. For a fair foliage comparison keep the same camera view and let tile placement settle before measuring.

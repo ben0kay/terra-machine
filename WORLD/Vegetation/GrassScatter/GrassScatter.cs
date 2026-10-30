@@ -21,6 +21,7 @@ public partial class GrassScatter : Node3D
     private readonly Dictionary<Vector2I, Tile> _tiles = new();
     private readonly Queue<Tile> _jobs = new();
     private readonly List<Mesh> _meshes = new();
+    private readonly List<Mesh> _farMeshes = new();
     private readonly List<Vector3> _pivots = new();
     private ITerrainSurfaceService? _surface;
     private Node3D? _player;
@@ -30,7 +31,8 @@ public partial class GrassScatter : Node3D
     private float _size, _range, _minimumUp, _dense, _sparse;
     private int _candidates, _gridSide;
     private int[] _cellOrder = Array.Empty<int>();
-    private bool _initialized;
+    private bool _initialized, _areaEnabled;
+    private Vector2 _areaCenter, _areaRadii;
     public bool IsPlacing
     {
         get
@@ -53,21 +55,47 @@ public partial class GrassScatter : Node3D
 
     // =========================================================
     // Extract selected mesh resources once; ignore Blender's display-layout node translations.
-    public void Initialize(ITerrainSurfaceService? surface, Node3D player)
+    public void Initialize(ITerrainSurfaceService? surface, Node3D player,
+        Vector2? areaCenter = null, Vector2? areaRadii = null)
     {
-        if (_initialized || surface == null || Settings.Variants == null || Settings.Material == null) return;
-        var source = Settings.Variants.Instantiate<Node3D>();
-        foreach (string name in Settings.MeshNames)
+        if (_initialized || surface == null || Settings.Material == null) return;
+        if (Settings.NearScenes.Count > 0)
         {
-            var meshNode = source.FindChild(name, true, false) as MeshInstance3D;
-            if (meshNode?.Mesh == null) continue;
-            Mesh mesh = meshNode.Mesh;
-            Aabb bounds = mesh.GetAabb();
-            _meshes.Add(mesh);
-            _pivots.Add(new Vector3(bounds.GetCenter().X, bounds.Position.Y, bounds.GetCenter().Z));
+            // Separate glTF source scenes are useful for authored meadow LOD pairs.
+            for (int i = 0; i < Settings.NearScenes.Count; i++)
+            {
+                Mesh? near = LoadFirstMesh(Settings.NearScenes[i]);
+                if (near == null) continue;
+                _meshes.Add(near);
+                Aabb bounds = near.GetAabb();
+                _pivots.Add(new Vector3(bounds.GetCenter().X, bounds.Position.Y, bounds.GetCenter().Z));
+                Mesh? far = i < Settings.FarScenes.Count ? LoadFirstMesh(Settings.FarScenes[i]) : null;
+                _farMeshes.Add(far ?? near);
+            }
+            if (Settings.FarScenes.Count != Settings.NearScenes.Count)
+                GD.PushWarning("Grass scatter: authored LOD scene counts differ; using near meshes as fallback.");
         }
-        source.Free();
-        if (_meshes.Count == 0) { GD.PushWarning("Grass preview found no configured variant meshes."); return; }
+        else if (Settings.Variants != null)
+        {
+            Node3D source = Settings.Variants.Instantiate<Node3D>();
+            foreach (string name in Settings.MeshNames)
+            {
+                var meshNode = source.FindChild(name, true, false) as MeshInstance3D;
+                if (meshNode?.Mesh == null) continue;
+                Mesh mesh = meshNode.Mesh;
+                Aabb bounds = mesh.GetAabb();
+                _meshes.Add(mesh);
+                _pivots.Add(new Vector3(bounds.GetCenter().X, bounds.Position.Y, bounds.GetCenter().Z));
+            }
+            source.Free();
+        }
+        if (_meshes.Count == 0) { GD.PushWarning("Grass scatter found no configured variant meshes."); return; }
+        _areaEnabled = Settings.HideOutsideArea && areaCenter.HasValue && areaRadii.HasValue;
+        if (_areaEnabled)
+        {
+            _areaCenter = areaCenter!.Value;
+            _areaRadii = new Vector2(Mathf.Max(1f, areaRadii!.Value.X), Mathf.Max(1f, areaRadii.Value.Y));
+        }
         _surface = surface; _player = player; _initialized = true;
         _size = Mathf.Clamp(Settings.TileSize, 8f, 32f);
         _range = Mathf.Clamp(Settings.EndDistance, 15f, 80f);
@@ -89,6 +117,30 @@ public partial class GrassScatter : Node3D
         _material.SetShaderParameter("end_distance", _range);
         _timer.WaitTime = Mathf.Max(Settings.TileCheckSeconds, 0.1f);
         UpdateActivity();
+    }
+
+    // =========================================================
+    // Load the one authored mesh from each distinct meadow glTF only during initialization.
+    private static Mesh? LoadFirstMesh(PackedScene sourceScene)
+    {
+        if (sourceScene == null) return null;
+        Node3D source = sourceScene.Instantiate<Node3D>();
+        Mesh? mesh = FindFirstMesh(source)?.Mesh;
+        source.Free();
+        return mesh;
+    }
+
+    // =========================================================
+    // Locate a scene's visual mesh without hard-coding its imported node name.
+    private static MeshInstance3D? FindFirstMesh(Node node)
+    {
+        if (node is MeshInstance3D mesh && mesh.Mesh != null) return mesh;
+        foreach (Node child in node.GetChildren())
+        {
+            MeshInstance3D? found = FindFirstMesh(child);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     // =========================================================
@@ -127,6 +179,7 @@ public partial class GrassScatter : Node3D
             Vector2 tileCenter = (new Vector2(key.X, key.Y) + Vector2.One * 0.5f) * _size;
             // Conservative ring includes tile corners and player motion within the current tile.
             if (tileCenter.DistanceTo(anchor) > _range + _size * 1.42f) continue;
+            if (_areaEnabled && !InsideArea(tileCenter, _size)) continue;
             wanted.Add(key); ordered.Add(key);
         }
         var remove = new List<Vector2I>();
@@ -177,6 +230,7 @@ public partial class GrassScatter : Node3D
             float x = origin.X + (cell % _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             float z = origin.Y + (cell / _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             tile.Cursor++;
+            if (_areaEnabled && !InsideArea(new Vector2(x, z))) continue;
             // Keep a continuous meadow base; broad variation changes fullness without bare bands.
             float patch = 0.5f + 0.3f * Mathf.Sin(x * 0.19f + Mathf.Sin(z * 0.11f)) + 0.2f * Mathf.Sin(z * 0.27f + x * 0.07f);
             if (tile.Random.Randf() < Mathf.Lerp(Mathf.Clamp(Settings.MinimumPatchCoverage, 0.1f, 0.98f), 0.98f, Mathf.Clamp(patch, 0f, 1f)))
@@ -200,7 +254,16 @@ public partial class GrassScatter : Node3D
     }
 
     // =========================================================
-    // One static MultiMesh per variant/tile; mixed variants avoid visible square species patches.
+    // Bounds check for optional forest ellipse, with padding only for tile discovery.
+    private bool InsideArea(Vector2 position, float padding = 0f)
+    {
+        float dx = (position.X - _areaCenter.X) / (_areaRadii.X + padding);
+        float dz = (position.Y - _areaCenter.Y) / (_areaRadii.Y + padding);
+        return dx * dx + dz * dz <= 1f;
+    }
+
+    // =========================================================
+    // One MultiMesh per variant/tile/LOD; regular Bermuda retains its original single batch.
     private void CompleteTile(Tile tile, Vector2 origin)
     {
         tile.Done = true;
@@ -213,13 +276,44 @@ public partial class GrassScatter : Node3D
             foreach (var item in tile.Transforms) if (item.Variant == variant) count++;
             if (count == 0) continue;
             var multi = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D, Mesh = _meshes[variant], InstanceCount = count };
+            MultiMesh? farMulti = _farMeshes.Count > 0
+                ? new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D, Mesh = _farMeshes[variant], InstanceCount = count }
+                : null;
             int index = 0;
+            float minY = float.MaxValue, maxY = float.MinValue;
             foreach (var item in tile.Transforms)
-                if (item.Variant == variant) multi.SetInstanceTransform(index++, item.Transform);
+            {
+                if (item.Variant != variant) continue;
+                multi.SetInstanceTransform(index, item.Transform);
+                farMulti?.SetInstanceTransform(index, item.Transform);
+                minY = Mathf.Min(minY, item.Transform.Origin.Y);
+                maxY = Mathf.Max(maxY, item.Transform.Origin.Y);
+                index++;
+            }
+            // Identical tile bounds make near/far native visibility ranges switch together.
+            Aabb bounds = new(new Vector3(-2f, minY - 2f, -2f),
+                new Vector3(_size + 4f, maxY - minY + 8f, _size + 4f));
+            float switchDistance = Mathf.Clamp(Settings.LodSwitchDistance, 5f, _range - 6f);
+            float margin = 1.5f;
             var batch = new MultiMeshInstance3D { Multimesh = multi, MaterialOverride = _material,
-                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off, VisibilityRangeEnd = _range + _size * 1.5f };
+                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                VisibilityRangeEnd = farMulti == null ? _range + _size * 1.5f : switchDistance };
+            if (farMulti != null)
+            {
+                batch.CustomAabb = bounds;
+                batch.VisibilityRangeEndMargin = margin;
+            }
             tile.Batch.AddChild(batch);
             tile.MeshBatches.Add(multi);
+            if (farMulti != null)
+            {
+                var farBatch = new MultiMeshInstance3D { Multimesh = farMulti, MaterialOverride = _material,
+                    CustomAabb = bounds, CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+                    VisibilityRangeBegin = switchDistance, VisibilityRangeEnd = _range + _size * 1.5f,
+                    VisibilityRangeBeginMargin = margin };
+                tile.Batch.AddChild(farBatch);
+                tile.MeshBatches.Add(farMulti);
+            }
         }
         tile.Transforms.Clear();
         if (_player != null) UpdateDensity(tile, _player.GlobalPosition);

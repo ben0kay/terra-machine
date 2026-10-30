@@ -7,6 +7,9 @@ public partial class GrassScatterSettings : Resource
     [Export] public PackedScene? Variants { get; set; }
     [Export] public ShaderMaterial? Material { get; set; }
     [Export] public string[] MeshNames { get; set; } = { "grass_bermuda_01_medium_a", "grass_bermuda_01_medium_c", "grass_bermuda_01_small_c" };
+    [Export] public Godot.Collections.Array<PackedScene> NearScenes { get; set; } = new();
+    [Export] public Godot.Collections.Array<PackedScene> FarScenes { get; set; } = new();
+    [Export(PropertyHint.Range, "5,70,1")] public float LodSwitchDistance { get; set; } = 36f;
     [ExportGroup("Coverage")]
     [Export] public float TileSize { get; set; } = 16f;
     [Export] public float TuftsPerSquareMeter { get; set; } = 12f;
@@ -22,4 +25,5 @@ public partial class GrassScatterSettings : Resource
     [Export] public int Seed { get; set; } = 727;
     [Export] public int QueriesPerPhysicsTick { get; set; } = 64;
     [Export] public float TileCheckSeconds { get; set; } = 0.25f;
+    [Export] public bool HideOutsideArea { get; set; } = false;
 }

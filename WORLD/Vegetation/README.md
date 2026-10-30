@@ -9,3 +9,5 @@
 `ForestPreview/` adds a separate, seeded pine-forest test area with sparse edges and a denser interior. It reuses PineTree002's authored distance LOD and uses a bounded collision-query budget as the player approaches; only a single pending-placement timer runs while incomplete. F1 can hide this forest independently. This is deliberately not a streamed, batched large-world forest; see ForestPreview/README.md.
 
 The test scene keeps all visual natural scenery under `NatureRoot/{Trees,Grass,Rocks}`. This is a scene-tree organization only, following the grouped-root idea from War Machine; sources and their ownership remain in their original feature folders.
+
+`ForestMeadowScatter` (under `NatureRoot/Grass`) reuses the same bounded GrassScatter tile system, but with the three MeadowGrass001 near/far authored models, wind and a density profile tied to the flat-side `ForestPreview` ellipse. The original 16-tree meadow preview stays separate; Bermuda grass is slightly less dense. Both can be switched independently using F1.

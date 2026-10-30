@@ -10,6 +10,7 @@ public partial class TestWorld : Node3D
     private ITerrainService _terrain = null!;
     private TreePreview? _trees;
     private GrassScatter? _grass;
+    private GrassScatter? _forestMeadow;
     private MeadowPreview? _meadow;
     private ForestPreview? _forest;
     private BoulderPreview? _boulders;
@@ -29,6 +30,7 @@ public partial class TestWorld : Node3D
         _readout = GetNode<Label>("TestHUD/Readout");
         _trees = GetNodeOrNull<TreePreview>("NatureRoot/Trees/TreePreview");
         _grass = GetNodeOrNull<GrassScatter>("NatureRoot/Grass/GrassScatter");
+        _forestMeadow = GetNodeOrNull<GrassScatter>("NatureRoot/Grass/ForestMeadowScatter");
         _meadow = GetNodeOrNull<MeadowPreview>("NatureRoot/Grass/MeadowPreview");
         _forest = GetNodeOrNull<ForestPreview>("NatureRoot/Trees/ForestPreview");
         _boulders = GetNodeOrNull<BoulderPreview>("NatureRoot/Rocks/BoulderPreview");
@@ -86,6 +88,12 @@ public partial class TestWorld : Node3D
             Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _forest?.Initialize(_terrain as ITerrainSurfaceService, _player, Settings.SpawnXZ,
             _trees?.Settings.Offsets, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
+        if (_forest != null)
+        {
+            ForestPreviewSettings footprint = _forest.Settings;
+            _forestMeadow?.Initialize(_terrain as ITerrainSurfaceService, _player,
+                Settings.SpawnXZ + footprint.CenterOffset, new Vector2(footprint.RadiusX, footprint.RadiusZ));
+        }
         _boulders?.Initialize(_terrain as ITerrainSurfaceService, _player, _forest,
             Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
