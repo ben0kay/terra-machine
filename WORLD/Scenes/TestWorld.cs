@@ -95,6 +95,8 @@ public partial class TestWorld : Node3D
         if (_forest != null)
         {
             ForestPreviewSettings footprint = _forest.Settings;
+            (_terrain as ITerrainForestFloor)?.SetForestFloorArea(Settings.SpawnXZ + footprint.CenterOffset,
+                new Vector2(footprint.RadiusX, footprint.RadiusZ));
             _forestMeadow?.Initialize(_terrain as ITerrainSurfaceService, _player,
                 Settings.SpawnXZ + footprint.CenterOffset, new Vector2(footprint.RadiusX, footprint.RadiusZ));
         }

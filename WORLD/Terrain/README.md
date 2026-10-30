@@ -13,3 +13,9 @@ Editor terrain preview and live tuning are deferred. Run the test scene to gener
 Render debug is optional through ITerrainRenderDebug. The adapter owns cached simple/textured/normal-disabled materials and native visibility; collision and streaming continue. Transition code is shared in Integration/transvoxel.gdshaderinc. No debug native calls leak into the overlay.
 
 `ITerrainSurfaceService` is an optional game-owned ground-position/normal query used by grass slope filtering. The adapter shares the existing physics ray with TryFindGround; no additional per-frame terrain work or native API leakage is introduced.
+
+## Forest leaf litter — awaiting local validation
+
+GroundMaterial now references the owner's brown_mud_leaves_01 diffuse JPEG. The ground shader softly blends this colour over the existing soil/grass shading inside the actual forest ellipse, with irregular 9 m patches, 2.5 m texture repeat and 0.9 maximum coverage. The edge fades from 65% to 105% of the ellipse radius; steep rock is excluded. Existing soil roughness and normal shading remain shared in this first colour-layer pass. The source EXR normal/roughness imports are marked invalid, so they are not introduced as runtime dependencies. No displacement, decals, floating planes or collision changes are added.
+
+ITerrainForestFloor is an optional presentation contract. TestWorld binds centre/radii from ForestMaster plus world spawn once at initialisation; VoxelTerrainAdapter updates its textured and normal-disabled cached materials. No additional C# frame/timer work is added. The visible leaf layer costs one additional diffuse texture sample where its spatial mask is active; no measured FPS claim. Set leaf_coverage=0 in GroundMaterial to disable. Shader/reference/loop review only; Godot shader compilation, scale, colour, fade edges and FPS need local validation. Moving the forest resource and restarting moves the litter mask as well.

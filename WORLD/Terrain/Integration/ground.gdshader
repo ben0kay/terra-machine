@@ -11,6 +11,12 @@ uniform sampler2D grass_roughness : filter_linear_mipmap_anisotropic, repeat_ena
 uniform sampler2D rock_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D rock_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D rock_roughness : filter_linear_mipmap_anisotropic, repeat_enable;
+// Leaf-litter colour blends into the existing soil shading only inside the forest footprint.
+uniform sampler2D leaf_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform vec2 leaf_area_center = vec2(18.0, 118.0);
+uniform vec2 leaf_area_radii = vec2(82.0, 86.0);
+uniform float leaf_coverage : hint_range(0.0, 1.0) = 0.9;
+uniform float leaf_tile_meters : hint_range(0.5, 12.0) = 2.5;
 // Fixed-resolution initial-surface slope avoids LOD-dependent material thresholds.
 uniform sampler2D surface_slope : filter_linear, repeat_enable;
 uniform float surface_map_size = 1024.0;
@@ -87,6 +93,16 @@ void fragment() {
     vec3 rc = triplanar_color(rock_color, weights, ux, uy, uz);
     float macro = patch_noise(world_position.xz / 37.0 + vec2(43.0));
     ALBEDO = mix(mix(fc, gc, grass), rc, rock) * mix(1.0 - macro_variation, 1.0 + macro_variation, macro);
+    vec2 leaf_delta = (world_position.xz - leaf_area_center) / max(leaf_area_radii, vec2(1.0));
+    float leaf_area = 1.0 - smoothstep(0.65, 1.05, length(leaf_delta));
+    float leaf_patch = smoothstep(0.22, 0.7, patch_noise(world_position.xz / 9.0 + vec2(13.7, 8.1)));
+    float leaf_blend = leaf_area * leaf_coverage * mix(0.45, 1.0, leaf_patch)
+        * (1.0 - rock) * smoothstep(0.75, 0.95, surface_up);
+    if (leaf_blend > 0.001) {
+        vec2 leaf_uv = ground_uv(vec2(world_position.x, -world_position.z) / max(leaf_tile_meters, 0.1));
+        vec3 litter = texture(leaf_color, leaf_uv).rgb;
+        ALBEDO = mix(ALBEDO, litter * mix(1.0 - macro_variation, 1.0 + macro_variation, macro), leaf_blend);
+    }
     float fr = triplanar_color(forest_roughness, ground_weights, ux, uy, uz).r;
     float gr = triplanar_color(grass_roughness, ground_weights, ux, uy, uz).r;
     float rr = triplanar_color(rock_roughness, weights, ux, uy, uz).r;
