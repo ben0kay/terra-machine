@@ -4,6 +4,10 @@
 > **Direction:** Hardcore first-person wilderness survival simulator in the long term; **currently focused on Sons of the Forest-like landscape immersion**, semi-believable visuals and optimized forests over new gameplay systems. Smooth editable voxel terrain remains foundational.  
 > **Status (2026-10-29):** Early Godot project / technical foundation. The game vision below is **proposed direction**, not a list of implemented systems or blanket authorization to build them.
 
+## Required vegetation authoring instructions
+
+Before creating or modifying trees, grass, ferns, moss or foliage materials, read [ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md](ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md). It records the owner's current pine budgets (**LOD1 4,000–6,000; LOD2 1,000–1,500 triangles**), fuller-canopy reference, exported-normal/winding checks, texture/mipmap/shading lessons and export-validation requirements. These take precedence over superseded higher-poly examples. This is an authoring guide, not authorization for unrelated asset or runtime changes.
+
 ## Read this first — project identity and scope
 
 Terra Machine is a **fresh project**, separate from [War Machine](https://github.com/ben0kay/war-machine). Its defining technical choice is **smooth, volumetric, editable voxel terrain from the beginning**. The immediate objective is **a beautiful, convincing wilderness test world**, with terrain, lighting, materials and vegetation as the development priority. Some genuine surface excavation, shallow tunnels and caves are important, but this is **not presently intended as a game about digging endlessly downward**. War Machine's heightmap-based world is a reference for design lessons and coding conventions, **not** an architecture to copy into this project.
