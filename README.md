@@ -44,6 +44,25 @@ Voxel terrain is still a **foundational requirement**, not an optional fake mini
 
 Natural caves, pre-existing mines or other openings can provide deeper exploration **without requiring the player to excavate kilometres downward**. Keep digging costs/materials configurable and isolated from the native Voxel Tools integration. Do not add pickaxe skill trees, metallurgy, large-scale excavation machines, terrain-collapse physics or extensive survival UI now.
 
+### Future digging hardness, noise and geology — design note
+
+**Status: proposed mechanic, not implemented or authorized for implementation.** Terra Machine should allow useful **shallow terrain excavation** without making effortless deep tunnelling the dominant strategy. The player might dig a trench, post holes, a small cellar, an animal-trap pit or a short hillside shelter. Depth eventually exposes hard rock and makes further excavation increasingly impractical with hand tools.
+
+| Ground/material | Intended behaviour | Typical tools / trade-offs |
+| --- | --- | --- |
+| Surface turf / topsoil | Relatively easy to remove; suitable for shallow trenches and foundations | Shovel; comparatively quiet |
+| Dense soil, clay, gravel | Slower excavation and greater effort | Shovel or pick; more sustained activity |
+| Weathered / fractured rock | Significantly tougher, especially as excavation continues | Pickaxe or stronger tools; repeated impacts create noise |
+| Solid bedrock | Very high resistance, often practically undiggable by hand | Specialized equipment or alternate cave route; considerable noise/resource expense |
+
+**Hardness model:** Use a **configurable, steeply increasing resistance curve** as a possible depth modifier (potentially exponential after a threshold), combined with the **actual geological material** and tool effectiveness. It must not be a uniform hard cutoff at one world-space Y level. Calculate depth relative to the **original local terrain surface** where appropriate; rock may be exposed at a cliff and deep soils may exist in valleys. Do not settle exact numbers, hardness factors, stamina costs or maximum depths until gameplay testing. Keep this tuning outside the voxel meshing/streaming engine.
+
+**Noise and risk:** Excavation emits gameplay sound events. Quiet soil digging should be less conspicuous than striking rock; repeated pickaxe blows, drilling or machinery can create escalating sound/activity that **nearby zombies may investigate**. The goal is a strategic decision: quiet/slow, noisy/fast, upgrade tools, find a natural cave or give up. This is a future sound/AI integration, **not a requirement to build zombie perception during the visual-first stage**.
+
+**Wildlife and construction uses:** Shallow dug pits/trenches may support later animal traps and shelter foundations; effective traps should depend on animal behaviour and placed components, not merely any hole. Ground near future building anchors may require protected support or event-driven checks when excavated. Full structural simulation, unrestricted deep mining and dynamic navigation rebuilding are **out of initial scope**.
+
+**Core technical requirements when authorized:** Real voxel removal, proper refreshed collision, stable save/reload of modified terrain, material-aware edits, configurable excavation resistance, and minimal localized update cost. Natural caves and authored mine entrances can still provide **deep exploration** without deep player excavation. Prioritize a beautiful test landscape first.
+
 ### Practical sequencing and guardrails
 
 1. **ENV0 — Visual terrain baseline:** refine hill/valley shape, terrain materials and scale using current working test scene; verify voxel/collision stability.
