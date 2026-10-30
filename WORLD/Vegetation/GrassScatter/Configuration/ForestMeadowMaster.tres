@@ -1,31 +1,31 @@
-[gd_resource type="Resource" script_class="GrassScatterSettings" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="GrassScatterSettings" load_steps=9 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/GrassScatter/GrassScatterSettings.cs" id="1"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMedium001/Models/grass_medium_01_LOD0.gltf" id="2"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMedium001/Models/grass_medium_01_LOD1.gltf" id="3"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMedium001/Models/grass_medium_01_LOD2.gltf" id="4"]
-[ext_resource type="ShaderMaterial" path="res://ASSETS/Vegetation/Grass/GrassMedium001/Materials/ForestGrass.tres" id="5"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_b_LOD1.gltf" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_c_LOD1.gltf" id="4"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_a_LOD2.gltf" id="5"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_b_LOD2.gltf" id="6"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Models/meadow_grass_002_c_LOD2.gltf" id="7"]
+[ext_resource type="ShaderMaterial" path="res://ASSETS/Vegetation/Grass/GrassMeadow002/Materials/ForestMeadow002Wind.tres" id="8"]
 [resource]
 script = ExtResource("1")
-Variants = ExtResource("2")
-MidVariants = ExtResource("3")
-FarVariants = ExtResource("4")
-MeshNames = PackedStringArray("grass_medium_01_large_a_LOD0", "grass_medium_01_large_b_LOD0", "grass_medium_01_large_c_LOD0", "grass_medium_01_mid_a_LOD0", "grass_medium_01_mid_b_LOD0", "grass_medium_01_mid_c_LOD0", "grass_medium_01_tall_a_LOD0", "grass_medium_01_tall_b_LOD0", "grass_medium_01_tall_c_LOD0")
-Material = ExtResource("5")
-LodSwitchDistance = 14.0
-MidLodDistance = 32.0
+NearScenes = Array[PackedScene]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+FarScenes = Array[PackedScene]([ExtResource("5"), ExtResource("6"), ExtResource("7")])
+Material = ExtResource("8")
+LodSwitchDistance = 24.0
 HideOutsideArea = true
 TileSize = 8.0
-TuftsPerSquareMeter = 2.4
+TuftsPerSquareMeter = 1.4
 DenseDistance = 16.0
-SparseDistance = 48.0
-EndDistance = 70.0
+SparseDistance = 44.0
+EndDistance = 68.0
 MaximumSlopeDegrees = 30.0
-MinimumScale = 4.2
-MaximumScale = 5.4
-MinimumPatchCoverage = 0.94
+MinimumScale = 1.25
+MaximumScale = 1.65
+MinimumPatchCoverage = 0.92
 PatchSpacing = 15.0
 PatchRadius = 5.8
-DistantDensityFraction = 0.25
+DistantDensityFraction = 0.20
 Seed = 9876
 QueriesPerPhysicsTick = 32
 TileCheckSeconds = 0.25

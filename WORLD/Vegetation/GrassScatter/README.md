@@ -1,6 +1,6 @@
 # Current forest grass update
 
-The forest now uses GrassMedium001's three named LOD scenes in broad clumps, with matching grassy ground and leaf litter in gaps. The old anchored meadow scene is removed from the test world's active instances. See Configuration/FOREST_MEADOW_README.md for current forest defaults/validation. Bermuda settings below remain independent.
+The forest now uses the substantially lighter GrassMeadow002 A/B/C LOD1/LOD2 scenes in broad clumps, slightly enlarged with per-instance variation, with matching grassy ground and leaf litter in gaps. The old anchored MeadowPreview instance is absent from the test scene, while the separate SpawnMeadow002 layer remains enabled near the original firs. See Configuration/FOREST_MEADOW_README.md for current forest defaults/validation. Bermuda settings below remain independent.
 
 # Player-centred grass trial
 
