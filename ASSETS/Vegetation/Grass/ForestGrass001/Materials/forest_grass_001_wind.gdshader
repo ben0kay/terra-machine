@@ -10,6 +10,8 @@ uniform vec2 wind_direction = vec2(0.82,0.57);
 uniform bool distance_fade_enabled = false;
 uniform float sparse_distance = 44.0;
 uniform float end_distance = 68.0;
+// Optional restrained, light-dependent transmission. 0 = geometry-only lighting baseline.
+uniform float foliage_backlight_strength : hint_range(0.0,0.35) = 0.12;
 varying flat float distance_presence;
 void vertex(){
     vec3 root_world = (MODEL_MATRIX * vec4(0.0,0.0,0.0,1.0)).xyz;
@@ -30,4 +32,7 @@ void fragment(){
     ALPHA_SCISSOR_THRESHOLD = alpha_cutoff;
     ROUGHNESS = 0.9;
     METALLIC = 0.0;
+    // Godot BACKLIGHT receives direct lighting; not self-illumination.
+    // Preserve two-sided rendering without manually flipping NORMAL again.
+    BACKLIGHT = ALBEDO * foliage_backlight_strength;
 }
