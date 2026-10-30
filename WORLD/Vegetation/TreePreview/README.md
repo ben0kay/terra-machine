@@ -1,3 +1,7 @@
+# Current test-world tree selection
+
+The twelve original fir sapling sites (indices 0–11) are disabled through TreePreviewMaster.DisabledIndices. Only the four existing PineTree002 sites instantiate. Disabled sites do not query terrain or create models/colliders. The shared Offsets array stays intact because meadow placement and forest/prop reservations also consume it; this preserves grass placement and each pine's original index, yaw and scale. The fir assets remain available for future reuse. Source checks completed; restart the test scene after pulling and confirm Trees: 4, with no firs near spawn. Earlier sections describe previous configurations.
+
 # Fir and pine visual preview
 
 `TreePreview.tscn` is a reusable, small authored group for `WORLD/Scenes/test.tscn`. `Configuration/TreePreviewMaster.tres` selects twelve fir A/B/C instances plus four PineTree002 distance-LOD scene instances, sixteen fixed XZ offsets relative to spawn, scale range, ground sink, alpha cutoff and loading budget. The default group is 11–55m in front of spawn (negative Z); the path down its centre remains open.

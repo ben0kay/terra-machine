@@ -7,6 +7,7 @@ public partial class TreePreviewSettings : Resource
     [ExportGroup("Assets")]
     [Export] public Godot.Collections.Array<PackedScene> Variants { get; set; } = new();
     [ExportGroup("Composition")]
+    [Export] public int[] DisabledIndices { get; set; } = System.Array.Empty<int>();
     [Export] public Godot.Collections.Array<Vector2> Offsets { get; set; } = new();
     [Export] public float MinimumScale { get; set; } = 0.9f;
     [Export] public float MaximumScale { get; set; } = 1.12f;

@@ -30,8 +30,14 @@ public partial class TreePreview : Node3D
         _center = center; _top = top; _bottom = bottom;
         _placed = new bool[Settings.Offsets.Count];
         _remaining = _placed.Length;
-        IsPlacing = true;
-        SetPhysicsProcess(true);
+        // Keep shared offsets and original pine indices stable when hiding authored sites.
+        foreach (int index in Settings.DisabledIndices)
+        {
+            if (index < 0 || index >= _placed.Length || _placed[index]) continue;
+            _placed[index] = true; _remaining--;
+        }
+        IsPlacing = _remaining > 0;
+        SetPhysicsProcess(IsPlacing);
     }
 
     // =========================================================

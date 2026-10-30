@@ -1,3 +1,7 @@
+# Current test world: no fir saplings
+
+ForestMaster.SaplingCount is now 0, so the forest creates no fir sapling models or colliders. Mature pines remain at target 156, with the same footprint, seed, scale, LODs and collision. The original spawn group's twelve firs are separately disabled in TreePreviewMaster; its four pines remain. Asset prefabs and reusable generator defaults are retained. Source configuration/placement checks completed; restart the scene and verify Fir saplings: 0/0. Runtime acceptance remains local. Earlier sections describe previous passes.
+
 # Current forest density reduction
 
 Forest footprint stays at radii 100.4 × 105.3 m, centre offset (18, +137.3). Mature tree target is now 156 (previously 195), including 10 tall Pine003 variants; fir sapling target is 41 (previously 51). Combined target falls from 246 to 197, approximately 20% fewer forest trees over the same area. Original 16 preview trees, grass/floor-layer settings, tree sizes, native LODs, shadows and collision settings remain unchanged. Seeded generation reruns on scene restart; sapling sites may change because their placement depends on nearby mature pines.
