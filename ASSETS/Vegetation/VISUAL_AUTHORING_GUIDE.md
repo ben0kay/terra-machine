@@ -10,12 +10,12 @@ Read the root `README.md` and `CodePreferences.md` before authoring. The current
 
 Read this section before generating or changing foliage. It supersedes older, higher-poly examples and superseded asset iterations. Follow the owner's current task scope; this guide does not authorize unrelated asset replacement or world expansion.
 
-| Repeated forest pine | Default authoring budget | Current PineTree002 reference |
+| Repeated full-sized tree (all species) | Default authoring budget | Current PineTree002 reference |
 | --- | --- | --- |
 | **LOD1: main / close model** | **4,000–6,000 triangles for the entire tree** | **4,962** triangles |
 | **LOD2: distant model** | **1,000–1,500 triangles for the entire tree** | **1,162** triangles |
 
-These are the default constraints for future repeated pine/conifer assets. Do not silently deliver a 15k–25k tree or add a more expensive LOD0. If a requested design cannot meet the budget, explain the visual trade-off before exceeding it. Count all wood and foliage surfaces together; do not quote only the trunk, vertices or Blender polygon faces. Other species and unique hero assets need their own task-specific budget; old showcase examples are not permission to use them throughout a forest.
+These are the owner's general baseline for future full-sized trees of ALL species, including broadleaf trees, not a pine-only rule. Smaller trees/saplings and simpler assets should cost substantially less. Use this working visual quality per triangle to judge rocks, bushes, plants and grass too; do not give every asset the same numerical allowance. Do not silently deliver a 15k–25k tree or add a more expensive LOD0. If a requested design cannot meet the budget, explain the visual trade-off before exceeding it. Count all wood and foliage surfaces together; do not quote only the trunk, vertices or Blender polygon faces. Unique hero assets require an explicitly chosen exception; old showcase examples are not permission to populate the world with expensive assets.
 
 **Owner's preferred result:** broad, chunky dark-green needle sprays extending from a believable central trunk, recognizable tiered branches, controlled gaps and a convincing forest canopy. The earlier detailed model looked worse to the owner than its fuller simplified LOD. Preserve that fuller silhouette in BOTH new LODs. Do not spend thousands of triangles on thin separated twigs, sparse needle detail or hidden interior branches at the expense of canopy coverage.
 
@@ -181,21 +181,26 @@ Although these may live in `ASSETS/Nature/` rather than `ASSETS/Vegetation/`, **
 - If different LOD meshes share the same materials, reference the **same external texture files** rather than copying one set per mesh.
 - Keep source asset provenance and licences in the asset README. When adapting third-party maps, record the source and any material changes; do not claim original authorship of those photographs.
 
-## 4. Geometry / performance budgets — current pine constraints and other starting points
+## 4. General natural-asset budgets — scale cost to size, repetition and visible benefit
 
-| Art category | Near / main visual target | Distance / simplified target | Most important GPU risk |
+The successful tree pair sets the efficiency standard for the whole natural-asset catalogue. The owner specified the tree and very-small-grass direction; the intermediate ranges below are conservative authoring starting points derived from that direction, not individually measured hardware limits. Prefer the lower end and fewer triangles when the result looks equally good.
+
+| Art category | Near / main target, whole asset | Distant target | Authoring priority |
 | --- | --- | --- | --- |
-| Mature showcase broadleaf tree | ~25k–50k triangles | ~6k–15k | Foliage overdraw and shadows |
-| Repeated forest pine / boreal conifer | **4k–6k triangles (LOD1)** | **1k–1.5k (LOD2)** | Alpha overdraw, canopy coverage and shadows |
-| Large cover boulder | ~2k–6k triangles | ~500–1.5k | Too many unique materials/draws |
-| Small plant / bush | Hundreds to a few thousand, depending on plant | Much less or culled | Alpha overdraw and instance count |
-| Grass tuft | **~40–100** triangles for a simple meadow cutout tuft (starting goal, not a rule) | **~20–40** triangles, or culled/faded | Total instances, alpha overdraw, shadows |
+| Full-sized repeated tree, any species | **4,000–6,000 (LOD1)** | **1,000–1,500 (LOD2)** | Full recognizable canopy, trunk and strong silhouette |
+| Small tree / sapling | **500–2,000** | **100–500**, or culled | Scale below full-tree budget; avoid expensive tiny trees |
+| Large landscape / cover boulder | **500–2,000** | **100–500** | Broad fracture planes and silhouette; texture supplies grain |
+| Small / medium rock | **50–500** | **12–150**, or culled | Simple asymmetric shape; no dense subdivision |
+| Bush / fern / substantial plant clump | **50–300** | **20–100**, or culled | Leafy cutout silhouette; few shared surfaces |
+| Grass tuft / small ground-cover clump | **20–100**, preferably **40–70** for meadow-style clumps | **12–40**, or culled/faded | **Keep very small**; texture/shape quality before geometry |
 
-Current reference data: PineTree002 LOD1 **4,962** triangles; LOD2 **1,162**. The older **23,644/6,972** figures describe superseded exports and are not current targets. Grass001 source card meshes range **8–268** triangles. **GrassMeadow002 A/B/C: LOD1 = 60/66/54 and LOD2 = 24/30/24 triangles per clump.** Earlier GrassMeadow001 LOD1 was ~204–228 triangles per clump; inspected GrassMedium001 source meshes vary widely, including versions with several thousand triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
+Do not pad a simple rock or grass tuft up to its range. Exceptionally large formations may need their own reviewed budget; split reusable rock forms where useful rather than blindly scaling tessellation. A visible patch should be assembled from efficient tufts, not exported as thousands of individually modelled blades. Count a whole exported tuft/clump, not each constituent card. Moss and tiny flowers should be judged by their actual screen size and repetition; very small ground cover should remain in the grass-scale cost class where practical.
+
+Historical and current comparison data (not alternative budgets): PineTree002 LOD1 **4,962** triangles; LOD2 **1,162**. The older **23,644/6,972** figures describe superseded exports and are not current targets. Grass001 source card meshes range **8–268** triangles. **GrassMeadow002 A/B/C: LOD1 = 60/66/54 and LOD2 = 24/30/24 triangles per clump.** Earlier GrassMeadow001 LOD1 was ~204–228 triangles per clump; inspected GrassMedium001 source meshes vary widely, including versions with several thousand triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
 
 **Practical guidelines:**
 
-- The pine budgets above are the owner's default constraints. Other table entries are starting examples, not mandatory targets or permission to introduce expensive mass-instanced trees.
+- The full-sized-tree budgets apply to all species by default. The smaller-asset ranges are proportional starting targets, not requirements to use more triangles. Any materially higher budget needs an explicit task-specific choice; the legacy showcase figures below are historical comparisons.
 - Shadow cost needs its own budget: measure casting on/off separately, and consider distance limits or simplified casters in an authorized runtime task. Lower shadow-map resolution and lower caster geometry are different controls. Do not assume generated mesh LODs automatically provide a dedicated cheap shadow model.
 - Measure from the same camera after loading settles, with FPS cap/VSync accounted for. Record frame milliseconds as well as FPS; reaching a 60 FPS cap does not prove headroom. Count alpha overdraw and shadow passes as well as triangles.
 
@@ -260,7 +265,7 @@ Before calling a new asset “game-ready”, include evidence for the following:
 - [ ] Every variant/LOD has valid normals consistent with exported winding and intentional smoothing; Godot front/back lighting checked without duplicate normal flips.
 - [ ] Actual texture import mipmaps, alpha edges, source-color/data channels and multiplied vertex/material tints checked; no emission masking a lighting defect.
 - [ ] Textures are reused between variants and LODs where practical; external paths resolve.
-- [ ] Real triangle counts recorded **per LOD**, alongside dimensions, material/surface count and texture dimensions. Repeated pines meet LOD1 4k–6k / LOD2 1k–1.5k unless the owner explicitly chose an exception.
+- [ ] Real triangle counts recorded **per LOD**, alongside dimensions, material/surface count and texture dimensions. Repeated full-sized trees of every species meet LOD1 4k–6k / LOD2 1k–1.5k unless the owner explicitly chose an exception; rocks and smaller plants scale down, and grass remains very low-poly.
 - [ ] Materials and foliage are examined under daylight **in Godot**, not only in Blender Material Preview.
 - [ ] LOD comparison is inspected at roughly the intended screen sizes; no obvious silhouette popping or missing crown structure.
 - [ ] Current game performance impact is measured separately (FPS/frame time, foliage overdraw, shadows, instance counts) before claiming any benchmark gain.

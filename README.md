@@ -6,7 +6,7 @@
 
 ## Required vegetation authoring instructions
 
-Before creating or modifying trees, grass, ferns, moss or foliage materials, read [ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md](ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md). It records the owner's current pine budgets (**LOD1 4,000–6,000; LOD2 1,000–1,500 triangles**), fuller-canopy reference, exported-normal/winding checks, texture/mipmap/shading lessons and export-validation requirements. These take precedence over superseded higher-poly examples. This is an authoring guide, not authorization for unrelated asset or runtime changes.
+Before creating or modifying trees, grass, ferns, moss or foliage materials, read [ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md](ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md). It records the owner's general full-sized-tree budgets across species (**LOD1 4,000–6,000; LOD2 1,000–1,500 triangles**), proportionately smaller rock/plant targets, very-low-poly grass (typically **20–100 triangles near, 12–40 far**), fuller-canopy reference, exported-normal/winding checks, texture/mipmap/shading lessons and export-validation requirements. These take precedence over superseded higher-poly examples. This is an authoring guide, not authorization for unrelated asset or runtime changes.
 
 ## Read this first — project identity and scope
 
