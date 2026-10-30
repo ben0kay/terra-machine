@@ -1,3 +1,5 @@
 # Meadow trial configuration
 
 `MeadowMaster.tres` controls the small grass clumps placed near the existing tree preview. It references the three imported LOD1 variants and the supplied shared `MeadowWind.tres` shader material. Set `SamplesPerTree` and `PatchRadius` for coverage, `TrunkClearance` to keep the trunk clear, and `MinimumScale`/`MaximumScale` for height. Scene restart applies changes. This resource is separate from Bermuda grass settings.
+
+`SpawnMeadow002Master.tres` uses the new GrassMeadow002 A/B/C LOD1 glTFs and their existing MeadowGrass002Wind material for a light patch test near spawn. The exported `TreeSiteLimit = 12` targets only the first twelve authored TreePreview sites (the A/B/C firs), leaving the following four big pines untouched. Two small lobes per fir, up to 26 candidate tufts per site, 1.3 m trunk clearance, subtle 0.88–1.13 variation and a 105 m batch draw distance are defaults. It is completely independent of the forest meadow scatter. No collision and no per-grass update loops.

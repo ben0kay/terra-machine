@@ -23,3 +23,9 @@ The first pass used small moss beneath tall grass and sparse random branch sites
 ## Fern wind opt-in
 
 FernsMaster explicitly supplies FernWind.tres, with preserved fern colour/alpha, normal and roughness maps and the shared WORLD/Vegetation/Wind breeze. Moss/dead branches remain static. Batches with an explicit shader material use 0.25 m extra cull padding. No CPU wind loop was added; settled placement remains dormant. Current controls/checks: ../Wind/README.md. Shader compilation, frond/ground fit and FPS require local validation.
+
+## Spawn-side GrassMeadow002 test
+
+The scene now includes `NatureRoot/Grass/SpawnMeadow002`, another instance of this same finite MeadowPreview helper with `Configuration/SpawnMeadow002Master.tres`. It samples the existing TreePreview offsets directly, limited to the **first 12 fir saplings near starting spawn** by the new optional `TreeSiteLimit` resource property (0 = unlimited, preserving previous behaviour for other layers). This does not modify forest vegetation or placement coordinates. Uses MeadowGrass002 LOD1 A/B/C and their pre-existing shared wind material, roughly two compact bunches per fir, 26 samples per fir, random yaw, 0.88–1.13 scale, trunk clearance 1.3 m, and native 105 m render cutoff. The asset's authored LOD2 files are not selected for this small bounded test. Grass is static/batched and collision-free; active wind comes from the GPU shader. Placement's existing bounded queries/retry window and dormant completion remain.
+
+F1 → OTHER MODELS → `Visible: SpawnMeadow002` switches only this layer; the top-left HUD shows `Meadow 2` placed count. Local test: pull/build, run `test.tscn`, examine the near-spawn fir stands (negative Z), verify tufts grow from voxel soil rather than floating, inspect scale/texture/cutouts/wind, and compare FPS with F1. Godot compile/renderer appearance remain to be checked locally.

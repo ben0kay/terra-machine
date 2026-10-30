@@ -10,6 +10,7 @@ public partial class MeadowPreviewSettings : Resource
     [Export] public StaticCollisionProfile? Collision { get; set; }
     [Export] public bool CollectAllMeshes { get; set; }
     [Export] public bool GroundAtMeshBottom { get; set; }
+    [Export] public int TreeSiteLimit { get; set; } = 0;
     [ExportGroup("Area sites")]
     [Export] public Godot.Collections.Array<Vector2> PreviewOffsets { get; set; } = new();
     [Export] public int SiteCount { get; set; } = 10;

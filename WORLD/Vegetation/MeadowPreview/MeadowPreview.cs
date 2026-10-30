@@ -20,7 +20,7 @@ public partial class MeadowPreview : Node3D
     private Vector2 _origin;
     private float _top, _bottom;
     private ulong _startMs;
-    private int _active = -1, _sample;
+    private int _active = -1, _sample, _plannedSites;
     private bool _started, _finished;
 
     public int PlacedCount { get; private set; }
@@ -65,7 +65,8 @@ public partial class MeadowPreview : Node3D
         _started = true;
         _surface = surface; _offsets = offsets; _origin = origin; _top = top; _bottom = bottom;
         _startMs = Time.GetTicksMsec();
-        for (int i = 0; i < offsets.Count; i++) _work.Enqueue(i);
+        _plannedSites = Settings.TreeSiteLimit > 0 ? Mathf.Min(Settings.TreeSiteLimit, offsets.Count) : offsets.Count;
+        for (int i = 0; i < _plannedSites; i++) _work.Enqueue(i);
         UpdateActivity();
     }
 
@@ -242,7 +243,7 @@ public partial class MeadowPreview : Node3D
         _finished = true;
         SetPhysicsProcess(false); _retryTimer.Stop();
         FlushBatches();
-        GD.Print($"{Name}: placed {PlacedCount} instances across {_offsets?.Count ?? 0} planned sites.");
+        GD.Print($"{Name}: placed {PlacedCount} instances across {_plannedSites} planned sites.");
     }
 
     // =========================================================
