@@ -38,6 +38,7 @@ script = ExtResource("1")
 editor_time_enabled = false
 game_time_enabled = false
 current_time = 16.0
+wind_speed = 0.25
 fog_enabled = false
 [node name="SunLight" type="DirectionalLight3D" parent="Sky3D"]
 shadow_enabled = true
@@ -52,6 +53,7 @@ sun_light_path = NodePath("../SunLight")
 moon_light_path = NodePath("../MoonLight")
 fog_visible = false
 sun_light_color = Color(1, 0.95, 0.86, 1)
+wind_speed = 0.25
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
 script = ExtResource("3")
 dome_path = NodePath("../SkyDome")

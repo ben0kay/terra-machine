@@ -13,6 +13,7 @@ public partial class DebugOverlay : CanvasLayer
     private TreePreview? _trees;
     private GrassScatter? _grass;
     private Godot.Environment? _atmosphere;
+    private WorldEnvironment? _sky;
     private PlayerController _player = null!;
     private PanelContainer _panel = null!;
     private Label _metrics = null!, _results = null!, _progress = null!;
@@ -53,7 +54,8 @@ public partial class DebugOverlay : CanvasLayer
         if (_initialized || !Settings.Enabled) return;
         _terrain = terrain; _trees = trees; _player = player;
         _grass = GetNodeOrNull<GrassScatter>("../NatureRoot/Grass/GrassScatter");
-        _atmosphere = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D")?.Environment;
+        _sky = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D");
+        _atmosphere = _sky?.Environment;
         _timer.WaitTime = Mathf.Max(0.1f, Settings.ReadoutInterval);
         BuildControls(GetNode<VBoxContainer>("Panel/Rows"));
         _initialized = true;
@@ -125,6 +127,7 @@ public partial class DebugOverlay : CanvasLayer
         var controls = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         scroll.AddChild(controls);
         AddSection(controls, "ENVIRONMENT");
+        BuildTimeControls(controls);
         if (_atmosphere != null)
         {
             AddToggle(controls, "Distant horizon haze", value => _atmosphere.FogEnabled = value, _atmosphere.FogEnabled);
@@ -180,6 +183,34 @@ public partial class DebugOverlay : CanvasLayer
         AddButton(rows, "Close / resume", () => SetOpen(false));
         if (_terrain == null) { _ground.Disabled = true; _textures.Disabled = true; _normals.Disabled = true; }
         if (_trees == null) { _models.Disabled = true; _shadows.Disabled = true; _unshaded.Disabled = true; }
+    }
+
+    // =========================================================
+    // Use Sky3D's public script property so sun, moon, sky and lighting update together.
+    // Five-minute input steps bound expensive celestial refreshes; there is no polling.
+    private void BuildTimeControls(VBoxContainer rows)
+    {
+        WorldEnvironment? sky = _sky;
+        if (sky == null) return;
+        double initialMinutes = Math.Clamp(Math.Round(sky.Get("current_time").AsDouble() * 12.0) * 5.0, 0.0, 1435.0);
+        var label = new Label();
+        var slider = new HSlider { MinValue = 0, MaxValue = 1435, Step = 5, Value = initialMinutes,
+            CustomMinimumSize = new Vector2(360, 24), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            FocusMode = Control.FocusModeEnum.None };
+        void UpdateLabel(double minutes)
+        {
+            int value = (int)Math.Round(minutes);
+            label.Text = $"Time of Day: {value / 60:00}:{value % 60:00}";
+        }
+        UpdateLabel(initialMinutes);
+        rows.AddChild(label); rows.AddChild(slider);
+        slider.ValueChanged += minutes =>
+        {
+            if (_stage >= 0) return;
+            sky.Set("current_time", (float)(minutes / 60.0));
+            UpdateLabel(minutes);
+        };
+        AddButton(rows, "Reset time to scene default", () => slider.Value = initialMinutes);
     }
 
     // =========================================================
@@ -252,6 +283,7 @@ public partial class DebugOverlay : CanvasLayer
         _report.AppendLine("Terra Machine — same-camera rendering comparison");
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
         _report.AppendLine($"Frame graph visible: {GetNodeOrNull<FrameTimeGraph>("FrameTimeGraph")?.Visible ?? false}");
+        _report.AppendLine($"Sky3D time (hours): {_sky?.Get("current_time").AsDouble() ?? 0.0:F3}; held across all five cases.");
         _report.AppendLine($"Horizon haze: {_atmosphere?.FogEnabled ?? false}; volumetric fog: {_atmosphere?.VolumetricFogEnabled ?? false}; held across all five cases.");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");

@@ -6,11 +6,19 @@ Source implemented; local UI/benchmark acceptance pending. Inspired by War Machi
 
 Run WORLD/Scenes/test.tscn, wait for the tree group/chunks to settle, frame a useful view, then press **F1**. The player and camera lock while the panel is open. Mouse is released; clicks outside the panel cannot recapture it. F1 or Escape closes, cancels a running comparison and restores the previous player movement/input/cursor state. F4 respawn is blocked while the panel is open. Changes are temporary to this running scene and persist when merely closing the panel; Restore full scene resets the render switches.
 
-Controls are grouped under **ENVIRONMENT** (horizon haze, volumetric fog and terrain), **FOLIAGE** (trees and grass), **OTHER MODELS** (only when additional roots exist), **PERFORMANCE** (FPS cap and frame graph), and **COMPARISON** (presets/results). Headings and separators are built once inside the existing scroll area; no polling/rebuild work is added. Grass has a dedicated visibility toggle, and is skipped in ExtraVisualRoots to prevent a duplicate checkbox. Local layout/compilation checks for this grouping are pending.
+Controls are grouped under **ENVIRONMENT** (time of day, horizon haze, volumetric fog and terrain), **FOLIAGE** (trees and grass), **OTHER MODELS** (only when additional roots exist), **PERFORMANCE** (FPS cap and frame graph), and **COMPARISON** (presets/results). Headings and separators are built once inside the existing scroll area; no polling/rebuild work is added. Grass has a dedicated visibility toggle, and is skipped in ExtraVisualRoots to prevent a duplicate checkbox. Local layout/compilation checks for this grouping are pending.
 
 Controls: terrain visibility, textured/simple ground shader, ground normal maps, tree visibility, tree shadow casting and tree unshaded diagnostic. Hiding visuals does not stop terrain generation/streaming/collision. No toggles change world generation, view distance or physics. Terrain controls use the game-owned ITerrainRenderDebug interface; only the adapter knows the native material property. Runtime materials are private cached copies, so saved settings/resources are unchanged. Cached tree meshes/material clones support visibility/shadow/unshaded changes without hierarchy scans on frames.
 
 The optional `ExtraVisualRoots` array on the overlay accepts NodePaths relative to it (e.g. ../Props). Each explicitly assigned Node3D gets a visibility checkbox. Use parent roots to group models; no full-world mesh discovery. Add specialized future section controls through explicit owners/interfaces rather than reaching into addon internals.
+
+## Time-of-day slider
+
+F1 → ENVIRONMENT now includes an HH:MM readout and 00:00–23:55 slider (five-minute steps). Input writes Sky3D's public `current_time`, updating its celestial lighting immediately while automatic time progression stays disabled. Reset time to scene default restores the startup value (currently 16:00). Closing the panel retains the selected time; restarting restores scene defaults. The existing Restore full scene button still affects terrain/tree render choices only.
+
+Slider work is event-only, with no additional poll/timer/process; input stepping bounds sky updates. The five-case comparison records time and holds it unchanged. Wait for Sky3D ambient transitions and fog temporal history to settle after large jumps. Cloud speed now defaults to 0.25 in the environment scene, versus the addon default 1.0.
+
+Source/property/range review completed; Godot/.NET compilation, UI layout, sun/sky response and slow-cloud visual acceptance remain local checks.
 
 ## Atmosphere controls
 

@@ -2,7 +2,7 @@
 
 ## Atmosphere trial — implemented, awaiting local validation
 
-`environment.tscn` remains the reusable Sky3D setup with explicit SunLight, MoonLight, SkyDome and TimeOfDay children. Time is fixed at **16:00**, with both editor/game progression disabled, for a lower afternoon sun and longer tree shadows. SkyDome uses a restrained warm daylight tint. Vendor files are unchanged.
+`environment.tscn` remains the reusable Sky3D setup with explicit SunLight, MoonLight, SkyDome and TimeOfDay children. Time starts at **16:00**, with both editor/game progression disabled, for a lower afternoon sun and longer tree shadows. SkyDome uses a restrained warm daylight tint. Vendor files are unchanged.
 
 The scene-local native Environment resource now provides two independently switchable effects:
 
@@ -13,9 +13,19 @@ Both start enabled. **F1 → ENVIRONMENT** toggles them independently without ed
 
 Sky3D's own `fog_enabled` and SkyDome's `fog_visible` remain false to avoid a second fog layer. Native volumetric fog requires Forward+; this project's existing renderer is Forward+. `project.godot` explicitly uses a modest 64 × 64 volume size/depth setting; increasing resolution costs more GPU work. Density alone is not a quality/performance control.
 
+## Time-of-day preview and slower clouds
+
+**F1 → ENVIRONMENT → Time of Day** provides a 00:00–23:55 slider in five-minute steps and an HH:MM readout. It writes Sky3D's public `current_time` property, whose TimeOfDay setter immediately refreshes celestial coordinates: the sun, moon and sky stay coordinated. It does not rotate the sun independently or enable automatic time progression. Closing F1 keeps the chosen time for this run; **Reset time to scene default** restores the startup time (currently 16:00). Restarting the scene restores authored settings. Baseline/Full controls leave the time unchanged. Copied benchmark reports record the selected hour, held across all five cases.
+
+Sky3D and SkyDome both explicitly use `wind_speed = 0.25`, down from the addon default 1.0: roughly one-quarter cloud translation speed. Cirrus retains its existing additional speed reduction. No vendor code, grass wind, weather or time-cycle logic was changed.
+
+The slider has no timer/process callback and only updates on value changes; five-minute steps limit celestial recomputation while dragging. Sky3D's existing cloud animation and short ambient-light transitions remain intentional. Large jumps between day/night may need a moment for the ambient transition and volumetric history to settle before judging/benchmarking.
+
+Current checks: inspected Sky3D's forwarding property, TimeOfDay's immediate coordinate refresh and SkyDome's wind multiplier; reviewed slider range, reset, label/report wiring and both scene wind values. **Compilation/UI/runtime checks remain local**. Build/run, drag through midnight/noon/sunset, close/reopen F1, reset time, confirm camera input resumes and cloud movement slows. Allow lighting/fog to settle before comparison. This doesn't change the existing moon shadow settings or fog colours into a complete night-art pass.
+
 ## Tuning and lifetime
 
-Tune the Environment subresource in `environment.tscn` for density, colour, depth/range and scattering; tune SkyDome/TimeOfDay there for sun colour and time. No extra C# sky manager, fog timer, per-tree script, weather or day/night gameplay was added. Debug writes occur only on checkbox input. Turning volumetric fog off disables the native effect rather than making an active volume transparent. Sky3D retains its existing shader/cloud work; enabled volumetric fog has an additional GPU cost.
+Tune the Environment subresource in `environment.tscn` for density, colour, depth/range and scattering; tune SkyDome/TimeOfDay there for sun colour and time. No extra C# sky manager, fog timer, per-tree script, weather or day/night gameplay was added. Debug writes occur only on checkbox/slider input. Turning volumetric fog off disables the native effect rather than making an active volume transparent. Sky3D retains its existing shader/cloud work; enabled volumetric fog has an additional GPU cost.
 
 Global haze also appears inside future caves/buildings: no interior exclusion is part of this pass. There are no visible ray guarantees from every angle, no measured FPS claim and no forest expansion.
 
