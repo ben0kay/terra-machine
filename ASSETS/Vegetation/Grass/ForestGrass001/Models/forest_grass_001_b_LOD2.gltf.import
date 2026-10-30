@@ -3,12 +3,12 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://taqnlea3qyas"
+uid="uid://dhp78141kjp1p"
 valid=false
 
 [deps]
 
-source_file="res://ASSETS/Vegetation/Grass/ForestGrass001/Models/forest_grass_003_a_LOD2.gltf"
+source_file="res://ASSETS/Vegetation/Grass/ForestGrass001/Models/forest_grass_001_b_LOD2.gltf"
 
 [params]
 

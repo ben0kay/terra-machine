@@ -1,7 +1,7 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine authoring \u2014 MeadowGrass002 from grass_medium_01"
+    "generator": "Terra Machine authoring \u2014 ForestGrass001 from grass_medium_01"
   },
   "scene": 0,
   "scenes": [
@@ -13,13 +13,13 @@
   ],
   "nodes": [
     {
-      "name": "meadow_grass_002_b_LOD2",
+      "name": "forest_grass_001_a_LOD1",
       "mesh": 0
     }
   ],
   "meshes": [
     {
-      "name": "meadow_grass_002_b_LOD2",
+      "name": "forest_grass_001_a_LOD1",
       "primitives": [
         {
           "attributes": {
@@ -37,7 +37,7 @@
   ],
   "materials": [
     {
-      "name": "ForestGrass003_DarkCutout",
+      "name": "ForestGrass001_DarkCutout",
       "doubleSided": true,
       "alphaMode": "MASK",
       "alphaCutoff": 0.39,
@@ -72,44 +72,44 @@
   ],
   "images": [
     {
-      "uri": "../Textures/forest_grass_003_dark_atlas_1k.png"
+      "uri": "../Textures/forest_grass_001_dark_atlas_1k.png"
     }
   ],
   "buffers": [
     {
-      "uri": "meadow_grass_002_b_LOD2.bin",
-      "byteLength": 2100
+      "uri": "forest_grass_001_a_LOD1.bin",
+      "byteLength": 4200
     }
   ],
   "bufferViews": [
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 480,
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteOffset": 480,
-      "byteLength": 480,
+      "byteLength": 960,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteOffset": 960,
-      "byteLength": 320,
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteOffset": 1280,
-      "byteLength": 640,
+      "byteLength": 960,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteOffset": 1920,
-      "byteLength": 180,
+      "byteLength": 640,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2560,
+      "byteLength": 1280,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 3840,
+      "byteLength": 360,
       "target": 34963
     }
   ],
@@ -117,48 +117,48 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 40,
+      "count": 80,
       "type": "VEC3",
       "min": [
-        -0.7123273611068726,
+        -0.57070392370224,
         0.0,
-        -0.4521997570991516
+        -0.6646842956542969
       ],
       "max": [
-        0.5223632454872131,
-        0.6865646839141846,
-        0.6187956929206848
+        0.47759661078453064,
+        0.8225257396697998,
+        0.599390983581543
       ]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 40,
+      "count": 80,
       "type": "VEC3"
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 40,
+      "count": 80,
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5126,
-      "count": 40,
+      "count": 80,
       "type": "VEC4"
     },
     {
       "bufferView": 4,
       "componentType": 5123,
-      "count": 90,
+      "count": 180,
       "type": "SCALAR"
     }
   ],
   "extras": {
-    "variant": "B",
-    "lod": 2,
+    "variant": "A",
+    "lod": 1,
     "reference": "grass_medium_01_1k.blend.zip",
-    "card_count": 5
+    "card_count": 10
   }
 }

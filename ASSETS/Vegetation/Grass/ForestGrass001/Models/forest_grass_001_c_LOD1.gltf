@@ -1,7 +1,7 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine authoring \u2014 MeadowGrass002 from grass_medium_01"
+    "generator": "Terra Machine authoring \u2014 ForestGrass001 from grass_medium_01"
   },
   "scene": 0,
   "scenes": [
@@ -13,13 +13,13 @@
   ],
   "nodes": [
     {
-      "name": "meadow_grass_002_c_LOD1",
+      "name": "forest_grass_001_c_LOD1",
       "mesh": 0
     }
   ],
   "meshes": [
     {
-      "name": "meadow_grass_002_c_LOD1",
+      "name": "forest_grass_001_c_LOD1",
       "primitives": [
         {
           "attributes": {
@@ -37,7 +37,7 @@
   ],
   "materials": [
     {
-      "name": "ForestGrass003_DarkCutout",
+      "name": "ForestGrass001_DarkCutout",
       "doubleSided": true,
       "alphaMode": "MASK",
       "alphaCutoff": 0.39,
@@ -72,12 +72,12 @@
   ],
   "images": [
     {
-      "uri": "../Textures/forest_grass_003_dark_atlas_1k.png"
+      "uri": "../Textures/forest_grass_001_dark_atlas_1k.png"
     }
   ],
   "buffers": [
     {
-      "uri": "meadow_grass_002_c_LOD1.bin",
+      "uri": "forest_grass_001_c_LOD1.bin",
       "byteLength": 3780
     }
   ],
