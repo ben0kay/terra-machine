@@ -65,7 +65,7 @@
       "doubleSided": false
     },
     {
-      "name": "Pine_Needles_Cutout_PhotoDetailed_DarkFir",
+      "name": "Pine_Needles_LushDistance_AlphaCutout",
       "pbrMetallicRoughness": {
         "baseColorTexture": {
           "index": 3
@@ -74,7 +74,7 @@
         "roughnessFactor": 0.9
       },
       "alphaMode": "MASK",
-      "alphaCutoff": 0.39,
+      "alphaCutoff": 0.29,
       "doubleSided": true
     }
   ],
@@ -113,8 +113,8 @@
       "mimeType": "image/png"
     },
     {
-      "name": "pine_needles_photo_detail_2k",
-      "uri": "../Textures/pine_needles_photo_detail_2k.png",
+      "name": "pine_needles_distance_full_2k",
+      "uri": "../Textures/pine_needles_distance_full_2k.png",
       "mimeType": "image/png"
     }
   ],
@@ -174,31 +174,31 @@
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 4180,
+      "count": 6980,
       "type": "VEC3",
       "min": [
-        -4.063109397888184,
-        3.7847542762756348,
-        -3.3298494815826416
+        -4.1695661544799805,
+        3.7137017250061035,
+        -4.239565849304199
       ],
       "max": [
-        4.050277233123779,
-        22.344738006591797,
-        4.36193323135376
+        4.317544460296631,
+        22.528913497924805,
+        4.444199562072754
       ]
     },
     {
       "bufferView": 5,
       "componentType": 5126,
-      "count": 4180,
+      "count": 6980,
       "type": "VEC3",
       "min": [
         -0.9237930774688721,
-        0.32978495955467224,
+        0.31764543056488037,
         -0.9242827296257019
       ],
       "max": [
-        0.9231441020965576,
+        0.9288282990455627,
         1.0,
         0.9283747673034668
       ]
@@ -206,13 +206,13 @@
     {
       "bufferView": 6,
       "componentType": 5126,
-      "count": 4180,
+      "count": 6980,
       "type": "VEC2"
     },
     {
       "bufferView": 7,
       "componentType": 5125,
-      "count": 6270,
+      "count": 10470,
       "type": "SCALAR"
     }
   ],
@@ -244,31 +244,31 @@
     {
       "buffer": 0,
       "byteOffset": 56864,
-      "byteLength": 50160,
+      "byteLength": 83760,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 107024,
-      "byteLength": 50160,
+      "byteOffset": 140624,
+      "byteLength": 83760,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 157184,
-      "byteLength": 33440,
+      "byteOffset": 224384,
+      "byteLength": 55840,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 190624,
-      "byteLength": 25080,
+      "byteOffset": 280224,
+      "byteLength": 41880,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 215704,
+      "byteLength": 322104,
       "uri": "pine_tree_002_a_LOD2.bin"
     }
   ]
