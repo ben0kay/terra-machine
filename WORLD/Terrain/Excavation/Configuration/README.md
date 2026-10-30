@@ -1,3 +1,1 @@
-# Excavation configuration
-
-**Reserved; no configuration resource implemented.** Later own gameplay parameters only: excavation radius/strength, depth threshold, material resistance, optional exponential scaling and feedback on failed digs. Keep voxel-edit API details inside `WORLD/Terrain/Integration/`. Do not hardcode `global_position.y` as geological depth; use original generated surface/geological data when such rules are authorized.
+ExcavationMaster.tres is bound by the test world's ExcavationService. ExcavationSettings caps tool reach at 4 m and radius at 1.5 m; native boundary caps remain 5/1.5 m. Invalid requests are rejected. These are work limits, not depth/hardness/geology. No exponential curve, material rules or world-Y cutoff exists in DG1.

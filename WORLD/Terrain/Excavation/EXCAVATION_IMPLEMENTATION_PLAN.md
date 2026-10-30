@@ -1,6 +1,6 @@
 # Excavation Implementation Plan — Terra Machine
 
-**Status:** Planned (documentation only, 2026-10-29). **No shovel or excavation code is implemented as part of this plan.** Implementation requires separate authorization per phase.
+**Status:** DG1 implemented in source, awaiting local compilation/native-runtime validation. DG0 remains documentation-complete; DG2/DG3/DG4 are not implemented. The owner authorised DG1 in this session; later phases still require separate authorization.
 
 **Current aim:** Prove that a player can press **1** to equip a fake shovel and left-click **nearby soil** to make a small **real voxel depression** with refreshed collision. Longer-term uses are shallow trenches, animal pits/zombie traps, post holes and minimal construction preparation — **not** free deep mining.
 
@@ -9,7 +9,7 @@
 | Phase | Goal | Suggested owner | Status |
 | --- | --- | --- | --- |
 | **DG0** | Documentation and reserved folder ownership (this commit) | Regular Chat | Implemented (docs only) |
-| **DG1** | Key 1 equips placeholder shovel; one click produces a small soil excavation | Codex | Planned |
+| **DG1** | Key 1 equips placeholder shovel; one click requests a small excavation | Codex | Awaiting Validation |
 | **DG2** | Gameplay material/depth resistance and visible soil/rock cut surfaces | Codex | Planned |
 | **DG3** | Save/reload edited terrain while preserving base generator and streaming | Codex | Planned |
 | **DG4** | Pit/trench interactions with animal/zombie navigation or traps | Codex, later | Deferred |
@@ -106,4 +106,12 @@ Do not force an expensive new geological generator or invent precise hardness nu
 - **Simplify aggressively:** No realistic shovel art, durability, tools inventory, or mining resource economy is required to prove one hole.
 - **Testing handoff:** At each implementation, report what was actually compiled/tested, what is unverified locally, and any native extension/runtime compatibility issue. Follow `CodePreferences.md` where applicable, but note its War Machine-specific branch references do not apply to Terra Machine's `main`.
 
-**Next action:** Codex may implement **DG1 only after explicit authorization**. DG0 lays out paths and responsibilities; no functional changes are being made here.
+**Next action:** Validate DG1 locally using DG1_VALIDATION.md; do not automatically start DG2. The DG0 implementation-time architecture snapshot above remains historical context.
+
+## DG1 implementation handoff
+
+Implemented PlayerEquipment + event-driven HUD, Shovel/Settings/Master, ExcavationService/Settings/Master and optional ITerrainExcavation. TestWorld binds them; the player remains usable without an excavation backend. Key 1 toggles, captured LMB queues one action, 0.65 s cooldown, 3.5 m reach and 1 m-radius rounded subtraction (0.15 m inset). One physics callback handles it then disables itself. UI/loading/focus loss/unequip/respawn cancel or reject pending requests. Mouse recapture is consumed before tool dispatch.
+
+VoxelTerrainAdapter alone caches the native tool, selects named CHANNEL_SDF/MODE_REMOVE constants, validates methods, stops on props, transforms the world hit into terrain-local coordinates, rejects scaled terrain and padded unloaded/out-of-bounds areas, and invokes do_sphere. One optional current-SDF check rejects stale already-empty collider hits. Native post_edit_area schedules LOD mesh/collision refresh; a successful request is not a claim that collision has already caught up. No persistence, hardness, cut-face material changes or vegetation cleanup was added. Use an open patch or F1 render toggles to inspect the actual excavation. Edits can disappear on chunk eviction/restart; DG3 owns that.
+
+Upstream API/source was reviewed (VoxelTool do_sphere/is_area_editable, SDF channel/mode, and VoxelToolLodTerrain::_post_edit). The bundled repo contains binaries, not corresponding API source/version metadata; installed-binary behaviour must still be verified locally. No Godot or dotnet executable is installed in this environment, so compilation/native runtime were not run. Source wiring, resource paths, input edges, callback sleep/cancellation and loops were reviewed. Full handoff: DG1_VALIDATION.md. Status remains Awaiting Validation until local results are available. This implementation is the single DG1 commit containing this section; its immutable SHA is supplied in the handoff response.

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="ShovelSettings" load_steps=2 format=3]
+[ext_resource type="Script" path="res://EQUIPMENT/Tools/Shovel/Configuration/ShovelSettings.cs" id="1"]
+[resource]
+script = ExtResource("1")
+Reach = 3.5
+Radius = 1.0
+SurfaceInset = 0.15
+CooldownSeconds = 0.65

@@ -1,3 +1,1 @@
-# Shovel configuration
-
-**Reserved; no settings resource implemented.** Later configure maximum reach, dig radius, per-click amount, cooldown, allowed materials and tool effectiveness. Use a typed C# `Resource` with a `.tres` master consistent with the repository's configuration conventions. Values must be tested in-game rather than assumed.
+ShovelMaster.tres is used by the player prefab. ShovelSettings exposes Reach (3.5 m), Radius (1 m), SurfaceInset (0.15 m) and CooldownSeconds (0.65 s). ExcavationService enforces its own smaller work limits before calling the adapter. Restart after editing this resource; no live polling. DG2 material/tool effectiveness remains unimplemented.

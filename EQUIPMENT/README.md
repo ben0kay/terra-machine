@@ -1,7 +1,5 @@
 # EQUIPMENT
 
-Future player-carried, selectable tools live here; this is **documentation-only scaffolding**, not implemented inventory or equipment.
+Tools/Shovel now owns the DG1 placeholder shovel and its used typed configuration. PLAYER/Equipment owns key 1 selection and discrete activation; WORLD/Terrain/Excavation owns request limits/service; Integration/VoxelTerrainAdapter alone touches native editing.
 
-`Tools/Shovel/` is the initial placeholder tool experiment. Keep input/equip state out of terrain integration. Future tools should reuse the terrain excavation contract rather than call Voxel Tools directly.
-
-The existing `PLAYER/PlayerInput.cs` is responsible for capturing input, not for calculating excavation or holding geological rules. Keep player functionality modular and preserve the existing movement controller.
+No inventory/hotbar, stamina, tool economy or other equipment framework was introduced. Native edits and collision refresh need local validation: ../WORLD/Terrain/Excavation/DG1_VALIDATION.md.

@@ -4,6 +4,7 @@ using Godot;
 public partial class PlayerInput : Node
 {
     private bool _jumpQueued;
+    public event System.Action? CaptureReleased;
     public bool Blocked { get; set; }
     public bool Captured => !Blocked && Input.MouseMode == Input.MouseModeEnum.Captured;
     public Vector2 Movement => Captured ? Input.GetVector("move_left", "move_right", "move_forward", "move_back") : Vector2.Zero;
@@ -33,7 +34,10 @@ public partial class PlayerInput : Node
         else if (@event is InputEventMouseButton mouse && mouse.Pressed)
         {
             if (!Captured && mouse.ButtonIndex == MouseButton.Left)
+            {
                 Input.MouseMode = Input.MouseModeEnum.Captured;
+                GetViewport().SetInputAsHandled();
+            }
             else if (Captured && mouse.IsActionPressed("jump")) _jumpQueued = true;
         }
     }
@@ -53,6 +57,7 @@ public partial class PlayerInput : Node
     {
         _jumpQueued = false;
         Input.MouseMode = Input.MouseModeEnum.Visible;
+        CaptureReleased?.Invoke();
     }
 
     // =========================================================

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
@@ -15,6 +15,8 @@
 [ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/FernsMaster.tres" id="14"]
 [ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/BranchesMaster.tres" id="15"]
 [ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/SpawnMeadow002Master.tres" id="16"]
+[ext_resource type="Script" path="res://WORLD/Terrain/Excavation/ExcavationService.cs" id="17"]
+[ext_resource type="Resource" path="res://WORLD/Terrain/Excavation/Configuration/ExcavationMaster.tres" id="18"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -72,3 +74,7 @@ Settings = ExtResource("13")
 Settings = ExtResource("14")
 [node name="Branches" parent="NatureRoot/Floor" instance=ExtResource("9")]
 Settings = ExtResource("15")
+
+[node name="Excavation" type="Node" parent="."]
+script = ExtResource("17")
+Settings = ExtResource("18")

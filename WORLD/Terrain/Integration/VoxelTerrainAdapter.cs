@@ -1,7 +1,7 @@
 // The only C# owner of Voxel Tools API calls. Native generation/streaming run in the addon.
 using Godot;
 
-public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug, ITerrainSurfaceService, ITerrainForestFloor
+public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRenderDebug, ITerrainSurfaceService, ITerrainForestFloor, ITerrainExcavation
 {
     [Export] public LandscapeSettings Landscape { get; set; } = new();
     private Node3D? _viewer;
@@ -10,6 +10,10 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     private ShaderMaterial? _simpleMaterial;
     private ShaderMaterial? _normalMapsOffMaterial;
     private Node3D? _target;
+    private RefCounted? _editTool;
+    private bool _editApiChecked;
+    private string _editUnavailable = "Native excavation API is unavailable.";
+    private PhysicsRayQueryParameters3D _editQuery = null!;
     private int _viewDistance;
     private PhysicsRayQueryParameters3D _groundQuery = null!;
     public bool IsAvailable { get; private set; }
@@ -20,6 +24,7 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     public override void _Ready()
     {
         SetProcess(false);
+        _editQuery = new PhysicsRayQueryParameters3D { CollisionMask = 5, CollideWithAreas = false };
         _groundQuery = new PhysicsRayQueryParameters3D { CollisionMask = 1, CollideWithAreas = false };
         if (!ClassDB.ClassExists("VoxelLodTerrain") || !ClassDB.ClassExists("VoxelViewer") || !ClassDB.ClassExists("VoxelGeneratorImage"))
         {
@@ -92,6 +97,74 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         return true;
     }
 
+    #region Excavation
+    // =========================================================
+    // Cache one native tool lazily. Missing/mismatched addon APIs disable editing only.
+    private bool PrepareEditTool()
+    {
+        if (_editApiChecked) return _editTool != null;
+        _editApiChecked = true;
+        if (_terrainNode == null || !_terrainNode.HasMethod("get_voxel_tool")) return false;
+        var tool = _terrainNode.Call("get_voxel_tool").AsGodotObject() as RefCounted;
+        if (tool == null) return false;
+        foreach (string method in new[] { "do_sphere", "is_area_editable", "set_mode", "set_channel" })
+            if (!tool.HasMethod(method))
+            { _editUnavailable = $"Native excavation API missing {method}."; tool.Dispose(); return false; }
+        // Read named constants from the installed addon instead of depending on guessed enum numbers.
+        bool hasSdf = false, hasRemove = false;
+        foreach (string name in ClassDB.ClassGetIntegerConstantList("VoxelBuffer"))
+            if (name == "CHANNEL_SDF") hasSdf = true;
+        foreach (string name in ClassDB.ClassGetIntegerConstantList("VoxelTool"))
+            if (name == "MODE_REMOVE") hasRemove = true;
+        if (!hasSdf || !hasRemove)
+        { _editUnavailable = "Native excavation channel/mode constants are missing."; tool.Dispose(); return false; }
+        tool.Call("set_channel", ClassDB.ClassGetIntegerConstant("VoxelBuffer", "CHANNEL_SDF"));
+        tool.Call("set_mode", ClassDB.ClassGetIntegerConstant("VoxelTool", "MODE_REMOVE"));
+        _editTool = tool;
+        return true;
+    }
+
+    // =========================================================
+    // Physics-frame only: target actual terrain, reject occluders/nonresident edit borders.
+    public bool TryExcavate(Vector3 origin, Vector3 direction, float reach, float radius, float inset, out string feedback)
+    {
+        feedback = "Terrain is not ready for digging.";
+        if (!IsAvailable || _terrainNode == null || _target == null) return false;
+        // Duplicate service limits at the native boundary so another caller cannot request a giant edit.
+        if (!origin.IsFinite() || !direction.IsFinite() || direction.LengthSquared() < 0.001f
+            || !float.IsFinite(reach) || !float.IsFinite(radius) || !float.IsFinite(inset)
+            || reach <= 0f || reach > 5f || radius < 0.5f || radius > 1.5f || inset < 0f || inset > radius * 0.5f)
+        { feedback = "Invalid excavation request."; return false; }
+        if (!PrepareEditTool()) { feedback = _editUnavailable; return false; }
+        Basis basis = _terrainNode.GlobalBasis;
+        if (!basis.IsEqualApprox(basis.Orthonormalized()))
+        { feedback = "DG1 requires unscaled terrain."; return false; }
+        _editQuery.From = origin; _editQuery.To = origin + direction.Normalized() * reach;
+        _editQuery.Exclude = _target is CollisionObject3D body
+            ? new Godot.Collections.Array<Rid> { body.GetRid() } : new Godot.Collections.Array<Rid>();
+        var hit = GetWorld3D().DirectSpaceState.IntersectRay(_editQuery);
+        if (hit.Count == 0) { feedback = "Aim at ground within shovel reach."; return false; }
+        Node? collider = hit["collider"].AsGodotObject() as Node;
+        if (collider == null || (collider != _terrainNode && !_terrainNode.IsAncestorOf(collider)))
+        { feedback = "Shovel only digs terrain; this object blocks the scoop."; return false; }
+        Vector3 point = hit["position"].AsVector3(), normal = hit["normal"].AsVector3().Normalized();
+        Vector3 center = _terrainNode.ToLocal(point - normal * inset);
+        Vector3 padding = Vector3.One * (radius + 2f);
+        Vector3 min = (center - padding).Floor(), max = (center + padding).Ceil();
+        Aabb area = new(min, max - min);
+        Aabb bounds = _terrainNode.Get("voxel_bounds").AsAabb();
+        if (!bounds.Encloses(area) || !_editTool!.Call("is_area_editable", area).AsBool())
+        { feedback = "Ground data is still loading here. Move closer and retry."; return false; }
+        // A collider can lag after an edit. Refuse a stale hit whose inward sample is already empty.
+        if (_editTool.HasMethod("get_voxel_f_interpolated")
+            && _editTool.Call("get_voxel_f_interpolated", center).AsDouble() > 0.05)
+        { feedback = "Ground mesh/collision is updating. Wait briefly and aim again."; return false; }
+        _editTool.Call("do_sphere", center, radius);
+        feedback = "Dig requested — mesh/collision refresh is asynchronous.";
+        return true;
+    }
+    #endregion
+
     // =========================================================
     // Configure both cached terrain materials once when world composition binds the forest.
     public void SetForestFloorArea(Vector2 center, Vector2 radii)
@@ -133,6 +206,7 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     // A viewer parented under an external target is still owned by this integration.
     public override void _ExitTree()
     {
+        _editTool?.Dispose(); _editTool = null;
         if (_viewer != null && GodotObject.IsInstanceValid(_viewer)) _viewer.QueueFree();
         _viewer = null;
         _target = null;

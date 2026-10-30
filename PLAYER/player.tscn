@@ -1,7 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 [ext_resource type="Script" path="res://PLAYER/PlayerController.cs" id="1"]
 [ext_resource type="Script" path="res://PLAYER/PlayerInput.cs" id="2"]
 [ext_resource type="Resource" path="res://PLAYER/Configuration/PlayerMaster.tres" id="3"]
+[ext_resource type="Script" path="res://PLAYER/Equipment/PlayerEquipment.cs" id="4"]
+[ext_resource type="Script" path="res://EQUIPMENT/Tools/Shovel/Shovel.cs" id="5"]
+[ext_resource type="Resource" path="res://EQUIPMENT/Tools/Shovel/Configuration/ShovelMaster.tres" id="6"]
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.3
 height = 1.8
@@ -23,3 +26,22 @@ near = 0.05
 far = 1200.0
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("2")
+
+[node name="Equipment" type="Node" parent="."]
+script = ExtResource("4")
+[node name="Shovel" type="Node" parent="Equipment"]
+script = ExtResource("5")
+Settings = ExtResource("6")
+[node name="HUD" type="CanvasLayer" parent="Equipment"]
+[node name="Status" type="Label" parent="Equipment/HUD"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -65.0
+offset_right = 950.0
+offset_bottom = -30.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+mouse_filter = 2

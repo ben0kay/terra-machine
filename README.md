@@ -16,6 +16,12 @@ The player needs freedom **and** meaningful long-term discoveries. No exact lore
 
 The ground is part of the gameplay, not just a visual surface. A player might dig a trench, excavate a hillside shelter, follow an ore vein, open a tunnel into a natural cave, or uncover something artificial far beneath the forest. Terrain changes must eventually be persistent and compatible with nearby structures and world streaming. Smooth/organic surfaces are preferred over visible Minecraft-style cube terrain.
 
+## DG1 excavation proof — awaiting local validation
+
+The test scene now includes a temporary shovel: press **1** to equip/unequip, then captured **LMB** requests one small rounded voxel subtraction within 3.5 m (1 m radius, 0.65 s cooldown). The HUD shows feedback; no held model or inventory is needed. Requests reject props, unsupported native APIs and unloaded edit bounds. Native terrain rebuilds mesh/collision asynchronously. This is an experiment, not accepted gameplay: compilation/contact/FPS still need local checks in [DG1_VALIDATION.md](WORLD/Terrain/Excavation/DG1_VALIDATION.md).
+
+Depth hardness, exposed soil/rock materials, vegetation cleanup and persistence are not implemented in this pass. Holes may disappear after chunk eviction/restart and surface foliage/shading may remain over cuts. Use an open area/F1 grass toggles to inspect. The existing [excavation plan](WORLD/Terrain/Excavation/EXCAVATION_IMPLEMENTATION_PLAN.md) marks DG1 Awaiting Validation; later phases remain separately authorised.
+
 ## Latest test-landscape pass
 
 `WORLD/Scenes/test.tscn` now uses a deliberately shaped meadow → broad mountain shoulder → plateau/cliff composition with a mountain backdrop. Initial surface and shared slope map are prepared once; native SDF terrain streaming remains isolated. Tune `WORLD/Terrain/Landscape/Configuration/LandscapeMaster.tres`. See `WORLD/Terrain/Landscape/README.md` for checks and local acceptance still required. This replaces the small noise-hill surface for the test scene; it is not a general world generator.

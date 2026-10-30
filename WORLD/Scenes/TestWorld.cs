@@ -16,6 +16,7 @@ public partial class TestWorld : Node3D
     private ForestPreview? _forest;
     private BoulderPreview? _boulders;
     private DebugOverlay? _debug;
+    private PlayerEquipment? _equipment;
     private readonly MeadowPreview?[] _floorLayers = new MeadowPreview?[3];
     private Label _readout = null!;
     private bool _waiting;
@@ -41,6 +42,10 @@ public partial class TestWorld : Node3D
         string[] floorNames = { "Moss", "Ferns", "Branches" };
         for (int i = 0; i < floorNames.Length; i++)
             _floorLayers[i] = GetNodeOrNull<MeadowPreview>($"NatureRoot/Floor/{floorNames[i]}");
+        var excavation = GetNode<ExcavationService>("Excavation");
+        excavation.Initialize(_terrain as ITerrainExcavation);
+        _equipment = _player.GetNodeOrNull<PlayerEquipment>("Equipment");
+        _equipment?.BindExcavation(excavation);
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
         timer.Timeout += RefreshReadout;
@@ -51,6 +56,7 @@ public partial class TestWorld : Node3D
     // Suspend the player until a real terrain collider exists below the spawn.
     private void BeginSpawn()
     {
+        _equipment?.CancelPending();
         _failed = false;
         _waiting = true;
         _elapsed = 0f;
