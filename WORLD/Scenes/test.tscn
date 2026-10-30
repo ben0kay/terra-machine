@@ -52,11 +52,10 @@ mouse_filter = 2
 wait_time = 0.25
 autostart = true
 [node name="DebugOverlay" parent="." instance=ExtResource("7")]
-ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/MeadowPreview"), NodePath("../NatureRoot/Grass/ForestMeadowScatter"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview"), NodePath("../NatureRoot/Floor/Moss"), NodePath("../NatureRoot/Floor/Ferns"), NodePath("../NatureRoot/Floor/Branches")])
+ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/ForestMeadowScatter"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview"), NodePath("../NatureRoot/Floor/Moss"), NodePath("../NatureRoot/Floor/Ferns"), NodePath("../NatureRoot/Floor/Branches")])
 [node name="Grass" type="Node3D" parent="NatureRoot"]
 [node name="GrassScatter" parent="NatureRoot/Grass" instance=ExtResource("8")]
 
-[node name="MeadowPreview" parent="NatureRoot/Grass" instance=ExtResource("9")]
 [node name="ForestMeadowScatter" parent="NatureRoot/Grass" instance=ExtResource("8")]
 Settings = ExtResource("12")
 [node name="ForestPreview" parent="NatureRoot/Trees" instance=ExtResource("10")]

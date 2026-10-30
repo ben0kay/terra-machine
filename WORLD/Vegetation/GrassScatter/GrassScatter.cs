@@ -21,6 +21,7 @@ public partial class GrassScatter : Node3D
     private readonly Dictionary<Vector2I, Tile> _tiles = new();
     private readonly Queue<Tile> _jobs = new();
     private readonly List<Mesh> _meshes = new();
+    private readonly List<Mesh> _midMeshes = new();
     private readonly List<Mesh> _farMeshes = new();
     private readonly List<Vector3> _pivots = new();
     private ITerrainSurfaceService? _surface;
@@ -78,16 +79,21 @@ public partial class GrassScatter : Node3D
         else if (Settings.Variants != null)
         {
             Node3D source = Settings.Variants.Instantiate<Node3D>();
+            Node3D? mid = Settings.MidVariants?.Instantiate<Node3D>();
+            Node3D? far = Settings.FarVariants?.Instantiate<Node3D>();
             foreach (string name in Settings.MeshNames)
             {
                 var meshNode = source.FindChild(name, true, false) as MeshInstance3D;
-                if (meshNode?.Mesh == null) continue;
+                if (meshNode?.Mesh == null) { GD.PushWarning($"Grass variant missing: {name}"); continue; }
                 Mesh mesh = meshNode.Mesh;
                 Aabb bounds = mesh.GetAabb();
                 _meshes.Add(mesh);
+                // Use the same near-mesh pivot for every authored LOD.
                 _pivots.Add(new Vector3(bounds.GetCenter().X, bounds.Position.Y, bounds.GetCenter().Z));
+                if (mid != null) _midMeshes.Add(FindLodMesh(mid, name, "_LOD1") ?? mesh);
+                if (far != null || mid != null) _farMeshes.Add(far != null ? FindLodMesh(far, name, "_LOD2") ?? mesh : mesh);
             }
-            source.Free();
+            source.Free(); mid?.Free(); far?.Free();
         }
         if (_meshes.Count == 0) { GD.PushWarning("Grass scatter found no configured variant meshes."); return; }
         _areaEnabled = Settings.HideOutsideArea && areaCenter.HasValue && areaRadii.HasValue;
@@ -117,6 +123,17 @@ public partial class GrassScatter : Node3D
         _material.SetShaderParameter("end_distance", _range);
         _timer.WaitTime = Mathf.Max(Settings.TileCheckSeconds, 0.1f);
         UpdateActivity();
+    }
+
+    // =========================================================
+    // Match authored variants by name rather than imported sibling order.
+    private static Mesh? FindLodMesh(Node source, string nearName, string suffix)
+    {
+        int index = nearName.LastIndexOf("_LOD", StringComparison.Ordinal);
+        string name = (index >= 0 ? nearName.Substring(0, index) : nearName) + suffix;
+        Mesh? mesh = (source.FindChild(name, true, false) as MeshInstance3D)?.Mesh;
+        if (mesh == null) GD.PushWarning($"Grass LOD missing: {name}; using near mesh.");
+        return mesh;
     }
 
     // =========================================================
@@ -308,44 +325,38 @@ public partial class GrassScatter : Node3D
             int count = 0;
             foreach (var item in tile.Transforms) if (item.Variant == variant) count++;
             if (count == 0) continue;
-            var multi = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D, Mesh = _meshes[variant], InstanceCount = count };
-            MultiMesh? farMulti = _farMeshes.Count > 0
-                ? new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D, Mesh = _farMeshes[variant], InstanceCount = count }
-                : null;
-            int index = 0;
+            // Three authored levels for named variants; legacy two/single-level paths remain valid.
+            Mesh[] levels = _midMeshes.Count > 0
+                ? new[] { _meshes[variant], _midMeshes[variant], _farMeshes[variant] }
+                : _farMeshes.Count > 0 ? new[] { _meshes[variant], _farMeshes[variant] } : new[] { _meshes[variant] };
+            float firstSwitch = Mathf.Clamp(Settings.LodSwitchDistance, 5f, _range - 8f);
+            float secondSwitch = Mathf.Clamp(Settings.MidLodDistance, firstSwitch + 2f, _range - 4f);
             float minY = float.MaxValue, maxY = float.MinValue;
             foreach (var item in tile.Transforms)
             {
                 if (item.Variant != variant) continue;
-                multi.SetInstanceTransform(index, item.Transform);
-                farMulti?.SetInstanceTransform(index, item.Transform);
                 minY = Mathf.Min(minY, item.Transform.Origin.Y);
                 maxY = Mathf.Max(maxY, item.Transform.Origin.Y);
-                index++;
             }
-            // Identical tile bounds make near/far native visibility ranges switch together.
-            Aabb bounds = new(new Vector3(-2f, minY - 2f, -2f),
-                new Vector3(_size + 4f, maxY - minY + 8f, _size + 4f));
-            float switchDistance = Mathf.Clamp(Settings.LodSwitchDistance, 5f, _range - 6f);
-            float margin = 1.5f;
-            var batch = new MultiMeshInstance3D { Multimesh = multi, MaterialOverride = _material,
-                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-                VisibilityRangeEnd = farMulti == null ? _range + _size * 1.5f : switchDistance };
-            if (farMulti != null)
+            Aabb bounds = new(new Vector3(-3f, minY - 3f, -3f),
+                new Vector3(_size + 6f, maxY - minY + 10f, _size + 6f));
+            for (int level = 0; level < levels.Length; level++)
             {
-                batch.CustomAabb = bounds;
-                batch.VisibilityRangeEndMargin = margin;
-            }
-            tile.Batch.AddChild(batch);
-            tile.MeshBatches.Add(multi);
-            if (farMulti != null)
-            {
-                var farBatch = new MultiMeshInstance3D { Multimesh = farMulti, MaterialOverride = _material,
+                var multi = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
+                    Mesh = levels[level], InstanceCount = count };
+                int index = 0;
+                foreach (var item in tile.Transforms)
+                    if (item.Variant == variant) multi.SetInstanceTransform(index++, item.Transform);
+                float begin = level == 0 ? 0f : level == 1 ? firstSwitch : secondSwitch;
+                float end = level == levels.Length - 1 ? _range + _size * 1.5f
+                    : level == 0 ? firstSwitch : secondSwitch;
+                var batch = new MultiMeshInstance3D { Multimesh = multi, MaterialOverride = _material,
                     CustomAabb = bounds, CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-                    VisibilityRangeBegin = switchDistance, VisibilityRangeEnd = _range + _size * 1.5f,
-                    VisibilityRangeBeginMargin = margin };
-                tile.Batch.AddChild(farBatch);
-                tile.MeshBatches.Add(farMulti);
+                    VisibilityRangeBegin = begin, VisibilityRangeEnd = end,
+                    VisibilityRangeBeginMargin = level == 0 ? 0f : 1f,
+                    VisibilityRangeEndMargin = level == levels.Length - 1 ? 0f : 1f };
+                tile.Batch.AddChild(batch);
+                tile.MeshBatches.Add(multi);
             }
         }
         tile.Transforms.Clear();

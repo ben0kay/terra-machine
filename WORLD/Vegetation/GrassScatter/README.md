@@ -1,3 +1,7 @@
+# Current forest grass update
+
+The forest now uses GrassMedium001's three named LOD scenes in broad clumps, with matching grassy ground and leaf litter in gaps. The old anchored meadow scene is removed from the test world's active instances. See Configuration/FOREST_MEADOW_README.md for current forest defaults/validation. Bermuda settings below remain independent.
+
 # Player-centred grass trial
 
 Implemented, awaiting local visual/runtime/performance acceptance. `GrassScatter.tscn` is composed into `WORLD/Scenes/test.tscn`; TestWorld activates it after the player finds real terrain collision. No grass nodes or addon calls belong in the player. Remove the scene to disable it, or use **F1 → FOLIAGE → Grass visible**.

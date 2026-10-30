@@ -4,6 +4,9 @@ using Godot;
 public partial class GrassScatterSettings : Resource
 {
     [ExportGroup("Assets")]
+    [Export] public PackedScene? MidVariants { get; set; }
+    [Export] public PackedScene? FarVariants { get; set; }
+    [Export] public float MidLodDistance { get; set; } = 32f;
     [Export] public PackedScene? Variants { get; set; }
     [Export] public ShaderMaterial? Material { get; set; }
     [Export] public string[] MeshNames { get; set; } = { "grass_bermuda_01_medium_a", "grass_bermuda_01_medium_c", "grass_bermuda_01_small_c" };

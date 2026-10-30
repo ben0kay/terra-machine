@@ -97,6 +97,12 @@ public partial class TestWorld : Node3D
             ForestPreviewSettings footprint = _forest.Settings;
             (_terrain as ITerrainForestFloor)?.SetForestFloorArea(Settings.SpawnXZ + footprint.CenterOffset,
                 new Vector2(footprint.RadiusX, footprint.RadiusZ));
+            if (_forestMeadow != null)
+            {
+                GrassScatterSettings cover = _forestMeadow.Settings;
+                (_terrain as ITerrainForestFloor)?.SetForestGrassPatches(
+                    cover.PatchSpacing, cover.PatchRadius, cover.Seed, cover.MaximumSlopeDegrees);
+            }
             _forestMeadow?.Initialize(_terrain as ITerrainSurfaceService, _player,
                 Settings.SpawnXZ + footprint.CenterOffset, new Vector2(footprint.RadiusX, footprint.RadiusZ));
         }

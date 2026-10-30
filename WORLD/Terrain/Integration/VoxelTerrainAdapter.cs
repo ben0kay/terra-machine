@@ -105,6 +105,20 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
     }
 
     // =========================================================
+    // Copy the scatter's patch recipe once; terrain appearance remains stable as tiles stream.
+    public void SetForestGrassPatches(float spacing, float radius, int seed, float maximumSlopeDegrees)
+    {
+        foreach (ShaderMaterial? material in new[] { _texturedMaterial, _normalMapsOffMaterial })
+        {
+            if (material == null) continue;
+            material.SetShaderParameter("forest_patch_spacing", spacing);
+            material.SetShaderParameter("forest_patch_radius", radius);
+            material.SetShaderParameter("forest_patch_seed", seed);
+            material.SetShaderParameter("forest_patch_min_up", Mathf.Cos(Mathf.DegToRad(maximumSlopeDegrees)));
+        }
+    }
+
+    // =========================================================
     // Apply only on UI changes. A private material copy protects the saved master resource.
     public void SetDebugRendering(bool visible, bool textured, bool normalMaps)
     {
