@@ -15,9 +15,9 @@ Read the root `README.md` and `CodePreferences.md` before authoring. The current
 | Pine, spruce, fir or other conifer | **`ASSETS/Vegetation/Trees/PineTree002/`** (authored northern pine, `Models/` and `Textures/`) | Tall narrow proportions, open tiered needle sprays, central leader, branch spacing, natural rounded base, 1K materials and near/far LOD construction |
 | Mature broadleaf tree (oak, maple, etc.) | **Mature Oak A V2** from the earlier design iteration **if the model is available**; use a current user-supplied example or reference images otherwise | Broad asymmetric crown, powerful curved limbs, bark mapping and varied leaf cluster depth. Do not reuse pine growth architecture for an oak |
 | Large boulder, rock outcrop or smaller stone | **Boulder001** (our first mossy cover boulder) **when its model is available** | Angular broken stone masses, believable ground contact, low geometry cost, localized moss, colour/normal/roughness mapping and near/far LODs |
-| Grass, small ground plants and similar foliage | **`ASSETS/Vegetation/Grass/Grass001/`** and other existing local plant assets | Low-poly card geometry, masked alpha, shared texture sheets, suitable ground pivot and reusable variation |
+| **Meadow / natural grass clumps** | **`ASSETS/Vegetation/Grass/GrassMeadow002/`** (preferred lightweight meadow reference); compare `Grass001` for short Bermuda grass | 54–66-triangle near clumps, 24–30-triangle far clumps, 1K shared photographic colour/alpha atlas, full leafy silhouettes rather than distinct stiff stalks |
 
-**Availability caveat (checked 2026-10-29):** `PineTree002` and `Grass001` are present in this repository. **Boulder001 and Mature Oak A V2 were produced separately during earlier asset-design work; their source model files are not confirmed in the current GitHub tree.** Do not invent paths or claim to have read them. When the owner adds their files to the repo, update this table with the verified directories (suggested boulder home: `ASSETS/Nature/Boulders/Boulder001/`). Until then, request/use their supplied ZIP, glTF/GLB or screenshots as available, and clearly distinguish visual references from inspected geometry.
+**Availability caveat (checked 2026-10-29):** `PineTree002`, `Grass001`, and `GrassMeadow002` are present in this repository. **Boulder001 and Mature Oak A V2 were produced separately during earlier asset-design work; their source model files are not confirmed in the current GitHub tree.** Do not invent paths or claim to have read them. When the owner adds their files to the repo, update this table with the verified directories (suggested boulder home: `ASSETS/Nature/Boulders/Boulder001/`). Until then, request/use their supplied ZIP, glTF/GLB or screenshots as available, and clearly distinguish visual references from inspected geometry.
 
 ### Required reference workflow for AI authors
 
@@ -56,7 +56,7 @@ These are **art-direction references**, not a claim that every model is currentl
 | Boulder001 (custom design) | Large (~5.5 × 3.5 × 4.3 m) asymmetric cover-sized form, broken planar faces, localized moss, textured microdetail | Smooth ellipsoid, regular low-poly gemstone, all-over green moss, no convincing ground contact |
 | Grass001 (current repo) | Very low-poly cutout tuft shapes, multiple forms, natural size/rotation variation, shared materials | One mesh/node/script per blade, dense opaque cards, huge tufts with no variation, alpha sorting everywhere |
 
-Reference paths in the repository: `ASSETS/Vegetation/Trees/PineTree002/README.md` and `ASSETS/Vegetation/Grass/Grass001/README.md`. The runtime trial belongs to `WORLD/Vegetation/` and is a separate concern.
+Reference paths in the repository: `ASSETS/Vegetation/Trees/PineTree002/README.md`, `ASSETS/Vegetation/Grass/Grass001/README.md`, and **`ASSETS/Vegetation/Grass/GrassMeadow002/README.md`**. The runtime trial belongs to `WORLD/Vegetation/` and is a separate concern.
 
 ## 2. Geometry recipes by asset family
 
@@ -100,6 +100,35 @@ Although these may live in `ASSETS/Nature/` rather than `ASSETS/Vegetation/`, **
 5. Avoid individual per-plant script updates and expensive transparent blending when masked foliage works.
 6. Author assets that can be batched by mesh/material. The current GrassScatter uses `MultiMesh` tile batches; do not copy its live range or density settings into the mesh geometry itself.
 
+### E. GrassMeadow002 case study — detailed appearance with very few triangles (preferred method)
+
+**Follow this for future grass, fern, weed, moss and low-growing foliage assets where a detailed silhouette can come from a texture.** The result looked better than increasing the number of stiff stalk-shaped GrassMeadow001 clumps in the user's meadow screenshot. The key improvement was the *asset's silhouette and source foliage texture*, not simply adding density.
+
+**Verified reference in this repository:** `ASSETS/Vegetation/Grass/GrassMeadow002/` (read its `README.md`, and inspect its `Models/`, `Textures/` and `Materials/` before creating a similar asset).
+
+| Example | Near mesh triangles per A/B/C variant | Far mesh triangles per A/B/C variant | Observation |
+| --- | --- | --- | --- |
+| **GrassMeadow002** | **60 / 66 / 54** (LOD1) | **24 / 30 / 24** (LOD2) | Fuller, softer green meadow tuft despite very little geometry; all variants share a 1K colour+alpha texture |
+| GrassMeadow001 (earlier tall asset) | ~204–228 (LOD1) | ~72–78 (LOD2) | More geometry did **not** cure separated, stiff-looking yellow stalks when clustered in the scene |
+| GrassMedium001 (source collection) | Highly variable, some individual meshes **thousands** of triangles | Varies by source LOD and mesh | Avoid selecting a high-poly mesh simply because its source pack is named “grass” |
+
+**The modelling method:**
+
+1. Start with **good real grass/leaf imagery with clean cutout alpha**, preferably matching the desired meadow species and colour. Detailed photos and believable leafy silhouettes do much of the visible work.
+2. Form a **compact individual tuft** from a small set of *crossed, angled, intersecting low-poly cards/strips*. One tuft should contain enough apparent leaves to read as full, but each leaf does **not** need its own 3D blade mesh. Cards should have UVs positioned on the foliage texture, not empty transparent atlas space.
+3. **Shape the whole tuft**, not just its polygon budget: use varied heights, tilt, radial spread and a fuller lower-to-middle section. Avoid rigid parallel stalks, evenly spaced fans, overly regular X-card crosses and conspicuous isolated bundles.
+4. Author **several distinct A/B/C shapes** for natural repetition breaking. They share one texture/material and consistent pivot but differ in width, posture, leaf angle and height. A/B/C are **appearance variants**, **not** LOD numbers.
+5. Create a second, cheaper mesh for each shape, keeping the same scale and silhouette. GrassMeadow002 demonstrates **54–66 triangles near and 24–30 far**. These are *achieved examples*, not minimums or strict budgets for all grass and ferns.
+6. Keep **one or very few materials**, a shared ~1K colour+alpha atlas, properly padded/mipmapped alpha, alpha-scissor/masked cutouts where viable, and double-sided rendering only as needed. Prefer alpha-cutout rather than full alpha blending for many overlapping tufts.
+7. Store the **base/pivot on the ground**, with no large invisible display offset; avoid a flat rectangle or visible card base. Reuse the same material across A/B/C and their LODs.
+8. **Compare a single tuft and a dense patch at player-eye level** against the reference model before accepting it. The same tuft that looks nice alone can look sparse, overly yellow, repetitive or like vertical sticks when repeated. Screenshots from neutral daylight and the actual Godot scene matter more than a software-preview triangle figure.
+9. If a meadow has visible gaps, **first correct plant shape, colour, layering and scattering distribution**. Increasing density or clumping a poor source mesh can make the flaws more obvious and can increase GPU cost without achieving a continuous meadow.
+10. For large populations, use **Godot MultiMesh/shared batching**, reasonable patches and scene LOD/distance thinning rather than nodes, collision objects or C# updates for every tuft. Wind can use one shared vertex shader; root vertices should remain relatively anchored.
+
+**Performance warning: low-poly does not automatically mean cheap.** The 54–66 triangles are a genuine *geometry* saving compared with heavier assets, but many large alpha-cutout cards can still create substantial **pixel overdraw, mip/alpha shimmer, bandwidth, wind/shadow cost and instance/draw cost**. Measure with actual density, viewing angle, sun and shadows. A 1K atlas does not guarantee good performance if most pixels are discarded. Record the actual counts per mesh, materials, textures and test conditions; never claim an FPS gain without a measured before/after comparison.
+
+**Visual design rule for future AI:** Prioritize **a realistic foliage silhouette baked into clean textures + very lightweight intersecting card geometry + A/B/C variation + shared atlas**, rather than spending thousands of triangles modelling grass blade-by-blade. Preserve the **good visual result of GrassMeadow002** as the benchmark, but do not assume every future plant should be exactly 60 triangles.
+
 ## 3. PBR materials and UV rules
 
 - Prefer **1K** colour/normal/roughness maps for small/medium vegetation and repeatable assets; use **2K only when a close-up visual test proves an improvement**. The 1K/2K suffix describes texture resolution, *not* model complexity.
@@ -120,9 +149,9 @@ Although these may live in `ASSETS/Nature/` rather than `ASSETS/Vegetation/`, **
 | Tall boreal conifer | ~15k–25k triangles | ~5k–10k | Dense overlapping needle cards |
 | Large cover boulder | ~2k–6k triangles | ~500–1.5k | Too many unique materials/draws |
 | Small plant / bush | Hundreds to a few thousand, depending on plant | Much less or culled | Alpha overdraw and instance count |
-| Grass tuft | Tens to a few hundred (sometimes fewer) | Sparse cards, simplified or faded | Total instances, alpha coverage, shadows |
+| Grass tuft | **~40–100** triangles for a simple meadow cutout tuft (starting goal, not a rule) | **~20–40** triangles, or culled/faded | Total instances, alpha overdraw, shadows |
 
-Known reference data: PineTree002 LOD1 **23,644** triangles; LOD2 **6,972**. Grass001 source card meshes range **8–268** triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
+Known reference data: PineTree002 LOD1 **23,644** triangles; LOD2 **6,972**. Grass001 source card meshes range **8–268** triangles. **GrassMeadow002 A/B/C: LOD1 = 60/66/54 and LOD2 = 24/30/24 triangles per clump.** Earlier GrassMeadow001 LOD1 was ~204–228 triangles per clump; inspected GrassMedium001 source meshes vary widely, including versions with several thousand triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
 
 **Practical guidelines:**
 
