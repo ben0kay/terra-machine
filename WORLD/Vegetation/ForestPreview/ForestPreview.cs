@@ -22,6 +22,7 @@ public partial class ForestPreview : Node3D
     private int _cursor, _remaining;
     private float _top, _bottom;
     private bool _started;
+    private readonly TreeRenderDiagnostics _diagnostics = new();
     public int PlacedCount { get; private set; }
     public int PlannedCount => _spots.Count;
     public int SaplingsPlaced { get; private set; }
@@ -248,6 +249,14 @@ public partial class ForestPreview : Node3D
     }
     #endregion
 
+    // =========================================================
+    // The global tree diagnostic includes this grove and newly placed saplings.
+    public void SetDebugRendering(bool visible, bool shadows, bool unshaded, float split = 70f, int lod = 0)
+    {
+        Visible = visible;
+        _diagnostics.Set(shadows, unshaded, split, lod);
+    }
+
     #region Visuals
     // =========================================================
     // Reuse PineTree002's existing authored near/far LOD scene; no per-tree distance script.
@@ -266,6 +275,7 @@ public partial class ForestPreview : Node3D
         MeshInstance3D? first = FindFirstMesh(model);
         if (!spot.IsSapling && first != null) model.Position -= wrapper.ToLocal(first.GlobalPosition);
         ApplyShadows(model, false, spot.IsSapling);
+        _diagnostics.Register(model);
         wrapper.Scale = Vector3.One * spot.Scale;
         wrapper.Rotation = new Vector3(0f, spot.Yaw, 0f);
         wrapper.GlobalPosition = ground - Vector3.Up * Settings.GroundSink;

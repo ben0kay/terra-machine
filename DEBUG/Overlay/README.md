@@ -1,3 +1,17 @@
+# All-tree performance diagnostics — current
+
+F1 → FOLIAGE now controls both original TreePreview and ForestPreview, including forest fir saplings. The redundant independent ForestPreview visibility checkbox is removed. Visibility remains render-only; trunk collision stays active. New placements inherit current shadow, material and LOD choices. The five-case comparison now includes the forest, rejects runs while it is still placing, restores pre-run visibility/shadow/unshaded state and records tree count, LOD mode/split and sun shadow distance.
+
+- ALL trees visible: hides/shows both owners, including original firs, original pines, forest pines and forest firs.
+- Tree shadow casting: Off disables every registered tree mesh's shadow casting. On restores each mesh's original policy, so LOD2 and firs originally configured without shadows stay without shadows.
+- Pine LOD1 → LOD2 distance: 5–140 m, initially 70 m. Native visibility ranges still perform distance switching.
+- Pine LOD mode: Auto, force detailed LOD1, or force simplified LOD2. Forced modes retain the asset's outer cull distance; firs do not have an authored pair and remain unchanged.
+- Sun shadow distance: 10–300 m, starts at scene value. This is the directional light's global shadow distance and affects all scenery, not just trees.
+
+These changes are session-only. At the same camera, disable the FPS cap, wait for loading to settle, then compare tree shadows off and forced LOD2 separately. Preserve the same LOD/distance settings across comparison runs. Slider changes do not add frame polling; cached mesh/material/range settings update on UI input or placement. Materials are shared per source within each owner; geometry, physics and grass are unchanged.
+
+Validation: resource/node paths and C# loop/state wiring reviewed. Godot/.NET unavailable here; compilation, native LOD transitions, all-tree visibility, shadow isolation and measured performance require local validation. Check toggling off/on, travel to place new trees, cancel a comparison and F4 respawn.
+
 # Rendering isolation overlay
 
 Source implemented; local UI/benchmark acceptance pending. Inspired by War Machine's scene-instanced panel, explicit ready-reference binding and event-only changes. No duplicate world manager or per-tree debug loop.

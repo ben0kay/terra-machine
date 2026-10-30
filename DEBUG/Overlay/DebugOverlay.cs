@@ -11,6 +11,10 @@ public partial class DebugOverlay : CanvasLayer
     [Export] public Godot.Collections.Array<NodePath> ExtraVisualRoots { get; set; } = new();
     private ITerrainRenderDebug? _terrain;
     private TreePreview? _trees;
+    private ForestPreview? _forest;
+    private DirectionalLight3D? _sun;
+    private float _treeSplit = 70f;
+    private int _treeLod;
     private GrassScatter? _grass;
     private Godot.Environment? _atmosphere;
     private WorldEnvironment? _sky;
@@ -54,6 +58,8 @@ public partial class DebugOverlay : CanvasLayer
     {
         if (_initialized || !Settings.Enabled) return;
         _terrain = terrain; _trees = trees; _player = player;
+        _forest = GetNodeOrNull<ForestPreview>("../NatureRoot/Trees/ForestPreview");
+        _sun = GetNodeOrNull<DirectionalLight3D>("../Environment/Sky3D/SunLight");
         _grass = GetNodeOrNull<GrassScatter>("../NatureRoot/Grass/GrassScatter");
         _sky = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D");
         _atmosphere = _sky?.Environment;
@@ -148,8 +154,19 @@ public partial class DebugOverlay : CanvasLayer
             controls.AddChild(new Label { Text = "Higher values dig deeper per click; session only." });
         }
         AddSection(controls, "FOLIAGE");
-        _models = AddToggle(controls, "Tree models visible", value => _treesOn = value);
+        _models = AddToggle(controls, "ALL trees visible (preview + forest + firs)", value => _treesOn = value);
         _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);
+        AddValueSlider(controls, "Pine LOD1 → LOD2 distance (m)", 5, 140, 5, _treeSplit,
+            value => { if (_stage >= 0) return; _treeSplit = value; ApplyRendering(); });
+        var lod = new OptionButton { FocusMode = Control.FocusModeEnum.None };
+        lod.AddItem("Pine LOD: Auto"); lod.AddItem("Pine LOD: Force detailed LOD1");
+        lod.AddItem("Pine LOD: Force simplified LOD2");
+        controls.AddChild(lod);
+        lod.ItemSelected += index => { if (_stage >= 0) return; _treeLod = (int)index; ApplyRendering(); };
+        if (_sun != null)
+            AddValueSlider(controls, "Sun shadow distance (m, ALL scenery)", 10, 300, 5,
+                _sun.DirectionalShadowMaxDistance, value => _sun.DirectionalShadowMaxDistance = value);
+        controls.AddChild(new Label { Text = "LOD override affects paired pines; firs keep their native range.\nShadows on restores authored policy (far pine/fir shadows may stay off)." });
         _unshaded = AddToggle(controls, "Trees unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
         if (_grass != null)
         {
@@ -161,7 +178,7 @@ public partial class DebugOverlay : CanvasLayer
         foreach (NodePath path in ExtraVisualRoots)
         {
             Node3D? root = GetNodeOrNull<Node3D>(path);
-            if (root == null || root == _grass) continue;
+            if (root == null || root == _grass || root == _forest || root == _trees) continue;
             if (!extraHeading) { AddSection(controls, "OTHER MODELS"); extraHeading = true; }
             var toggle = new CheckButton { Text = $"Visible: {root.Name}", ButtonPressed = root.Visible, FocusMode = Control.FocusModeEnum.None };
             controls.AddChild(toggle);
@@ -193,7 +210,7 @@ public partial class DebugOverlay : CanvasLayer
         AddButton(rows, "Restore full scene", () => ApplyCase(3));
         AddButton(rows, "Close / resume", () => SetOpen(false));
         if (_terrain == null) { _ground.Disabled = true; _textures.Disabled = true; _normals.Disabled = true; }
-        if (_trees == null) { _models.Disabled = true; _shadows.Disabled = true; _unshaded.Disabled = true; }
+        if (_trees == null && _forest == null) { _models.Disabled = true; _shadows.Disabled = true; _unshaded.Disabled = true; }
     }
 
     // =========================================================
@@ -286,7 +303,8 @@ public partial class DebugOverlay : CanvasLayer
     private void ApplyRendering()
     {
         _terrain?.SetDebugRendering(_groundOn, _texturesOn, _normalsOn);
-        _trees?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn);
+        _trees?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod);
+        _forest?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod);
         _ground.SetPressedNoSignal(_groundOn); _textures.SetPressedNoSignal(_texturesOn);
         _normals.SetPressedNoSignal(_normalsOn); _models.SetPressedNoSignal(_treesOn);
         _shadows.SetPressedNoSignal(_shadowsOn); _unshaded.SetPressedNoSignal(_unshadedOn);
@@ -310,7 +328,7 @@ public partial class DebugOverlay : CanvasLayer
     private void StartComparison()
     {
         if (_stage >= 0) return;
-        if ((_trees != null && _trees.IsPlacing) || (_grass != null && _grass.IsPlacing))
+        if ((_trees != null && _trees.IsPlacing) || (_forest != null && _forest.IsPlacing) || (_grass != null && _grass.IsPlacing))
         {
             _results.Text = "Vegetation is still loading; wait, then retry.";
             return;
@@ -326,6 +344,7 @@ public partial class DebugOverlay : CanvasLayer
         _report.AppendLine($"Horizon haze: {_atmosphere?.FogEnabled ?? false}; volumetric fog: {_atmosphere?.VolumetricFogEnabled ?? false}; held across all five cases.");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
+        _report.AppendLine($"Forest: {_forest?.PlacedCount ?? 0}; pine split: {_treeSplit:F0} m; LOD mode: {_treeLod}; sun shadow distance: {_sun?.DirectionalShadowMaxDistance ?? 0:F0} m; held across cases.");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
         _stage = 0;
         BeginCase();
