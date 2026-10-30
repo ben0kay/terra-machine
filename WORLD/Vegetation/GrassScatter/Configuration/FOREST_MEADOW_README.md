@@ -32,3 +32,14 @@ After examining the forest screenshot, the GrassMeadow002 patches were too tall 
 `GrassScatter` exposes the three optional scale and spacing controls via `GrassScatterSettings`; the defaults (`TallTuftChance=0`, `MinimumTuftSpacing=0`) retain the original Bermuda scatter behaviour. `SpawnMeadow002` uses `MeadowPreview` with its own settings and is unchanged. The new list of accepted positions is populated only when minimum spacing is enabled and lives per active tile; no additional per-tuft scripts, collision or permanent update loop.
 
 Test: Pull main, restart the test scene for regenerated positions, enter the flat-side forest (+Z), and compare the same patch with the previous screenshot. Check that leaf litter and short Bermuda grass can be seen between clumps, that a few taller stalks still break up the silhouette, and that occasional tile-boundary overlaps are acceptable. F1 → OTHER MODELS → ForestMeadowScatter and F2 allow same-view performance comparison. Godot import, C# compilation and visual results still require local testing.
+
+
+## Widely distributed light clumps — follow-up tuning
+
+The forest Meadow Grass 2 now has **more small patches distributed across the forest**, rather than fewer large dense mats. `PatchSpacing` changes from 15 to **12 m**, introducing more potential patch centres; `PatchRadius` drops from 5.8 to **4.2 m** so each one covers less ground. The terrain's existing `ITerrainForestFloor` patch-mask handshake reads these same settings, keeping grassy ground and leaf litter aligned with the altered patch footprints.
+
+Within each patch, `TuftsPerSquareMeter` decreases from 0.75 to **0.65** candidates/m², `MinimumPatchCoverage` decreases from 0.92 to **0.72** (the underlying acceptance formula still reaches 0.98 in some locations), and tile-local `MinimumTuftSpacing` increases from 1.4 to **1.9 m**. This should leave visibly more ground between roots and improve the distribution of individual plants. The minimum spacing remains tile-local, so some cross-tile overlap is still possible.
+
+The **85% short** (scale 0.75–0.95) and **15% tall** (1.30–1.65) height mix, grass models, near/far LODs, forest footprint, GPU wind, seed and render-distance settings are unchanged. The spawn-only Meadow002 and Bermuda configurations are also unchanged.
+
+Restart `test.tscn` after pulling so all relevant 8 m scatter tiles regenerate. Inspect both local separation and how evenly small patches cover the forest; if their footprints still appear too circular, later consider changing the patch-mask shape separately. This was a configuration-only pass; engine rendering and performance were not tested here.
