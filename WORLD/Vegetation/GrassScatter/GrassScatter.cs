@@ -230,7 +230,12 @@ public partial class GrassScatter : Node3D
             float x = origin.X + (cell % _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             float z = origin.Y + (cell / _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             tile.Cursor++;
-            if (_areaEnabled && !InsideArea(new Vector2(x, z))) continue;
+            if (_areaEnabled && !InsideArea(new Vector2(x, z)))
+            {
+                // Even a rejected final sample must retire its tile before the next tick.
+                if (tile.Cursor >= _candidates) { CompleteTile(tile, origin); _jobs.Dequeue(); }
+                continue;
+            }
             // Keep a continuous meadow base; broad variation changes fullness without bare bands.
             float patch = 0.5f + 0.3f * Mathf.Sin(x * 0.19f + Mathf.Sin(z * 0.11f)) + 0.2f * Mathf.Sin(z * 0.27f + x * 0.07f);
             if (tile.Random.Randf() < Mathf.Lerp(Mathf.Clamp(Settings.MinimumPatchCoverage, 0.1f, 0.98f), 0.98f, Mathf.Clamp(patch, 0f, 1f)))
