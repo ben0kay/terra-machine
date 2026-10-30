@@ -1,7 +1,7 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine PineTree002 V4 Detailed Fir — V3 unmodified mesh + photo-derived twig needle atlas"
+    "generator": "Terra Machine PineTree002 V4 Detailed Fir \u2014 V3 unmodified mesh + photo-derived twig needle atlas"
   },
   "scene": 0,
   "scenes": [
@@ -130,51 +130,51 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 10272,
+      "count": 6045,
       "type": "VEC3",
       "min": [
-        -3.089775562286377,
+        -3.089561939239502,
         -0.1899999976158142,
-        -3.3437674045562744
+        -3.343461513519287
       ],
       "max": [
         3.334881067276001,
-        22.400911331176758,
-        3.2339556217193604
+        22.400859832763672,
+        3.233247756958008
       ]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 10272,
+      "count": 6045,
       "type": "VEC3",
       "min": [
-        -1,
-        -0.999983549118042,
-        -0.9999995827674866
+        -1.0,
+        -0.997572124004364,
+        -1.0
       ],
       "max": [
-        1,
-        0.999983549118042,
-        0.9997326731681824
+        1.0,
+        0.997572124004364,
+        1.0
       ]
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 10272,
+      "count": 6045,
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5125,
-      "count": 39612,
+      "count": 20340,
       "type": "SCALAR"
     },
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 20880,
+      "count": 15660,
       "type": "VEC3",
       "min": [
         -4.085265636444092,
@@ -183,36 +183,36 @@
       ],
       "max": [
         4.2261834144592285,
-        22.546518325805664,
+        22.51094627380371,
         4.146563529968262
       ]
     },
     {
       "bufferView": 5,
       "componentType": 5126,
-      "count": 20880,
+      "count": 15660,
       "type": "VEC3",
       "min": [
         -0.9247949123382568,
         0.3068007230758667,
-        -0.936892032623291
+        -0.9290738701820374
       ],
       "max": [
         0.9288282990455627,
-        1,
+        1.0,
         0.9282701015472412
       ]
     },
     {
       "bufferView": 6,
       "componentType": 5126,
-      "count": 20880,
+      "count": 15660,
       "type": "VEC2"
     },
     {
       "bufferView": 7,
       "componentType": 5125,
-      "count": 31320,
+      "count": 23490,
       "type": "SCALAR"
     }
   ],
@@ -220,55 +220,55 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 123264,
+      "byteLength": 72540,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 123264,
-      "byteLength": 123264,
+      "byteOffset": 72540,
+      "byteLength": 72540,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 246528,
-      "byteLength": 82176,
+      "byteOffset": 145080,
+      "byteLength": 48360,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 328704,
-      "byteLength": 158448,
+      "byteOffset": 193440,
+      "byteLength": 81360,
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteOffset": 487152,
-      "byteLength": 250560,
+      "byteOffset": 274800,
+      "byteLength": 187920,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 737712,
-      "byteLength": 250560,
+      "byteOffset": 462720,
+      "byteLength": 187920,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 988272,
-      "byteLength": 167040,
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteOffset": 1155312,
+      "byteOffset": 650640,
       "byteLength": 125280,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 775920,
+      "byteLength": 93960,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 1280592,
+      "byteLength": 869880,
       "uri": "pine_tree_002_a_LOD1.bin"
     }
   ]

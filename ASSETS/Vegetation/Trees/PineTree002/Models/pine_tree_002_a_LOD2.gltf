@@ -1,7 +1,7 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine PineTree002 V4 Detailed Fir — V3 unmodified mesh + photo-derived twig needle atlas"
+    "generator": "Terra Machine PineTree002 V4 Detailed Fir \u2014 V3 unmodified mesh + photo-derived twig needle atlas"
   },
   "scene": 0,
   "scenes": [
@@ -130,89 +130,89 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 2610,
+      "count": 1225,
       "type": "VEC3",
       "min": [
-        -3.084066390991211,
+        -3.083486795425415,
         -0.1899999976158142,
-        -2.476693630218506
+        -2.4762933254241943
       ],
       "max": [
-        3.1638028621673584,
-        22.400911331176758,
-        3.5015435218811035
+        3.1637895107269287,
+        22.400859832763672,
+        3.501297950744629
       ]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 2610,
+      "count": 1225,
       "type": "VEC3",
       "min": [
-        -1,
-        -0.9989521503448486,
-        -0.9750986695289612
+        -0.9996134638786316,
+        -0.9969042539596558,
+        -0.999890148639679
       ],
       "max": [
-        1,
-        0.9993630051612854,
-        0.999890148639679
+        1.0,
+        0.9975127577781677,
+        0.9998902082443237
       ]
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 2610,
+      "count": 1225,
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5125,
-      "count": 11412,
+      "count": 4416,
       "type": "SCALAR"
     },
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 6336,
+      "count": 4180,
       "type": "VEC3",
       "min": [
         -4.063109397888184,
-        3.775254487991333,
+        3.7847542762756348,
         -3.3298494815826416
       ],
       "max": [
-        4.071749210357666,
-        22.38958168029785,
+        4.050277233123779,
+        22.344738006591797,
         4.36193323135376
       ]
     },
     {
       "bufferView": 5,
       "componentType": 5126,
-      "count": 6336,
+      "count": 4180,
       "type": "VEC3",
       "min": [
-        -0.9268795847892761,
-        0.3272464871406555,
+        -0.9237930774688721,
+        0.32978495955467224,
         -0.9242827296257019
       ],
       "max": [
-        0.9240227341651917,
-        1,
+        0.9231441020965576,
+        1.0,
         0.9283747673034668
       ]
     },
     {
       "bufferView": 6,
       "componentType": 5126,
-      "count": 6336,
+      "count": 4180,
       "type": "VEC2"
     },
     {
       "bufferView": 7,
       "componentType": 5125,
-      "count": 9504,
+      "count": 6270,
       "type": "SCALAR"
     }
   ],
@@ -220,55 +220,55 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 31320,
+      "byteLength": 14700,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 31320,
-      "byteLength": 31320,
+      "byteOffset": 14700,
+      "byteLength": 14700,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 62640,
-      "byteLength": 20880,
+      "byteOffset": 29400,
+      "byteLength": 9800,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 83520,
-      "byteLength": 45648,
+      "byteOffset": 39200,
+      "byteLength": 17664,
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteOffset": 129168,
-      "byteLength": 76032,
+      "byteOffset": 56864,
+      "byteLength": 50160,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 205200,
-      "byteLength": 76032,
+      "byteOffset": 107024,
+      "byteLength": 50160,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 281232,
-      "byteLength": 50688,
+      "byteOffset": 157184,
+      "byteLength": 33440,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 331920,
-      "byteLength": 38016,
+      "byteOffset": 190624,
+      "byteLength": 25080,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 369936,
+      "byteLength": 215704,
       "uri": "pine_tree_002_a_LOD2.bin"
     }
   ]
