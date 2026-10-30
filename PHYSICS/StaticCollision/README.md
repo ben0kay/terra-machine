@@ -22,7 +22,7 @@ For a trunk, create an AuthoredShape profile with a capsule/cylinder sized to th
 
 ## First consumer: existing boulders
 
-BoulderMaster.tres references Boulder001/BoulderCollision.tres. It explicitly chooses ConvexMesh, layer 4, mask 0, and no simplification; the same hull-generation arguments and body alignment are retained. One hull is cooked per BoulderPreview initialization and shared among up to 14 native bodies. Existing EnableCollision false still avoids both hull cooking and attachment. Trees and grass remain unchanged.
+BoulderMaster.tres references Boulder001/BoulderCollision.tres. It explicitly chooses ConvexMesh, layer 4, mask 0, and no simplification; the same hull-generation arguments and body alignment are retained. One hull is cooked per BoulderPreview initialization and shared among up to 14 native bodies. Existing EnableCollision false still avoids both hull cooking and attachment. Grass remains unchanged. Tree adoption is described below.
 
 Terrain remains layer 1; the player uses mask 5 (terrain 1 + static scenery 4). Terrain-grounding rays still use mask 1. The helper does not change terrain/player filtering. Visibility ranges and F1 visual switches do **not** unload colliders.
 
@@ -39,3 +39,9 @@ Reviewed meadow (batched MultiMeshes, shader wind, bounded placement), forest (f
 Source-level profile/reference/loop/API review and old/new collider transform equivalence checked. **Compilation, Godot runtime contacts and measured performance remain unverified** here (no Godot/.NET executable). Local checks: build; inspect visible collision shapes at different rock scales/yaws; walk/jump around rocks; confirm no grounding on props; test both disabling paths, visual-only hide, F4 and scene reload; verify shared Shape resource identity. Future primitive-profile adoption needs its own scale/contact check. No measured speedup is claimed by this refactor.
 
 Reference: https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html
+
+## Prefab component and tree adoption
+
+StaticCollisionInstance is a one-time Node3D component for authored shared Shape3D profiles. Put it in an asset scene and assign Profile. It calls the same Prepare/Attach helper, with no runtime update/timer; its parent carries placement/scale and lifetime. Mode None disables creation. ConvexMesh is intentionally rejected here to avoid cooking a mesh hull separately for every prefab instance; use a placement owner that prepares once, or author/save a hull as an AuthoredShape.
+
+PineTree002 now embeds this component outside its two visual LODs. The A/B/C fir wrapper scenes embed it too, sharing a family capsule and normalizing imported display offsets. No collision was added to foliage cards. Collision mode/layer/shape remain asset data, with no vegetation dependencies in PHYSICS. Current capsules are initial blocking proxies requiring local fit review, not mesh-exact models. Shape sharing does not remove each body's native broadphase/contact costs.

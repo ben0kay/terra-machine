@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StaticCollisionProfile" load_steps=3 format=3]
+[ext_resource type="Script" path="res://PHYSICS/StaticCollision/StaticCollisionProfile.cs" id="1"]
+[sub_resource type="CapsuleShape3D" id="Trunk"]
+radius = 0.32
+height = 16
+[resource]
+script = ExtResource("1")
+Mode = 1
+Shape = SubResource("Trunk")
+ShapeTransform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+CollisionLayer = 4
+CollisionMask = 0

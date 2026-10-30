@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="TreePreviewSettings" load_steps=6 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/TreePreview/TreePreviewSettings.cs" id="1"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_a_1k.glb" id="2"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_b_1k.glb" id="3"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_c_1k.glb" id="4"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_A.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_B.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_C.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/PineTree002.tscn" id="5"]
 [resource]
 script = ExtResource("1")

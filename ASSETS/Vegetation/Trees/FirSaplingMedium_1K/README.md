@@ -19,3 +19,11 @@ For future exports keep only the selected LOD1 object for the desired A/B/C vari
 ## Later optimization
 
 For a large forest, consider one shared external texture/material set across all three variants, then instancing, distance LOD and foliage/shadow budgets. This takes a deliberate material/import setup or a re-export with shared texture references; merely renaming PNGs does not make embedded GLBs share GPU resources. Keep source Blender/download textures outside the game project if needed for re-export. Runtime optimization and placing trees in the test world are separate tasks.
+
+## Trunk collision enabled — awaiting local validation
+
+Trees now opt into the shared PHYSICS/StaticCollision construction. PineTree002.tscn carries one StaticCollisionInstance outside both visual LODs; its shared capsule is radius 0.32 m, height 16 m, centred 8 m above the asset origin. The original twelve firs now use A/B/C wrapper scenes with one shared radius 0.14 m / height 3.5 m capsule. Their wrappers cancel the existing B/C display offsets before grounding. These are deliberately simple blocking proxies, not anatomically exact trunk geometry; review their fit locally.
+
+All four original pines and the forest's PineTree002 instances inherit collision from the same asset prefab. No duplicate collider per LOD, full-canopy hull, per-tree ray or tick was added. Layer 4 / mask 0 preserves player contact and terrain-only placement queries. Shape resources are shared; bodies are per tree. Hiding/culling visuals does not disable collision; actual parent unload frees the body. Existing finite resident-world limitation remains.
+
+Local: build, run test.tscn, enable Debug → Visible Collision Shapes, approach pine/fir trunks from several angles, walk through foliage gaps and inspect scaled/rotated instances. Check B/C roots align, F4 doesn't duplicate bodies, changing LOD keeps the same collision and boulders/grass still ground on terrain. Disable an asset profile with Mode None and restart to opt out. Source references/scene layout reviewed; compilation, contact fit and FPS remain unverified here.

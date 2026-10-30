@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/fir_sapling_medium_b_1k.glb" id="1"]
+[ext_resource type="Script" path="res://PHYSICS/StaticCollision/StaticCollisionInstance.cs" id="2"]
+[ext_resource type="Resource" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/TrunkCollision.tres" id="3"]
+[node name="FirSaplingMedium_B" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+position = Vector3(-5, 0, 0)
+[node name="TrunkCollision" type="Node3D" parent="."]
+script = ExtResource("2")
+Profile = ExtResource("3")
