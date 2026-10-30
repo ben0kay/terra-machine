@@ -282,6 +282,7 @@ public partial class MeadowPreview : Node3D
         AddChild(new MultiMeshInstance3D {
             Name = $"Patch_{variant + 1:00}", Multimesh = multi, MaterialOverride = Settings.Material,
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            ExtraCullMargin = Settings.Material != null ? 0.25f : 0f,
             VisibilityRangeEnd = Mathf.Max(20f, Settings.DrawDistance)
         });
     }

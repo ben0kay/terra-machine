@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=4 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreviewSettings.cs" id="1"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Plants/Ferns001/Models/ferns00`.gltf" id="2"]
+[ext_resource type="ShaderMaterial" path="res://ASSETS/Vegetation/Plants/Ferns001/Materials/FernWind.tres" id="3"]
 [resource]
 script = ExtResource("1")
 Variants = Array[PackedScene]([ExtResource("2")])
 CollectAllMeshes = true
+Material = ExtResource("3")
 Seed = 735
 PreviewOffsets = Array[Vector2]([Vector2(-4, 9), Vector2(7, 16), Vector2(-9, 24)])
 SiteCount = 22

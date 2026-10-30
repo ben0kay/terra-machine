@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3]
+[ext_resource type="Shader" path="res://WORLD/Vegetation/Wind/plant_wind.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Plants/Ferns001/Textures/fern_02_diff-fern_02_alpha.png" id="2"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Plants/Ferns001/Textures/fern_02_nor_gl.png" id="3"]
+[ext_resource type="Texture2D" path="res://ASSETS/Vegetation/Plants/Ferns001/Textures/fern_02_rough.png" id="4"]
+[resource]
+shader = ExtResource("1")
+shader_parameter/plant_color = ExtResource("2")
+shader_parameter/plant_normal = ExtResource("3")
+shader_parameter/plant_roughness = ExtResource("4")
+shader_parameter/wind_response = 0.7
+shader_parameter/wind_plant_height = 0.35

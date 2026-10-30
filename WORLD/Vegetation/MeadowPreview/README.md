@@ -19,3 +19,7 @@ Source references, JSON/buffer links and edited loops were reviewed. **Compilati
 ## Visibility correction — awaiting local validation
 
 The first pass used small moss beneath tall grass and sparse random branch sites, with visuals held until the entire layer finished or timed out. The current pass doubles fern scale, enlarges moss and slightly raises its base, reduces branch sink from 2.5 cm to 5 mm, modestly enlarges branches, adds near-spawn anchors, and flushes each completed site. Existing capped queries, shared branch hulls, finite site counts and dormant completion remain. It does not remove surrounding grass or guarantee distant unloaded terrain will populate. Check the first branch near spawn+(2,6), moss near +(3,8), and ferns near +(-4,9); patch jitter means approximate positions. Verify HUD counts, temporarily hide grass for moss inspection, then assess density/contacts/FPS with grass restored. Compilation/runtime are not verified here.
+
+## Fern wind opt-in
+
+FernsMaster explicitly supplies FernWind.tres, with preserved fern colour/alpha, normal and roughness maps and the shared WORLD/Vegetation/Wind breeze. Moss/dead branches remain static. Batches with an explicit shader material use 0.25 m extra cull padding. No CPU wind loop was added; settled placement remains dormant. Current controls/checks: ../Wind/README.md. Shader compilation, frond/ground fit and FPS require local validation.
