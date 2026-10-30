@@ -52,7 +52,7 @@ public partial class DebugOverlay : CanvasLayer
     {
         if (_initialized || !Settings.Enabled) return;
         _terrain = terrain; _trees = trees; _player = player;
-        _grass = GetNodeOrNull<GrassScatter>("../GrassScatter");
+        _grass = GetNodeOrNull<GrassScatter>("../NatureRoot/Grass/GrassScatter");
         _atmosphere = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D")?.Environment;
         _timer.WaitTime = Mathf.Max(0.1f, Settings.ReadoutInterval);
         BuildControls(GetNode<VBoxContainer>("Panel/Rows"));

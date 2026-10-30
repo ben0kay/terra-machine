@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="BoulderPreviewSettings" load_steps=3 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/BoulderPreview/BoulderPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Rocks/Boulder001/Models/Boulder001_A_LOD1.gltf" id="2"]
+[resource]
+script = ExtResource("1")
+Model = ExtResource("2")
+Seed = 414
+RockCount = 14
+MinimumSpacing = 20.0
+TreeClearance = 5.5
+MinimumScale = 0.55
+MaximumScale = 1.0
+GroundSink = 0.27
+MaximumSlopeDegrees = 22.0
+DrawDistance = 190.0
+CastShadows = true
+EnableCollision = true
+ProbeTop = 192.0
+PlacementRange = 140.0
+QueriesPerPhysicsTick = 3
+RetrySeconds = 2.0
+MaxGroundRetries = 18

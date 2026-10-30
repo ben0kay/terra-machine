@@ -98,6 +98,20 @@ public partial class ForestPreview : Node3D
         float t = Mathf.Clamp((x - a) / Mathf.Max(b - a, 0.001f), 0f, 1f);
         return t * t * (3f - 2f * t);
     }
+    // =========================================================
+    // Reserve existing tree sites and the winding corridor for static forest props.
+    // Called by one-time content generation, never from a frame callback.
+    public bool IsReservedForBoulder(Vector2 position, Vector2 spawn, float clearance)
+    {
+        float clearanceSq = clearance * clearance;
+        foreach (TreeSpot spot in _spots)
+            if (spot.Position.DistanceSquaredTo(position) < clearanceSq) return true;
+        float direction = Settings.CenterOffset.Y >= 0f ? 1f : -1f;
+        float forward = (position.Y - spawn.Y) * direction;
+        float progress = Mathf.Clamp((forward - 25f) / 150f, 0f, 1f);
+        float trailX = spawn.X + 9f + 14f * progress + 5f * Mathf.Sin(forward * 0.047f);
+        return Mathf.Abs(position.X - trailX) < Settings.TrailHalfWidth + clearance;
+    }
     #endregion
 
     #region Grounding

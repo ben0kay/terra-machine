@@ -12,6 +12,7 @@ public partial class TestWorld : Node3D
     private GrassScatter? _grass;
     private MeadowPreview? _meadow;
     private ForestPreview? _forest;
+    private BoulderPreview? _boulders;
     private DebugOverlay? _debug;
     private Label _readout = null!;
     private bool _waiting;
@@ -26,10 +27,11 @@ public partial class TestWorld : Node3D
         _player = GetNode<PlayerController>(PlayerPath);
         _terrain = (ITerrainService)GetNode(TerrainPath);
         _readout = GetNode<Label>("TestHUD/Readout");
-        _trees = GetNodeOrNull<TreePreview>("TreePreview");
-        _grass = GetNodeOrNull<GrassScatter>("GrassScatter");
-        _meadow = GetNodeOrNull<MeadowPreview>("MeadowPreview");
-        _forest = GetNodeOrNull<ForestPreview>("ForestPreview");
+        _trees = GetNodeOrNull<TreePreview>("NatureRoot/Trees/TreePreview");
+        _grass = GetNodeOrNull<GrassScatter>("NatureRoot/Grass/GrassScatter");
+        _meadow = GetNodeOrNull<MeadowPreview>("NatureRoot/Grass/MeadowPreview");
+        _forest = GetNodeOrNull<ForestPreview>("NatureRoot/Trees/ForestPreview");
+        _boulders = GetNodeOrNull<BoulderPreview>("NatureRoot/Rocks/BoulderPreview");
         _debug = GetNodeOrNull<DebugOverlay>("DebugOverlay");
         BeginSpawn();
         var timer = GetNode<Timer>("ReadoutTimer");
@@ -84,6 +86,8 @@ public partial class TestWorld : Node3D
             Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _forest?.Initialize(_terrain as ITerrainSurfaceService, _player, Settings.SpawnXZ,
             _trees?.Settings.Offsets, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
+        _boulders?.Initialize(_terrain as ITerrainSurfaceService, _player, _forest,
+            Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
         RefreshReadout();
     }
@@ -104,7 +108,8 @@ public partial class TestWorld : Node3D
         string trees = _trees == null ? "" : $" | Trees: {_trees.PlacedCount}";
         string meadow = _meadow == null ? "" : $" | Meadow: {_meadow.PlacedCount}";
         string forest = _forest == null ? "" : $" | Forest: {_forest.PlacedCount}/{_forest.PlannedCount}";
-        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}{forest}\n" +
+        string rocks = _boulders == null ? "" : $" | Boulders: {_boulders.PlacedCount}/{_boulders.PlannedCount}";
+        _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}{forest}{rocks}\n" +
             "Arrows: move   Shift: sprint   RMB: jump\nMouse: look   Esc: release   LMB: capture   F4: respawn   F1: render debug   F2: frame graph";
     }
 }

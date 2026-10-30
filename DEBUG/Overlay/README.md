@@ -47,3 +47,6 @@ Grass trial: test.tscn assigns GrassScatter through ExtraVisualRoots. Its visibi
 Frame pacing: the test defaults to a 60 FPS cap from DebugMaster.tres, adjustable through F1. The bottom-right FrameTimeGraph can be toggled with F2/F1. See ../FrameTime/README.md. Disable the cap (and consider the existing VSync state) before interpreting raw throughput benchmarks; capped cases may all report 60 FPS despite different rendering costs. Graph visibility is recorded in the comparison header.
 
 Forest trial: `ForestPreview` appears as a separate F1 → OTHER MODELS visibility toggle and is intentionally independent of the original TreePreview controls/comparison. The five-case test holds forest visibility fixed; toggle ForestPreview off/on from the same camera to measure its cost. Pending forest placement can continue if visible during the comparison, so wait for nearby trees to settle before benchmarking.
+
+
+The natural scene nodes are nested beneath `NatureRoot/Trees`, `NatureRoot/Grass` and `NatureRoot/Rocks`; F1 resolves the new paths. The original tree controls, separate Bermuda toggle, meadow toggle, forest toggle and new boulder toggle remain independent. Hiding boulder visuals doesn't disable their static colliders. Benchmarking should hold those extra toggles fixed except the content being measured.

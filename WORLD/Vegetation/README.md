@@ -4,4 +4,8 @@
 
 `MeadowPreview/` adds an optional, bounded tufted-grass comparison around the existing tree offsets (three imported LOD1 clump variants, shared GPU wind material). It uses at most three MultiMesh batches after placement, sleeps when finished and is separately switchable in F1 → OTHER MODELS. It does not change the player-centred Bermuda scatter; see MeadowPreview/README.md.
 
+`BoulderPreview/` scatters a few seeded, collision-enabled mossy boulders around the flat-side forest, using Boulder001 and the forest's tree/trail exclusion. See BoulderPreview/README.md.
+
 `ForestPreview/` adds a separate, seeded pine-forest test area with sparse edges and a denser interior. It reuses PineTree002's authored distance LOD and uses a bounded collision-query budget as the player approaches; only a single pending-placement timer runs while incomplete. F1 can hide this forest independently. This is deliberately not a streamed, batched large-world forest; see ForestPreview/README.md.
+
+The test scene keeps all visual natural scenery under `NatureRoot/{Trees,Grass,Rocks}`. This is a scene-tree organization only, following the grouped-root idea from War Machine; sources and their ownership remain in their original feature folders.
