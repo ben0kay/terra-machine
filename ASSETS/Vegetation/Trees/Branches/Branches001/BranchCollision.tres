@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="StaticCollisionProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://PHYSICS/StaticCollision/StaticCollisionProfile.cs" id="1"]
+[resource]
+script = ExtResource("1")
+Mode = 2
+SimplifyConvexHull = true
+CollisionLayer = 4
+CollisionMask = 0

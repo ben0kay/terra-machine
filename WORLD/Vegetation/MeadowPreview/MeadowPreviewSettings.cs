@@ -7,10 +7,18 @@ public partial class MeadowPreviewSettings : Resource
     [ExportGroup("Assets")]
     [Export] public Godot.Collections.Array<PackedScene> Variants { get; set; } = new();
     [Export] public ShaderMaterial? Material { get; set; }
+    [Export] public StaticCollisionProfile? Collision { get; set; }
+    [Export] public bool CollectAllMeshes { get; set; }
+    [Export] public bool GroundAtMeshBottom { get; set; }
+    [ExportGroup("Area sites")]
+    [Export] public int SiteCount { get; set; } = 10;
+    [Export] public float SiteSpacing { get; set; } = 8f;
     [ExportGroup("Composition")]
     [Export] public int Seed { get; set; } = 906;
     [Export] public int SamplesPerTree { get; set; } = 72;
     [Export] public float PatchRadius { get; set; } = 5.5f;
+    [Export] public int ClumpsPerSite { get; set; } = 3;
+    [Export] public float ClumpRadius { get; set; } = 0.9f;
     [Export] public float TrunkClearance { get; set; } = 1.4f;
     [Export] public float MinimumScale { get; set; } = 0.8f;
     [Export] public float MaximumScale { get; set; } = 1.25f;

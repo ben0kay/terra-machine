@@ -1,4 +1,4 @@
-// Bounded meadow-grass visual trial around the authored test trees.
+// Bounded clumped vegetation preview: tree-adjacent meadow or finite forest-floor sites.
 // Grounds shared MultiMesh tufts with a fixed physics-ray budget, then sleeps.
 using Godot;
 using System.Collections.Generic;
@@ -11,7 +11,10 @@ public partial class MeadowPreview : Node3D
     private readonly List<Mesh> _meshes = new();
     private readonly List<List<Transform3D>> _transforms = new();
     private readonly Queue<int> _work = new(), _retries = new();
-    private readonly Vector2[] _lobes = new Vector2[3];
+    private Vector2[] _lobes = new Vector2[3];
+    private readonly List<Basis> _sourceBases = new();
+    private readonly List<Shape3D?> _shapes = new();
+    private readonly Dictionary<Material, Material> _materials = new();
     private readonly RandomNumberGenerator _random = new();
     private Timer _retryTimer = null!;
     private Vector2 _origin;
@@ -40,13 +43,17 @@ public partial class MeadowPreview : Node3D
     public void Initialize(ITerrainSurfaceService? surface, Godot.Collections.Array<Vector2>? offsets,
         Vector2 origin, float top, float bottom)
     {
-        if (_started || surface == null || offsets == null || offsets.Count == 0 || Settings.Material == null) return;
+        if (_started || surface == null || offsets == null || offsets.Count == 0) return;
         foreach (PackedScene variant in Settings.Variants)
         {
             if (variant == null) continue;
             Node3D source = variant.Instantiate<Node3D>();
-            Mesh? mesh = FindFirstMesh(source)?.Mesh;
-            if (mesh != null) { _meshes.Add(mesh); _transforms.Add(new List<Transform3D>()); }
+            if (Settings.CollectAllMeshes) CollectMeshes(source, Basis.Identity);
+            else
+            {
+                MeshInstance3D? first = FindFirstMesh(source);
+                if (first?.Mesh != null) AddMesh(first.Mesh, first.Basis);
+            }
             source.Free();
         }
         if (_meshes.Count == 0)
@@ -54,6 +61,7 @@ public partial class MeadowPreview : Node3D
             GD.PushWarning("Meadow preview: no imported LOD1 meshes available.");
             return;
         }
+        _lobes = new Vector2[Mathf.Clamp(Settings.ClumpsPerSite, 1, 8)];
         _started = true;
         _surface = surface; _offsets = offsets; _origin = origin; _top = top; _bottom = bottom;
         _startMs = Time.GetTicksMsec();
@@ -82,6 +90,67 @@ public partial class MeadowPreview : Node3D
     }
     #endregion
 
+    // =========================================================
+    // Finite, spaced sites across a forest ellipse; centres are shared with the same batching path.
+    public void InitializeArea(ITerrainSurfaceService? surface, Vector2 origin, Vector2 centerOffset,
+        Vector2 radii, float top, float bottom)
+    {
+        if (_started) return;
+        var sites = new Godot.Collections.Array<Vector2>();
+        var random = new RandomNumberGenerator { Seed = unchecked((uint)Settings.Seed) };
+        int target = Mathf.Clamp(Settings.SiteCount, 1, 64);
+        for (int attempt = 0; attempt < target * 100 && sites.Count < target; attempt++)
+        {
+            float angle = random.Randf() * Mathf.Tau, r = Mathf.Sqrt(random.Randf());
+            Vector2 site = centerOffset + new Vector2(Mathf.Cos(angle) * radii.X, Mathf.Sin(angle) * radii.Y) * r;
+            bool blocked = false;
+            foreach (Vector2 other in sites)
+                if (other.DistanceSquaredTo(site) < Settings.SiteSpacing * Settings.SiteSpacing) { blocked = true; break; }
+            if (!blocked) sites.Add(site);
+        }
+        Initialize(surface, sites, origin, top, bottom);
+    }
+
+    // =========================================================
+    // Treat imported siblings as individual variants; their translations are Blender display layout.
+    private void CollectMeshes(Node node, Basis parentBasis)
+    {
+        Basis basis = node is Node3D spatial ? parentBasis * spatial.Basis : parentBasis;
+        if (node is MeshInstance3D visual && visual.Mesh != null) AddMesh(visual.Mesh, basis);
+        foreach (Node child in node.GetChildren()) CollectMeshes(child, basis);
+    }
+
+    // =========================================================
+    // Share configured mesh/materials and cook at most one convex shape per imported variant.
+    private void AddMesh(Mesh source, Basis basis)
+    {
+        Mesh mesh = source;
+        if (Settings.Material == null)
+        {
+            mesh = (Mesh)source.Duplicate();
+            for (int i = 0; i < mesh.GetSurfaceCount(); i++)
+            {
+                Material original = source.SurfaceGetMaterial(i);
+                if (original is not StandardMaterial3D standard) continue;
+                if (!_materials.TryGetValue(original, out Material? material))
+                {
+                    var configured = (StandardMaterial3D)standard.Duplicate();
+                    configured.TextureFilter = BaseMaterial3D.TextureFilterEnum.LinearWithMipmapsAnisotropic;
+                    if (configured.Transparency == BaseMaterial3D.TransparencyEnum.Alpha)
+                    {
+                        configured.Transparency = BaseMaterial3D.TransparencyEnum.AlphaScissor;
+                        configured.AlphaScissorThreshold = 0.4f;
+                    }
+                    material = configured; _materials.Add(original, material);
+                }
+                mesh.SurfaceSetMaterial(i, material);
+            }
+        }
+        _meshes.Add(mesh); _sourceBases.Add(basis);
+        _shapes.Add(StaticCollisionBuilder.Prepare(Settings.Collision, mesh));
+        _transforms.Add(new List<Transform3D>());
+    }
+
     #region GroundedPlacement
     // =========================================================
     // Spread irregular clumps near trees, rejecting trunks, steep ground and missing collision.
@@ -95,8 +164,8 @@ public partial class MeadowPreview : Node3D
             Finish(); return;
         }
         int budget = Mathf.Clamp(Settings.QueriesPerPhysicsTick, 1, 128);
-        float radius = Mathf.Max(Settings.PatchRadius, Settings.TrunkClearance + 2f);
-        float clearance = Mathf.Max(0.3f, Settings.TrunkClearance);
+        float clearance = Mathf.Max(0f, Settings.TrunkClearance);
+        float radius = Mathf.Max(Settings.PatchRadius, clearance + Settings.ClumpRadius);
         float minUp = Mathf.Cos(Mathf.DegToRad(Mathf.Clamp(Settings.MaximumSlopeDegrees, 0f, 60f)));
         while (budget > 0)
         {
@@ -123,15 +192,16 @@ public partial class MeadowPreview : Node3D
                 for (int i = 0; i < _lobes.Length; i++)
                 {
                     float angle = startAngle + i * Mathf.Tau / _lobes.Length + _random.RandfRange(-0.45f, 0.45f);
-                    float distance = _random.RandfRange(clearance + 1f, radius * 0.7f);
+                    float distance = _random.RandfRange(clearance, Mathf.Max(clearance, radius - Settings.ClumpRadius));
                     _lobes[i] = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
                 }
             }
+            if (budget <= 0) break;
             if (_sample >= Mathf.Clamp(Settings.SamplesPerTree, 1, 256)) { _active = -1; continue; }
             int lobe = _sample % _lobes.Length;
             _sample++; budget--;
             float angleLocal = _random.Randf() * Mathf.Tau;
-            float distanceLocal = Mathf.Sqrt(_random.Randf()) * radius * 0.47f;
+            float distanceLocal = Mathf.Sqrt(_random.Randf()) * Mathf.Max(0.01f, Settings.ClumpRadius);
             Vector2 position = _lobes[lobe] + new Vector2(Mathf.Cos(angleLocal), Mathf.Sin(angleLocal)) * distanceLocal;
             Vector2 centerXZ = _origin + _offsets[_active];
             float distanceSquared = position.DistanceSquaredTo(centerXZ);
@@ -143,8 +213,17 @@ public partial class MeadowPreview : Node3D
                 Mathf.Max(Settings.MinimumScale, Settings.MaximumScale));
             Basis basis = new Basis(new Quaternion(Vector3.Up, normal.Normalized()))
                 * new Basis(Vector3.Up, _random.Randf() * Mathf.Tau);
-            basis = basis.Scaled(Vector3.One * scale);
-            _transforms[variant].Add(new Transform3D(basis, ground - Vector3.Up * Settings.GroundSink));
+            basis = basis.Scaled(Vector3.One * scale) * _sourceBases[variant];
+            Vector3 position3D = ground - normal * Settings.GroundSink;
+            if (Settings.GroundAtMeshBottom) position3D -= normal * (_meshes[variant].GetAabb().Position.Y * scale);
+            Transform3D transform = new(basis, ToLocal(position3D));
+            _transforms[variant].Add(transform);
+            if (_shapes[variant] != null)
+            {
+                var owner = new Node3D { Name = $"Branch_{PlacedCount + 1:00}", Transform = transform };
+                AddChild(owner);
+                StaticCollisionBuilder.Attach(owner, Settings.Collision, _shapes[variant], Transform3D.Identity);
+            }
             PlacedCount++;
         }
     }
@@ -160,21 +239,37 @@ public partial class MeadowPreview : Node3D
         {
             List<Transform3D> transforms = _transforms[i];
             if (transforms.Count == 0) continue;
-            var multi = new MultiMesh {
-                TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
-                Mesh = _meshes[i],
-                InstanceCount = transforms.Count
-            };
-            for (int j = 0; j < transforms.Count; j++) multi.SetInstanceTransform(j, transforms[j]);
-            AddChild(new MultiMeshInstance3D {
-                Name = $"Meadow_{i + 1:00}",
-                Multimesh = multi,
-                MaterialOverride = Settings.Material,
-                CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
-                VisibilityRangeEnd = Mathf.Max(60f, Settings.DrawDistance)
-            });
+            // Small spatial batches allow nearby patches to render independently of distant ones.
+            if (Settings.CollectAllMeshes)
+            {
+                var tiles = new Dictionary<Vector2I, List<Transform3D>>();
+                foreach (Transform3D transform in transforms)
+                {
+                    var key = new Vector2I(Mathf.FloorToInt(transform.Origin.X / 16f), Mathf.FloorToInt(transform.Origin.Z / 16f));
+                    if (!tiles.TryGetValue(key, out List<Transform3D>? tile)) { tile = new(); tiles.Add(key, tile); }
+                    tile.Add(transform);
+                }
+                foreach (var tile in tiles) AddBatch(i, tile.Value);
+            }
+            else AddBatch(i, transforms);
             transforms.Clear();
         }
+    }
+
+    // =========================================================
+    // Native renderer culling per spatial group; no per-instance distance checks.
+    private void AddBatch(int variant, List<Transform3D> transforms)
+    {
+        var multi = new MultiMesh {
+            TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
+            Mesh = _meshes[variant], InstanceCount = transforms.Count
+        };
+        for (int j = 0; j < transforms.Count; j++) multi.SetInstanceTransform(j, transforms[j]);
+        AddChild(new MultiMeshInstance3D {
+            Name = $"Patch_{variant + 1:00}", Multimesh = multi, MaterialOverride = Settings.Material,
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            VisibilityRangeEnd = Mathf.Max(20f, Settings.DrawDistance)
+        });
     }
 
     // =========================================================

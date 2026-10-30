@@ -21,6 +21,9 @@ public partial class GrassScatterSettings : Resource
     [Export] public float MaximumScale { get; set; } = 4.5f;
     [Export] public float MinimumPatchCoverage { get; set; } = 0.75f;
     [Export] public float DistantDensityFraction { get; set; } = 0.15f;
+    [ExportGroup("Clumped patches")]
+    [Export] public float PatchSpacing { get; set; } = 0f;
+    [Export] public float PatchRadius { get; set; } = 2.5f;
     [ExportGroup("Work budget")]
     [Export] public int Seed { get; set; } = 727;
     [Export] public int QueriesPerPhysicsTick { get; set; } = 64;
