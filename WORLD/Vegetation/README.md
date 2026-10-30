@@ -10,7 +10,7 @@
 
 The test scene keeps all visual natural scenery under `NatureRoot/{Trees,Grass,Rocks}`. This is a scene-tree organization only, following the grouped-root idea from War Machine; sources and their ownership remain in their original feature folders.
 
-`ForestMeadowScatter` (under `NatureRoot/Grass`) reuses the same bounded GrassScatter tile system with the three lightweight MeadowGrass002 LOD1/LOD2 authored models, enlarged seeded size variation and patches tied to the flat-side `ForestPreview` ellipse. The original 16-tree meadow preview stays separate; Bermuda grass is slightly less dense. Both can be switched independently using F1.
+`ForestMeadowScatter` (under `NatureRoot/Grass`) reuses the same bounded GrassScatter tile system with the three ForestGrass001 A/B/C LOD1/LOD2 authored models, unchanged seeded tuft positions and sizes, and patches tied to the `ForestPreview` ellipse. The original 16-tree meadow preview stays separate; Bermuda grass is slightly less dense. Both can be switched independently using F1.
 
 The forest's interior now has a mildly tighter mature-pine spacing plus a small, seeded A/B/C fir understory using the existing `ForestPreview` placement budget and shared trunk-collision prefabs. Tune counts, spacing, scales, shadows and distance in `ForestPreview/Configuration/ForestMaster.tres`; no new scene root or update loop is introduced.
 

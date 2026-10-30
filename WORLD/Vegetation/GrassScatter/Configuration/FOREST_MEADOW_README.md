@@ -1,4 +1,17 @@
-# Flat-side forest — GrassMeadow002 replacement (awaiting local validation)
+# Forest Grass 001 — current active forest scatter
+
+**Current configuration (2026-10-30):** `ForestMeadowMaster.tres` now uses the owner's new **ForestGrass001** A/B/C LOD1 and matching A/B/C LOD2 meshes plus `ForestGrass001Wind_DistanceFade.tres` (the authored dark atlas). This is an **asset-only swap**; all original Meadow Grass 2 settings and the existing `NatureRoot/Grass/ForestMeadowScatter` F1 entry remain identical. No placement-code, scene, seed or terrain shader changes were made.
+
+- **Positions and distribution are preserved:** `Seed=9876`, `TileSize=8`, `PatchSpacing=12`, `PatchRadius=4.2`, `TuftsPerSquareMeter=0.65`, `MinimumPatchCoverage=0.72`, `MinimumTuftSpacing=1.9`, and existing area/slope limits. Three A/B/C variants in the same order ensure the existing random selection/ground probes produce the same XZ sites; each new mesh is aligned to the same ground hit by its own bounds pivot. Model geometry and visual shape can differ slightly.
+- **Scale unchanged:** 85% of accepted tufts use 0.75–0.95; 15% use 1.30–1.65. These are scaling factors, not a guaranteed visual height; ForestGrass001's geometry is similarly proportioned but check height in Godot.
+- **Rendering unchanged:** near/far switch near 24 m; 16/44/68 m density and fade bands; GPU wind, alpha cutout and no shadows/collision. The new forest material is configured for distance fade and uses the dark atlas. Spawn-area Meadow Grass 2, Bermuda and other vegetation remain unchanged.
+- **Enlarged forest:** as before, TestWorld derives the scatter ellipse and terrain grassy-floor patch mask from `ForestPreview.Settings`, so this swap follows any new forest size without its own copied bounds.
+
+Run `test.tscn` after pulling, wait for grass reimport, compare forest patches against the previous view, and confirm foliage fade and LOD changes. Source/reference validation only; no engine rendering, compilation or measured FPS check was possible here.
+
+---
+
+## Historical tuning notes — GrassMeadow002 (previously active, retained for reference)
 
 `ForestMeadowMaster.tres` retains the existing `NatureRoot/Grass/ForestMeadowScatter` node and F1 toggle, but now selects **GrassMeadow002** instead of the much higher-poly **GrassMedium001**. It uses the already imported A/B/C LOD1 and LOD2 glTFs, paired in order using the existing GrassScatter near/far loader. Three variants × two LODs replace the previous nine variants × three LODs. GrassMedium001 source assets are retained for comparison/reuse and no longer referenced by the active forest-scatter resource.
 
