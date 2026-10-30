@@ -14,6 +14,7 @@ public partial class GrassScatter : Node3D
         public bool CenterChecked, Done;
         public ulong RetryAt;
         public readonly List<(int Variant, Transform3D Transform)> Transforms = new();
+        public readonly List<Vector2> AcceptedPositions = new();
         public Node3D? Batch;
         public readonly List<MultiMesh> MeshBatches = new();
         public RandomNumberGenerator Random = new();
@@ -247,7 +248,8 @@ public partial class GrassScatter : Node3D
             float x = origin.X + (cell % _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             float z = origin.Y + (cell / _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             tile.Cursor++;
-            if ((_areaEnabled && !InsideArea(new Vector2(x, z))) || !InsidePatch(new Vector2(x, z)))
+            if ((_areaEnabled && !InsideArea(new Vector2(x, z))) || !InsidePatch(new Vector2(x, z))
+                || TooCloseToTuft(tile, new Vector2(x, z)))
             {
                 // Even a rejected final sample must retire its tile before the next tick.
                 if (tile.Cursor >= _candidates) { CompleteTile(tile, origin); _jobs.Dequeue(); }
@@ -261,18 +263,36 @@ public partial class GrassScatter : Node3D
                 if (_surface.TryFindSurface(new Vector2(x, z), top, bottom, out Vector3 ground, out Vector3 normal) && normal.Y >= _minimumUp)
                 {
                     int variant = tile.Random.RandiRange(0, _meshes.Count - 1);
-                    float scale = tile.Random.RandfRange(Mathf.Max(0.1f, Settings.MinimumScale), Mathf.Max(Settings.MinimumScale, Settings.MaximumScale));
+                    // Default grass uses the original scale range; forest meadow can keep rare tall accents.
+                    bool tall = tile.Random.Randf() < Mathf.Clamp(Settings.TallTuftChance, 0f, 1f);
+                    float low = tall ? Settings.TallMinimumScale : Settings.MinimumScale;
+                    float high = tall ? Settings.TallMaximumScale : Settings.MaximumScale;
+                    float scale = tile.Random.RandfRange(Mathf.Max(0.1f, low), Mathf.Max(low, high));
                     Basis basis = new Basis(new Quaternion(Vector3.Up, normal.Normalized())) * new Basis(Vector3.Up, tile.Random.Randf() * Mathf.Tau);
                     basis = basis.Scaled(Vector3.One * scale);
                     Vector3 position = ground - Vector3.Up * 0.015f - basis * _pivots[variant];
                     position -= new Vector3(origin.X, 0f, origin.Y);
                     tile.Transforms.Add((variant, new Transform3D(basis, position)));
+                    if (Settings.MinimumTuftSpacing > 0f) tile.AcceptedPositions.Add(new Vector2(x, z));
                 }
             }
             if (tile.Cursor < _candidates) continue;
             CompleteTile(tile, origin); _jobs.Dequeue();
         }
         if (_jobs.Count == 0) SetPhysicsProcess(false);
+    }
+
+    // =========================================================
+    // Enforce a small root-to-root clearance in this tile during initial placement only.
+    // A tile has a bounded candidate count; no per-frame proximity checks or extra physics rays.
+    private bool TooCloseToTuft(Tile tile, Vector2 position)
+    {
+        float spacing = Settings.MinimumTuftSpacing;
+        if (spacing <= 0f) return false;
+        float minDistanceSq = spacing * spacing;
+        foreach (Vector2 existing in tile.AcceptedPositions)
+            if (existing.DistanceSquaredTo(position) < minDistanceSq) return true;
+        return false;
     }
 
     // =========================================================

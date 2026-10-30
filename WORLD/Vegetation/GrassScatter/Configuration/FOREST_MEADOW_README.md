@@ -18,3 +18,17 @@ The previous selected GrassMedium001 near meshes cost **290–6,422 triangles ea
 ## Acceptance
 
 Pull main, build Godot .NET and run `WORLD/Scenes/test.tscn`. Enter the flat-side (+Z) pine forest. Confirm the taller meadow bunches, scale variation, ground alignment, wind motion, texture alpha edges, patch transition and near/far LOD switch at ~24 m. Check that grassy ground aligns with the new patches and that the original Meadow Grass 2 around spawn remains unchanged. F1 → OTHER MODELS → `Visible: ForestMeadowScatter` isolates the replacement; F2 shows frame times. Compare with previous fixed-camera baseline if available, and inspect visually for grass being too tall. No engine compile or local FPS validation was possible in this GitHub-editing environment.
+
+
+## Lighter meadow patches — October 2026 visual adjustment (pending in-game review)
+
+After examining the forest screenshot, the GrassMeadow002 patches were too tall and had several clumps rooted almost at the same location. The *forest-only* resource now uses:
+- `TuftsPerSquareMeter = 0.75` rather than 1.4: about **46% fewer candidate positions** before the existing patch/slope/spacing filters, not a guaranteed 46% final-instance reduction.
+- `MinimumTuftSpacing = 1.4` metres: once an instance is placed, any later candidate with a root inside this radius in the **same 8 m tile** is rejected without a terrain ray. This prevents the most obvious five-clumps-in-one-spot look. Neighbouring tile boundaries can still overlap slightly; this remains a bounded, tile-local test rather than an expensive global placement pass.
+- `MinimumScale = 0.75`, `MaximumScale = 0.95` for 85% of accepted clumps, keeping them substantially shorter.
+- `TallTuftChance = 0.15`, `TallMinimumScale = 1.3`, `TallMaximumScale = 1.65` for occasional full-height accents. The weighted average scale is about **0.944**, vs the previous uniform average **1.45** — about **35% shorter on average**, though visual height depends on the variant.
+- Same A/B/C models, GPU wind, near/far LODs, 15 m patch spacing, 5.8 m patch radii, density fade distances and grassy-ground patch mask.
+
+`GrassScatter` exposes the three optional scale and spacing controls via `GrassScatterSettings`; the defaults (`TallTuftChance=0`, `MinimumTuftSpacing=0`) retain the original Bermuda scatter behaviour. `SpawnMeadow002` uses `MeadowPreview` with its own settings and is unchanged. The new list of accepted positions is populated only when minimum spacing is enabled and lives per active tile; no additional per-tuft scripts, collision or permanent update loop.
+
+Test: Pull main, restart the test scene for regenerated positions, enter the flat-side forest (+Z), and compare the same patch with the previous screenshot. Check that leaf litter and short Bermuda grass can be seen between clumps, that a few taller stalks still break up the silhouette, and that occasional tile-boundary overlaps are acceptable. F1 → OTHER MODELS → ForestMeadowScatter and F2 allow same-view performance comparison. Godot import, C# compilation and visual results still require local testing.

@@ -22,6 +22,10 @@ public partial class GrassScatterSettings : Resource
     [Export] public float MaximumSlopeDegrees { get; set; } = 35f;
     [Export] public float MinimumScale { get; set; } = 3.0f;
     [Export] public float MaximumScale { get; set; } = 4.5f;
+    [Export(PropertyHint.Range, "0,1,0.01")] public float TallTuftChance { get; set; } = 0f;
+    [Export] public float TallMinimumScale { get; set; } = 1.3f;
+    [Export] public float TallMaximumScale { get; set; } = 1.65f;
+    [Export] public float MinimumTuftSpacing { get; set; } = 0f;
     [Export] public float MinimumPatchCoverage { get; set; } = 0.75f;
     [Export] public float DistantDensityFraction { get; set; } = 0.15f;
     [ExportGroup("Clumped patches")]
