@@ -18,9 +18,9 @@ The ground is part of the gameplay, not just a visual surface. A player might di
 
 ## DG1 excavation proof — awaiting local validation
 
-The test scene now includes a temporary shovel: press **1** to equip/unequip, then captured **LMB** requests one small rounded voxel subtraction within 3.5 m (1 m radius, 0.65 s cooldown). The HUD shows feedback; no held model or inventory is needed. Requests reject props, unsupported native APIs and unloaded edit bounds. Native terrain rebuilds mesh/collision asynchronously. This is an experiment, not accepted gameplay: compilation/contact/FPS still need local checks in [DG1_VALIDATION.md](WORLD/Terrain/Excavation/DG1_VALIDATION.md).
+The test scene now includes a temporary shovel: press **1** to equip/unequip, then captured **LMB** requests one small rounded voxel subtraction within 3.5 m (1 m radius, 0.65 s cooldown). The HUD shows feedback; no held model or inventory is needed. F1 → EXCAVATION now scales dig amount, with 1.0 giving a shallow default scoop and higher values available for testing. Requests reject props, unsupported native APIs and unloaded edit bounds. Native terrain rebuilds mesh/collision asynchronously. This is an experiment, not accepted gameplay: compilation/contact/FPS still need local checks in [DG1_VALIDATION.md](WORLD/Terrain/Excavation/DG1_VALIDATION.md).
 
-Depth hardness, exposed soil/rock materials, vegetation cleanup and persistence are not implemented in this pass. Holes may disappear after chunk eviction/restart and surface foliage/shading may remain over cuts. Use an open area/F1 grass toggles to inspect. The existing [excavation plan](WORLD/Terrain/Excavation/EXCAVATION_IMPLEMENTATION_PLAN.md) marks DG1 Awaiting Validation; later phases remain separately authorised.
+Depth hardness, exposed soil/rock materials and persistence are not implemented in this pass. Ground foliage now clears from accepted excavations; collidable scenery remains unchanged. Holes may disappear after chunk eviction/restart and surface shading may remain over cuts. Use an open area/F1 grass toggles to inspect. The existing [excavation plan](WORLD/Terrain/Excavation/EXCAVATION_IMPLEMENTATION_PLAN.md) marks DG1 Awaiting Validation; later phases remain separately authorised.
 
 ## Latest test-landscape pass
 

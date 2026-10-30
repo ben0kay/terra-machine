@@ -19,6 +19,8 @@ public partial class GrassScatter : Node3D
         public readonly List<MultiMesh> MeshBatches = new();
         public RandomNumberGenerator Random = new();
     }
+    private readonly GroundFoliageEdits _foliageCuts = new();
+    public void RemoveGroundFoliage(Vector3 center, float radius) => _foliageCuts.RemoveSphere(center, radius);
     private readonly Dictionary<Vector2I, Tile> _tiles = new();
     private readonly Queue<Tile> _jobs = new();
     private readonly List<Mesh> _meshes = new();
@@ -202,7 +204,8 @@ public partial class GrassScatter : Node3D
         }
         var remove = new List<Vector2I>();
         foreach (var entry in _tiles)
-            if (!wanted.Contains(entry.Key)) { entry.Value.Batch?.QueueFree(); remove.Add(entry.Key); }
+            if (!wanted.Contains(entry.Key)) { if (entry.Value.Batch != null) _foliageCuts.Forget(entry.Value.Batch);
+                entry.Value.Batch?.QueueFree(); remove.Add(entry.Key); }
         foreach (Vector2I key in remove) _tiles.Remove(key);
         ordered.Sort((a, b) => (a - center).LengthSquared().CompareTo((b - center).LengthSquared()));
         _jobs.Clear();
@@ -260,7 +263,7 @@ public partial class GrassScatter : Node3D
             if (tile.Random.Randf() < Mathf.Lerp(Mathf.Clamp(Settings.MinimumPatchCoverage, 0.1f, 0.98f), 0.98f, Mathf.Clamp(patch, 0f, 1f)))
             {
                 rays--;
-                if (_surface.TryFindSurface(new Vector2(x, z), top, bottom, out Vector3 ground, out Vector3 normal) && normal.Y >= _minimumUp)
+                if (_surface.TryFindSurface(new Vector2(x, z), top, bottom, out Vector3 ground, out Vector3 normal) && normal.Y >= _minimumUp && !_foliageCuts.Contains(ground))
                 {
                     int variant = tile.Random.RandiRange(0, _meshes.Count - 1);
                     // Default grass uses the original scale range; forest meadow can keep rare tall accents.
@@ -377,6 +380,11 @@ public partial class GrassScatter : Node3D
                     VisibilityRangeEndMargin = level == levels.Length - 1 ? 0f : 1f };
                 tile.Batch.AddChild(batch);
                 tile.MeshBatches.Add(multi);
+                var roots = new List<Vector3>(count);
+                foreach (var item in tile.Transforms)
+                    if (item.Variant == variant)
+                        roots.Add(tile.Batch.ToGlobal(item.Transform.Origin + item.Transform.Basis * _pivots[variant]));
+                _foliageCuts.Register(tile.Batch, multi, roots);
             }
         }
         tile.Transforms.Clear();

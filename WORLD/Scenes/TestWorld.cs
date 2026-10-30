@@ -17,6 +17,7 @@ public partial class TestWorld : Node3D
     private BoulderPreview? _boulders;
     private DebugOverlay? _debug;
     private PlayerEquipment? _equipment;
+    private ExcavationService? _excavation;
     private readonly MeadowPreview?[] _floorLayers = new MeadowPreview?[3];
     private Label _readout = null!;
     private bool _waiting;
@@ -44,6 +45,8 @@ public partial class TestWorld : Node3D
             _floorLayers[i] = GetNodeOrNull<MeadowPreview>($"NatureRoot/Floor/{floorNames[i]}");
         var excavation = GetNode<ExcavationService>("Excavation");
         excavation.Initialize(_terrain as ITerrainExcavation);
+        _excavation = excavation;
+        excavation.Excavated += ClearExcavatedFoliage;
         _equipment = _player.GetNodeOrNull<PlayerEquipment>("Equipment");
         _equipment?.BindExcavation(excavation);
         BeginSpawn();
@@ -129,6 +132,25 @@ public partial class TestWorld : Node3D
             Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);
         RefreshReadout();
+    }
+
+    // =========================================================
+    // Local edit events prune ground foliage only; no tree/rock physics or support simulation.
+    private void ClearExcavatedFoliage(Vector3 center, float radius)
+    {
+        _grass?.RemoveGroundFoliage(center, radius);
+        _forestMeadow?.RemoveGroundFoliage(center, radius);
+        _meadow?.RemoveGroundFoliage(center, radius);
+        _spawnMeadow002?.RemoveGroundFoliage(center, radius);
+        foreach (MeadowPreview? layer in _floorLayers) layer?.RemoveGroundFoliage(center, radius);
+    }
+
+    // =========================================================
+    // Disconnect the edit event when world composition unloads.
+    public override void _ExitTree()
+    {
+        if (_excavation != null && GodotObject.IsInstanceValid(_excavation))
+            _excavation.Excavated -= ClearExcavatedFoliage;
     }
 
     // =========================================================

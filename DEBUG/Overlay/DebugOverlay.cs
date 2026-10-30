@@ -139,6 +139,14 @@ public partial class DebugOverlay : CanvasLayer
         _ground = AddToggle(controls, "Terrain visible (collision stays active)", value => _groundOn = value);
         _textures = AddToggle(controls, "Textured terrain / simple baseline", value => _texturesOn = value);
         _normals = AddToggle(controls, "Ground normal maps", value => _normalsOn = value);
+        var excavation = GetNodeOrNull<ExcavationService>("../Excavation");
+        if (excavation != null)
+        {
+            AddSection(controls, "EXCAVATION");
+            AddValueSlider(controls, "Dig amount (1 = shallow default)", 0.25, 6, 0.25,
+                excavation.DigAmount, excavation.SetDebugDigAmount);
+            controls.AddChild(new Label { Text = "Higher values dig deeper per click; session only." });
+        }
         AddSection(controls, "FOLIAGE");
         _models = AddToggle(controls, "Tree models visible", value => _treesOn = value);
         _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);

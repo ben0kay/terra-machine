@@ -69,3 +69,7 @@ F1 → ENVIRONMENT now includes **Night ambient fill**, **Sun bloom / glow**, **
 Glow strength controls GlowIntensity; the native spread/strength setting remains authored at 0.8. Threshold 1.5 targets HDR highlights; whole-image bloom stays zero. The five-case comparison preserves these independent settings and records them in Copy results. Baseline/Full/Restore full scene still affect terrain/tree choices only. Close/reopen preserves adjustments for the run; restart resets them.
 
 Source/property/signal/reference checks only. Build/runtime/UI/night appearance/sun halo and frame-time validation remain local; see WORLD/Environment/README.md. Glow is an added GPU post effect, not a claim of zero FPS cost or a lens-flare implementation.
+
+## EXCAVATION debug controls
+
+F1 includes an EXCAVATION category when the test scene has an ExcavationService. Dig amount defaults to 1.0 with 0.25–6 range; it scales the next scoop's cap depth, with existing radius/reach/cooldown bounds. 1.0 is the new substantially smaller default, not the old large scoop or a volume in m³. Controls update the service on ValueChanged only and do not mutate resources, poll input, or run extra timers. Restart resets the session multiplier. Current intended behaviour/checks: ../../WORLD/Terrain/Excavation/DG1_VALIDATION.md.

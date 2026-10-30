@@ -4,5 +4,5 @@
 script = ExtResource("1")
 Reach = 3.5
 Radius = 1.0
-SurfaceInset = 0.15
+SurfaceInset = -0.75
 CooldownSeconds = 0.65

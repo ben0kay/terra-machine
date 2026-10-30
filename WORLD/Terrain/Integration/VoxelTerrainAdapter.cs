@@ -97,6 +97,8 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         return true;
     }
 
+    public event System.Action<Vector3, float>? Excavated;
+
     #region Excavation
     // =========================================================
     // Cache one native tool lazily. Missing/mismatched addon APIs disable editing only.
@@ -133,7 +135,7 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         // Duplicate service limits at the native boundary so another caller cannot request a giant edit.
         if (!origin.IsFinite() || !direction.IsFinite() || direction.LengthSquared() < 0.001f
             || !float.IsFinite(reach) || !float.IsFinite(radius) || !float.IsFinite(inset)
-            || reach <= 0f || reach > 5f || radius < 0.5f || radius > 1.5f || inset < 0f || inset > radius * 0.5f)
+            || reach <= 0f || reach > 5f || radius < 0.5f || radius > 1.5f || inset < -radius || inset > radius * 0.5f)
         { feedback = "Invalid excavation request."; return false; }
         if (!PrepareEditTool()) { feedback = _editUnavailable; return false; }
         Basis basis = _terrainNode.GlobalBasis;
@@ -157,9 +159,10 @@ public partial class VoxelTerrainAdapter : Node3D, ITerrainService, ITerrainRend
         { feedback = "Ground data is still loading here. Move closer and retry."; return false; }
         // A collider can lag after an edit. Refuse a stale hit whose inward sample is already empty.
         if (_editTool.HasMethod("get_voxel_f_interpolated")
-            && _editTool.Call("get_voxel_f_interpolated", center).AsDouble() > 0.05)
+            && _editTool.Call("get_voxel_f_interpolated", _terrainNode.ToLocal(point - normal * 0.1f)).AsDouble() > 0.05)
         { feedback = "Ground mesh/collision is updating. Wait briefly and aim again."; return false; }
         _editTool.Call("do_sphere", center, radius);
+        Excavated?.Invoke(_terrainNode.ToGlobal(center), radius);
         feedback = "Dig requested — mesh/collision refresh is asynchronous.";
         return true;
     }

@@ -6,6 +6,9 @@ using System.Collections.Generic;
 public partial class MeadowPreview : Node3D
 {
     [Export] public MeadowPreviewSettings Settings { get; set; } = new();
+    private readonly GroundFoliageEdits _foliageCuts = new();
+    public void RemoveGroundFoliage(Vector3 center, float radius)
+    { if (Settings.Collision == null) _foliageCuts.RemoveSphere(center, radius); }
     private ITerrainSurfaceService? _surface;
     private Godot.Collections.Array<Vector2>? _offsets;
     private readonly List<Mesh> _meshes = new();
@@ -214,7 +217,7 @@ public partial class MeadowPreview : Node3D
             float distanceSquared = position.DistanceSquaredTo(centerXZ);
             if (distanceSquared < clearance * clearance || distanceSquared > radius * radius) continue;
             if (!_surface.TryFindSurface(position, _top, _bottom, out Vector3 ground, out Vector3 normal)
-                || normal.Y < minUp) continue;
+                || normal.Y < minUp || (Settings.Collision == null && _foliageCuts.Contains(ground))) continue;
             int variant = _random.RandiRange(0, _meshes.Count - 1);
             float scale = _random.RandfRange(Mathf.Max(0.1f, Settings.MinimumScale),
                 Mathf.Max(Settings.MinimumScale, Settings.MaximumScale));
@@ -280,6 +283,12 @@ public partial class MeadowPreview : Node3D
             Mesh = _meshes[variant], InstanceCount = transforms.Count
         };
         for (int j = 0; j < transforms.Count; j++) multi.SetInstanceTransform(j, transforms[j]);
+        if (Settings.Collision == null)
+        {
+            var roots = new List<Vector3>(transforms.Count);
+            foreach (Transform3D transform in transforms) roots.Add(ToGlobal(transform.Origin));
+            _foliageCuts.Register(this, multi, roots);
+        }
         AddChild(new MultiMeshInstance3D {
             Name = $"Patch_{variant + 1:00}", Multimesh = multi, MaterialOverride = Settings.Material,
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,

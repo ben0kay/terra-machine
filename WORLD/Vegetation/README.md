@@ -15,3 +15,7 @@ The test scene keeps all visual natural scenery under `NatureRoot/{Trees,Grass,R
 The forest's interior now has a mildly tighter mature-pine spacing plus a small, seeded A/B/C fir understory using the existing `ForestPreview` placement budget and shared trunk-collision prefabs. Tune counts, spacing, scales, shadows and distance in `ForestPreview/Configuration/ForestMaster.tres`; no new scene root or update loop is introduced.
 
 `SpawnMeadow002` adds a compact GrassMeadow002 A/B/C wind-swaying test in the original 12 near-spawn fir tree locations. It reuses MeadowPreview's finite MultiMesh placement with a configurable fir-site limit and its own F1 toggle/configuration; no changes to the forest or Bermuda grass.
+
+## Ground foliage after excavation
+
+GroundFoliageEdits is a shared per-owner, event-only MultiMesh pruning helper. TestWorld forwards accepted excavation spheres to Bermuda/forest/spawn meadow and noncollidable floor layers. Roots in the removed volume (12 cm tolerance) are compacted out across LOD batches; 8 m spatial cut history filters future placements/reloaded tiles. Grass owners release batch references on unload; finite meadow batches live with their manager. No global cache, idle callback or re-ground ray polling. Trees/rocks/collidable branches remain unchanged. Placement HUD counts do not yet subtract removals. Cut history resets with the scene and is not a save system. See ../Terrain/Excavation/DG1_VALIDATION.md for pending local validation.
