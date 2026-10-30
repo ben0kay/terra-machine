@@ -11,6 +11,7 @@ public partial class MeadowPreviewSettings : Resource
     [Export] public bool CollectAllMeshes { get; set; }
     [Export] public bool GroundAtMeshBottom { get; set; }
     [ExportGroup("Area sites")]
+    [Export] public Godot.Collections.Array<Vector2> PreviewOffsets { get; set; } = new();
     [Export] public int SiteCount { get; set; } = 10;
     [Export] public float SiteSpacing { get; set; } = 8f;
     [ExportGroup("Composition")]
