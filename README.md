@@ -1,8 +1,12 @@
 # TERRA MACHINE
 
 > **Working title:** Terra Machine  
-> **Direction:** Visual-first, first-person exploration of a beautiful, Earth-like procedural wilderness built on smooth editable voxel terrain; survival/crafting systems come later.  
+> **Direction:** Hardcore first-person wilderness survival simulator in the long term; **currently focused on Sons of the Forest-like landscape immersion**, semi-believable visuals and optimized forests over new gameplay systems. Smooth editable voxel terrain remains foundational.  
 > **Status (2026-10-29):** Early Godot project / technical foundation. The game vision below is **proposed direction**, not a list of implemented systems or blanket authorization to build them.
+
+## Required vegetation authoring instructions
+
+Before creating or modifying trees, grass, ferns, moss or foliage materials, read [ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md](ASSETS/Vegetation/VISUAL_AUTHORING_GUIDE.md). It records the owner's general full-sized-tree budgets across species (**LOD1 4,000–6,000; LOD2 1,000–1,500 triangles**), proportionately smaller rock/plant targets, very-low-poly grass (typically **20–100 triangles near, 12–40 far**), fuller-canopy reference, exported-normal/winding checks, texture/mipmap/shading lessons and export-validation requirements. These take precedence over superseded higher-poly examples. This is an authoring guide, not authorization for unrelated asset or runtime changes.
 
 ## Read this first — project identity and scope
 
@@ -15,6 +19,22 @@ The player needs freedom **and** meaningful long-term discoveries. No exact lore
 ### Why voxel terrain matters
 
 The ground is part of the gameplay, not just a visual surface. A player might dig a trench, excavate a hillside shelter, follow an ore vein, open a tunnel into a natural cave, or uncover something artificial far beneath the forest. Terrain changes must eventually be persistent and compatible with nearby structures and world streaming. Smooth/organic surfaces are preferred over visible Minecraft-style cube terrain.
+
+## Creative direction — hardcore survival simulation, immersion first (2026-10-30)
+
+**North-star genre:** A grounded, hardcore **first-person wilderness survival simulator** in a persistent, physically interactive world. Aim for semi-believable, visually cohesive scenery and convincing systemic consequences, **not photorealism or full simulation of everything**. This is an evolving creative direction, not a mandate to implement all systems now.
+
+### Three principal game references — distinct roles
+
+- **Sons of the Forest — CURRENT PRIMARY REFERENCE for landscape, atmosphere and immersion.** Prioritize lush, natural-feeling, dense forest, mature canopy, filtered sunlight and shade, convincing ground cover, varied geology, undergrowth, organic clearings, believable scale, environmental audio/visual mood, and intimate first-person presence in the wilderness. Physical, tactile interactions such as later carrying wood, building and digging are useful long-term reference points. **Do not chase its graphical fidelity or copy its exact mechanics**: strive for a cohesive, semi-realistic look at a sustainable frame rate on modest hardware.
+- **DayZ — FUTURE REFERENCE for unforgiving survival and exploration.** Scavenging, scarce supplies, equipment choices, injury/exposure, travel between locations, meaningful risk and consequential preparation. Possible vehicles and larger regions matter eventually; they are not today's implementation priorities.
+- **Project Zomboid — FUTURE REFERENCE for interconnected simulation depth.** Systemic interactions among health, equipment, environment, construction, noise, enemies and persistence. Simulate nearby and meaningful events in detail; abstract, suspend or stream away distant systems. Do not introduce complexity simply for realism's sake.
+
+**Immediate priority:** Make the **existing test landscape and forest feel right at ground level**, using Sons of the Forest as an *immersion reference*, before expanding survival systems. It must be compelling just to walk through the woods. Prioritize forest silhouette and density, natural vegetation distribution, varied terrain and geology, forest-floor material blending, atmospheric daylight/shadows, close-up plausibility, and consistent visual style. Use measured performance, instancing, simplified tree LODs and selective shadows to protect FPS. A beautiful 256 × 256 m benchmark within the current test world takes precedence over increasing map size.
+
+**Gameplay identity over time:** DayZ-like harsh survival + Project Zomboid-like depth + Sons of the Forest-like first-person presence and physical world interaction, with Terra Machine's **smooth editable voxel ground** as a differentiator. Shallow trenches, animal/zombie pits and small shelters are desirable eventual uses of digging; material resistance increases with geology/depth. Preserve the existing excavation plan and avoid turning the game into an unrestricted deep mining simulator.
+
+**Scope guardrails for Codex and future contributors:** This passage defines direction, not automatic authorization for new survival, AI, building, crafting, vehicles, networking or world-streaming gameplay systems. Keep the current working test scene, terrain adapter, environment assets and render/performance controls intact. Prioritize focused visual/performance passes, validate them in first person and only then expand gameplay. Large streamed landscapes and drivable vehicles remain **long-term aspirations**, not commitments to produce an enormous world before a polished playable slice.
 
 ## DG1 excavation proof — awaiting local validation
 

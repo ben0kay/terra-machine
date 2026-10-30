@@ -1,10 +1,50 @@
 # Terra Machine — Vegetation & Natural Asset Visual Authoring Guide
 
-> **Status:** Initial art-direction guide (2026-10-29). Applies to future AI-assisted and human-authored natural 3D assets.  
+> **Status:** Owner-directed authoring instructions, updated 2026-10-30. Applies to future AI-assisted and human-authored natural 3D assets.  
 > **Purpose:** Preserve the grounded, detailed-but-efficient look established while iterating the mature oak, northern conifer, and mossy cover boulder.  
 > **Scope:** **Visual design, geometry, PBR materials, LOD art, and portable exports.** This is NOT the gameplay/placement/collision specification. A separate structural/runtime authoring guide can define collisions, vegetation streaming, wind integration, destruction, interaction, and save behaviour later.
 
 Read the root `README.md` and `CodePreferences.md` before authoring. The current priority is one attractive first-person wilderness benchmark in `WORLD/Scenes/test.tscn`, **not** a massive procedural generator. Assets should remain usable both in this benchmark and in later deterministic world placement. Visual quality must be judged in Godot from player eye level, not only in Blender.
+
+## Mandatory instructions for future AI authors — current owner baseline
+
+Read this section before generating or changing foliage. It supersedes older, higher-poly examples and superseded asset iterations. Follow the owner's current task scope; this guide does not authorize unrelated asset replacement or world expansion.
+
+| Repeated full-sized tree (all species) | Default authoring budget | Current PineTree002 reference |
+| --- | --- | --- |
+| **LOD1: main / close model** | **4,000–6,000 triangles for the entire tree** | **4,962** triangles |
+| **LOD2: distant model** | **1,000–1,500 triangles for the entire tree** | **1,162** triangles |
+
+These are the owner's general baseline for future full-sized trees of ALL species, including broadleaf trees, not a pine-only rule. Smaller trees/saplings and simpler assets should cost substantially less. Use this working visual quality per triangle to judge rocks, bushes, plants and grass too; do not give every asset the same numerical allowance. Do not silently deliver a 15k–25k tree or add a more expensive LOD0. If a requested design cannot meet the budget, explain the visual trade-off before exceeding it. Count all wood and foliage surfaces together; do not quote only the trunk, vertices or Blender polygon faces. Unique hero assets require an explicitly chosen exception; old showcase examples are not permission to populate the world with expensive assets.
+
+**Owner's preferred result:** broad, chunky dark-green needle sprays extending from a believable central trunk, recognizable tiered branches, controlled gaps and a convincing forest canopy. The earlier detailed model looked worse to the owner than its fuller simplified LOD. Preserve that fuller silhouette in BOTH new LODs. Do not spend thousands of triangles on thin separated twigs, sparse needle detail or hidden interior branches at the expense of canopy coverage.
+
+**Verified implementation history:** PineTree002's former 4,962-triangle LOD2 was promoted to LOD1 with its binary geometry unchanged and its fuller distance atlas retained. A new 1,162-triangle LOD2 uses 500 broader foliage cards (1,000 triangles) and a 162-triangle trunk. The owner reports the new distant model looks almost as good as the main model. Read [PineTree002/README.md](Trees/PineTree002/README.md) and inspect the actual current files; do not reconstruct the obsolete detailed model from old documentation.
+
+**Performance lesson:** the owner reported roughly 42 FPS in the forest and a return to the 60 FPS cap when hiding trees; hiding grass produced little gain in that view. Following pine simplification and fir-sapling removal, the owner reported mostly 60 FPS, sometimes 58–59. Several changes were combined, so this is not an isolated measurement of pine geometry, nor proof of spare headroom. Preserve the working benchmark. Do not increase world size, density, shadow range or model complexity to compensate for an asset-design weakness without a separately authorized task.
+
+### Texture, normals and lighting failures that must not recur
+
+1. **A darker albedo is not a lighting fix.** Grass appeared pale toward the sun and almost black from the other side. First inspect source normals, triangle winding, two-sided shading, vertex colour multiplication, light/shadow settings and fog. Distinguish measured file problems from possible rendering causes; screenshots alone do not prove the cause.
+2. **Check actual exported mesh data for every variant AND every LOD.** The earlier ForestGrass001 export had normals opposite the triangle geometric normals in all six A/B/C LOD1/LOD2 files. They were normalized vectors, so checking vector length alone missed the problem. Compare normals with geometric face direction under glTF winding conventions; inspect intentional smoothing and any mirrored transforms before changing them. Validate again after export/import.
+3. **Double-sided visibility does not excuse inconsistent normals.** Verify lighting on both sides of foliage cards in Godot. Do not blindly add a FRONT_FACING normal flip: account for what the renderer/importer already does and avoid flipping twice. A good-looking Blender preview is not proof of correct Godot shading.
+4. **Preserve intentional foliage normals.** The earlier grass normals were all horizontal, which can create strong directional contrast. Horizontal or upward-biased normals can be an art choice, but must be tested under changing sun elevation/direction; do not universally replace smoothed foliage normals with flat geometric ones.
+5. **Use clean cutout atlases:** believable leaf/needle detail, transparent gaps, padded edges without pale fringes, and no baked directional sunlight. Dark forest greens should retain colour and detail. Keep base-colour sampling in sRGB/source-color and normal/roughness maps in their appropriate data channels. A normal map is optional for small card foliage; it is not a substitute for correct vertex normals.
+6. **Enable and verify mipmaps for foliage textures.** Earlier ForestGrass001 import files disabled mipmap generation even though its shader requested mipmap filtering. Inspect the actual Godot texture import settings, not just the sampler declaration. Check thin alpha edges, distant shimmer and canopy coverage through mip levels. Do not disable mipmaps to make distant foliage look thicker.
+7. **Inspect texture × vertex-colour × material tint together.** Baked root shading and colour variation can multiply into excessively dark plants. Avoid compounding dark texture edits with strong vertex/shader tints. Do not assume replacing the atlas transfers another asset's shader improvements: ForestGrass001 initially used a simpler shader than the improved Meadow002.
+8. **Foliage shading must stay restrained and light-dependent.** After correcting mesh data, use modest translucency/backlighting, controlled specular/roughness and subtle root-to-tip and per-clump variation where useful. Do not use emission or unshaded materials to hide broken lighting. Do not add backlight simply to counteract a normal error or overpower fog.
+9. **Required appearance checks:** the same plant/tree with sun behind the camera, behind the foliage and to either side; neutral daylight, low sun and dusk; close and intended far views; single asset and repeated patch. Identify contributions from sun-facing haze separately. Report Godot checks as pending if unavailable.
+
+These are authoring requirements and historical findings, not a claim that every latest upload already contains the fixes. Inspect the current model, active material and texture imports before declaring an asset corrected.
+
+### Export integrity and runtime handoff
+
+- Use stable names such as ForestGrass001 / forest_grass_001 or PineTree002 / pine_tree_002. A/B/C are appearance variants; LOD1/LOD2 are distance levels. Do not leave V2/V4/003 suffixes or old family names after an authorized rename.
+- Rename/update filenames, glTF node/mesh names, buffer URIs, image URIs, material/shader paths and import source paths together. Earlier ForestGrass001 models referenced missing meadow_grass_002 buffers and materials referenced the absent ForestGrass003 directory. Check every dependency and buffer byte length.
+- Preserve texture pixels, UV layout, plant dimensions, pivots, LOD alignment, stable scene references and import UIDs unless the task requires changing them. Do not make the close/far model move or change species when switching.
+- Geometry and texture coverage must work together. The preferred pine uses pine_needles_distance_full_2k.png with alpha cutoff 0.29; this is reference-specific, not a universal cutoff. A new atlas can need different UVs/coverage. Test the canopy rather than just making cards larger or lowering alpha thresholds indiscriminately.
+- Preserve existing shared material/batching, wind masks, native LODs, collision and debug controls when replacing render assets. Do not integrate new runtime behaviours during an art-only job.
+- Record actual triangles, surfaces, textures, bounds, source/provenance and checks in the owning asset README. Software renders verify some silhouette/texture properties; they do not establish Godot lighting, FPS or collision acceptance.
 
 ## Required step — choose and inspect a reference asset FIRST
 
@@ -12,7 +52,7 @@ Read the root `README.md` and `CodePreferences.md` before authoring. The current
 
 | New asset request | Preferred starting reference | What to study |
 | --- | --- | --- |
-| Pine, spruce, fir or other conifer | **`ASSETS/Vegetation/Trees/PineTree002/`** (authored northern pine, `Models/` and `Textures/`) | Tall narrow proportions, open tiered needle sprays, central leader, branch spacing, natural rounded base, 1K materials and near/far LOD construction |
+| Pine, spruce, fir or other conifer | **`ASSETS/Vegetation/Trees/PineTree002/`** (authored northern pine, `Models/` and `Textures/`) | Tall narrow proportions, fuller broad tiered needle sprays, central leader, branch spacing, natural rounded base, shared bark/needle textures and the current 4,962/1,162-triangle LOD pair |
 | Mature broadleaf tree (oak, maple, etc.) | **Mature Oak A V2** from the earlier design iteration **if the model is available**; use a current user-supplied example or reference images otherwise | Broad asymmetric crown, powerful curved limbs, bark mapping and varied leaf cluster depth. Do not reuse pine growth architecture for an oak |
 | Large boulder, rock outcrop or smaller stone | **Boulder001** (our first mossy cover boulder) **when its model is available** | Angular broken stone masses, believable ground contact, low geometry cost, localized moss, colour/normal/roughness mapping and near/far LODs |
 | **Meadow / natural grass clumps** | **`ASSETS/Vegetation/Grass/GrassMeadow002/`** (preferred lightweight meadow reference); compare `Grass001` for short Bermuda grass | 54–66-triangle near clumps, 24–30-triangle far clumps, 1K shared photographic colour/alpha atlas, full leafy silhouettes rather than distinct stiff stalks |
@@ -141,19 +181,28 @@ Although these may live in `ASSETS/Nature/` rather than `ASSETS/Vegetation/`, **
 - If different LOD meshes share the same materials, reference the **same external texture files** rather than copying one set per mesh.
 - Keep source asset provenance and licences in the asset README. When adapting third-party maps, record the source and any material changes; do not claim original authorship of those photographs.
 
-## 4. Geometry / performance budgets — starting points, not hard requirements
+## 4. General natural-asset budgets — scale cost to size, repetition and visible benefit
 
-| Art category | Near / main visual target | Distance / simplified target | Most important GPU risk |
+The successful tree pair sets the efficiency standard for the whole natural-asset catalogue. The owner specified the tree and very-small-grass direction; the intermediate ranges below are conservative authoring starting points derived from that direction, not individually measured hardware limits. Prefer the lower end and fewer triangles when the result looks equally good.
+
+| Art category | Near / main target, whole asset | Distant target | Authoring priority |
 | --- | --- | --- | --- |
-| Mature showcase broadleaf tree | ~25k–50k triangles | ~6k–15k | Foliage overdraw and shadows |
-| Tall boreal conifer | ~15k–25k triangles | ~5k–10k | Dense overlapping needle cards |
-| Large cover boulder | ~2k–6k triangles | ~500–1.5k | Too many unique materials/draws |
-| Small plant / bush | Hundreds to a few thousand, depending on plant | Much less or culled | Alpha overdraw and instance count |
-| Grass tuft | **~40–100** triangles for a simple meadow cutout tuft (starting goal, not a rule) | **~20–40** triangles, or culled/faded | Total instances, alpha overdraw, shadows |
+| Full-sized repeated tree, any species | **4,000–6,000 (LOD1)** | **1,000–1,500 (LOD2)** | Full recognizable canopy, trunk and strong silhouette |
+| Small tree / sapling | **500–2,000** | **100–500**, or culled | Scale below full-tree budget; avoid expensive tiny trees |
+| Large landscape / cover boulder | **500–2,000** | **100–500** | Broad fracture planes and silhouette; texture supplies grain |
+| Small / medium rock | **50–500** | **12–150**, or culled | Simple asymmetric shape; no dense subdivision |
+| Bush / fern / substantial plant clump | **50–300** | **20–100**, or culled | Leafy cutout silhouette; few shared surfaces |
+| Grass tuft / small ground-cover clump | **20–100**, preferably **40–70** for meadow-style clumps | **12–40**, or culled/faded | **Keep very small**; texture/shape quality before geometry |
 
-Known reference data: PineTree002 LOD1 **23,644** triangles; LOD2 **6,972**. Grass001 source card meshes range **8–268** triangles. **GrassMeadow002 A/B/C: LOD1 = 60/66/54 and LOD2 = 24/30/24 triangles per clump.** Earlier GrassMeadow001 LOD1 was ~204–228 triangles per clump; inspected GrassMedium001 source meshes vary widely, including versions with several thousand triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
+Do not pad a simple rock or grass tuft up to its range. Exceptionally large formations may need their own reviewed budget; split reusable rock forms where useful rather than blindly scaling tessellation. A visible patch should be assembled from efficient tufts, not exported as thousands of individually modelled blades. Count a whole exported tuft/clump, not each constituent card. Moss and tiny flowers should be judged by their actual screen size and repetition; very small ground cover should remain in the grass-scale cost class where practical.
+
+Historical and current comparison data (not alternative budgets): PineTree002 LOD1 **4,962** triangles; LOD2 **1,162**. The older **23,644/6,972** figures describe superseded exports and are not current targets. Grass001 source card meshes range **8–268** triangles. **GrassMeadow002 A/B/C: LOD1 = 60/66/54 and LOD2 = 24/30/24 triangles per clump.** Earlier GrassMeadow001 LOD1 was ~204–228 triangles per clump; inspected GrassMedium001 source meshes vary widely, including versions with several thousand triangles. Custom Mature Oak A V2 was approximately **45,820** triangles; custom Boulder001 approximately **5,120/1,280** triangles. These values are examples from our asset iterations, not measured real-world FPS limits. Do not label an asset “optimized” merely because it falls under a triangle threshold.
 
 **Practical guidelines:**
+
+- The full-sized-tree budgets apply to all species by default. The smaller-asset ranges are proportional starting targets, not requirements to use more triangles. Any materially higher budget needs an explicit task-specific choice; the legacy showcase figures below are historical comparisons.
+- Shadow cost needs its own budget: measure casting on/off separately, and consider distance limits or simplified casters in an authorized runtime task. Lower shadow-map resolution and lower caster geometry are different controls. Do not assume generated mesh LODs automatically provide a dedicated cheap shadow model.
+- Measure from the same camera after loading settles, with FPS cap/VSync accounted for. Record frame milliseconds as well as FPS; reaching a 60 FPS cap does not prove headroom. Count alpha overdraw and shadow passes as well as triangles.
 
 - Spend triangles on silhouette and recognizable branch/rock forms, not hidden interior geometry.
 - Prefer shared textures, fewer material surfaces, instancing and scene/mesh LODs. Be mindful of alpha-card **overdraw**, draw calls and shadow caster cost.
@@ -213,9 +262,10 @@ Before calling a new asset “game-ready”, include evidence for the following:
 - [ ] Front, side, 3/4, rear and top views show an appealing, non-repetitive silhouette.
 - [ ] Ground-contact base looks natural; no star spikes, flat skirts, clipping gaps or unintended floating geometry.
 - [ ] Trunk/branch/rock UVs have sensible scale; materials do not stretch noticeably at joints, roots or cliffs.
-- [ ] Normals, face winding, texture channels, opacity cutouts and shadows look correct from both sides where applicable.
+- [ ] Every variant/LOD has valid normals consistent with exported winding and intentional smoothing; Godot front/back lighting checked without duplicate normal flips.
+- [ ] Actual texture import mipmaps, alpha edges, source-color/data channels and multiplied vertex/material tints checked; no emission masking a lighting defect.
 - [ ] Textures are reused between variants and LODs where practical; external paths resolve.
-- [ ] Real triangle counts recorded **per LOD**, alongside dimensions, material/surface count and texture dimensions.
+- [ ] Real triangle counts recorded **per LOD**, alongside dimensions, material/surface count and texture dimensions. Repeated full-sized trees of every species meet LOD1 4k–6k / LOD2 1k–1.5k unless the owner explicitly chose an exception; rocks and smaller plants scale down, and grass remains very low-poly.
 - [ ] Materials and foliage are examined under daylight **in Godot**, not only in Blender Material Preview.
 - [ ] LOD comparison is inspected at roughly the intended screen sizes; no obvious silhouette popping or missing crown structure.
 - [ ] Current game performance impact is measured separately (FPS/frame time, foliage overdraw, shadows, instance counts) before claiming any benchmark gain.
