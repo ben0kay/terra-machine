@@ -8,3 +8,6 @@ The flat-side forest now uses `ForestMeadowMaster.tres` configured for three Gra
 
 
 The flat-side ForestMeadowMaster now targets lighter clusters: 0.75 candidates/m², 1.4 m minimum root clearance *within each tile*, 85% short clumps at scale 0.75–0.95, 15% taller accents at 1.30–1.65 (weighted mean ~35% below the prior 1.25–1.65 uniform range). The old 15 m patch spacing and 5.8 m patch radius remain. `TallTuftChance=0` and `MinimumTuftSpacing=0` are safe defaults for other GrassScatter instances, including Bermuda.
+
+
+Latest flat-side forest scatter adjustment: `TuftsPerSquareMeter=0.65`, `MinimumTuftSpacing=1.9` m (within an 8 m tile), `MinimumPatchCoverage=0.72`, `PatchSpacing=12` m, `PatchRadius=4.2` m. Height variation, Meadow002 near/far meshes, seed and draw bands are unchanged. Existing older values in this file document previous passes; `ForestMeadowMaster.tres` is authoritative.
