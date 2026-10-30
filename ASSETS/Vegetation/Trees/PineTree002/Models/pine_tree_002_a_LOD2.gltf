@@ -1,7 +1,7 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine PineTree002 V4 Detailed Fir \u2014 V3 unmodified mesh + photo-derived twig needle atlas"
+    "generator": "Terra Machine PineTree002 distant canopy: 500 broad source cards + reduced source trunk"
   },
   "scene": 0,
   "scenes": [
@@ -130,51 +130,51 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 1225,
+      "count": 100,
       "type": "VEC3",
       "min": [
-        -3.083486795425415,
+        -0.7140601277351379,
         -0.1899999976158142,
-        -2.4762933254241943
+        -0.6612957119941711
       ],
       "max": [
-        3.1637895107269287,
+        0.7757856249809265,
         22.400859832763672,
-        3.501297950744629
+        0.8210433125495911
       ]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 1225,
+      "count": 100,
       "type": "VEC3",
       "min": [
-        -0.9996134638786316,
-        -0.9969042539596558,
-        -0.999890148639679
+        -0.9398778676986694,
+        -0.05782085284590721,
+        -0.9847135543823242
       ],
       "max": [
         1.0,
-        0.9975127577781677,
-        0.9998902082443237
+        0.05745570361614227,
+        0.9846057295799255
       ]
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 1225,
+      "count": 100,
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5125,
-      "count": 4416,
+      "count": 486,
       "type": "SCALAR"
     },
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 6980,
+      "count": 2000,
       "type": "VEC3",
       "min": [
         -4.1695661544799805,
@@ -183,36 +183,36 @@
       ],
       "max": [
         4.317544460296631,
-        22.528913497924805,
+        22.43698501586914,
         4.444199562072754
       ]
     },
     {
       "bufferView": 5,
       "componentType": 5126,
-      "count": 6980,
+      "count": 2000,
       "type": "VEC3",
       "min": [
         -0.9237930774688721,
         0.31764543056488037,
-        -0.9242827296257019
+        -0.921676754951477
       ],
       "max": [
-        0.9288282990455627,
+        0.9231441020965576,
         1.0,
-        0.9283747673034668
+        0.921824038028717
       ]
     },
     {
       "bufferView": 6,
       "componentType": 5126,
-      "count": 6980,
+      "count": 2000,
       "type": "VEC2"
     },
     {
       "bufferView": 7,
       "componentType": 5125,
-      "count": 10470,
+      "count": 3000,
       "type": "SCALAR"
     }
   ],
@@ -220,55 +220,55 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 14700,
+      "byteLength": 1200,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 14700,
-      "byteLength": 14700,
+      "byteOffset": 1200,
+      "byteLength": 1200,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 29400,
-      "byteLength": 9800,
+      "byteOffset": 2400,
+      "byteLength": 800,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 39200,
-      "byteLength": 17664,
+      "byteOffset": 3200,
+      "byteLength": 1944,
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteOffset": 56864,
-      "byteLength": 83760,
+      "byteOffset": 5144,
+      "byteLength": 24000,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 140624,
-      "byteLength": 83760,
+      "byteOffset": 29144,
+      "byteLength": 24000,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 224384,
-      "byteLength": 55840,
+      "byteOffset": 53144,
+      "byteLength": 16000,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 280224,
-      "byteLength": 41880,
+      "byteOffset": 69144,
+      "byteLength": 12000,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 322104,
+      "byteLength": 81144,
       "uri": "pine_tree_002_a_LOD2.bin"
     }
   ]

@@ -1,21 +1,20 @@
-# Pine Tree 002
+# PineTree002 — fuller near canopy and lightweight distant LOD
 
-Owner-authored pine, separate from the PolyHaven PineTree001. Models/ and Textures/ keep relative glTF references. LOD1: 23,644 triangles. LOD2: 6,972 triangles. Export height ~22.74 m including roots. Bark has colour/normal/roughness textures; needles use a double-sided cutout atlas with threshold 0.39. Source exports contain no root display translation.
+The former authored LOD2 is now LOD1: **4,962 triangles** (1,472 bark/wood + 3,490 foliage). Its binary geometry is copied byte-for-byte; only the glTF node/mesh name and buffer URI change to LOD1. Its fuller pine_needles_distance_full_2k.png atlas and alpha cutoff 0.29 are preserved. The previous detailed LOD1 is replaced, and remains recoverable through Git history.
 
-The test scene places four pines alongside twelve firs through WORLD/Vegetation/TreePreview, using the reusable PineTree002.tscn. Its one-time AuthoredTreeLod setup selects the existing LOD1 at 0–70 m, LOD2 at 70–280 m, and culls beyond 280 m via native visibility ranges (±3 m hysteresis, no blended fade). Tune those exported distances in PineTree002.tscn. Both LODs stay loaded, share transforms and use the same union bounds for consistent distance centres. Source geometry and textures are unchanged. Primitive trunk collision is now enabled via the shared profile component; chopping, wind and persistence remain unimplemented. Existing import-generated mesh LODs are preserved. Appearance/performance require local acceptance.
+The new authored LOD2 has **1,162 triangles**: 162 for the trunk and 1,000 for foliage. It retains ten nine-sided rings from the source trunk, including its base, bend, taper and bark UVs. Five hundred source foliage cards are selected using deterministic spatial farthest-point sampling (vertical weight 0.62), expanded 1.65× about each card centre and clamped to the source foliage bounds. Cards retain their existing atlas tile, orientation and lighting normals. This trades tiny twigs and wooden branch geometry for broader, separated needle masses distributed throughout the original canopy. It is a distant model; exposed card shapes and reduced branch structure may be noticeable close up.
 
-Current LOD pass: source/reference/range checks only; C# compilation and Godot distance switching, silhouette/shadow continuity and FPS need local validation. Test walking past 70/280 m in both directions with F1 tree controls; distances are camera-to-AABB-centre, not ground/trunk distance. No per-frame distance script is used.
+## Stable scene, materials and collision
 
-## Trunk collision enabled — awaiting local validation
+PineTree002.tscn and all resource paths remain stable. LOD1 covers 0–70 m, LOD2 70–280 m, with native hysteresis and union bounds; no per-frame tree scripts are added. Existing F1 Auto/forced LOD controls still apply. Both models share the original bark colour/normal/roughness textures and the fuller distance needle atlas. No new materials, textures, draw surfaces, grass settings or forest density changes are introduced.
 
-Trees now opt into the shared PHYSICS/StaticCollision construction. PineTree002.tscn carries one StaticCollisionInstance outside both visual LODs; its shared capsule is radius 0.32 m, height 16 m, centred 8 m above the asset origin. The original twelve firs now use A/B/C wrapper scenes with one shared radius 0.14 m / height 3.5 m capsule. Their wrappers cancel the existing B/C display offsets before grounding. These are deliberately simple blocking proxies, not anatomically exact trunk geometry; review their fit locally.
+The shared trunk capsule remains radius 0.32 m, height 16 m, centred 8 m above the origin, outside both visual LODs. It remains a deliberately approximate blocking proxy rather than a canopy hull. StaticCollision construction, player contact layers and collision lifetime are unchanged. PineTree003 and fir assets are unchanged.
 
-All four original pines and the forest's PineTree002 instances inherit collision from the same asset prefab. No duplicate collider per LOD, full-canopy hull, per-tree ray or tick was added. Layer 4 / mask 0 preserves player contact and terrain-only placement queries. Shape resources are shared; bodies are per tree. Hiding/culling visuals does not disable collision; actual parent unload frees the body. Existing finite resident-world limitation remains.
+## Validation — awaiting Godot acceptance
 
-Local: build, run test.tscn, enable Debug → Visible Collision Shapes, approach pine/fir trunks from several angles, walk through foliage gaps and inspect scaled/rotated instances. Check B/C roots align, F4 doesn't duplicate bodies, changing LOD keeps the same collision and boulders/grass still ground on terrain. Disable an asset profile with Mode None and restart to opt out. Source references/scene layout reviewed; compilation, contact fit and FPS remain unverified here.
+- Parsed both glTF models; buffer lengths and indices checked.
+- All new positions/normals are finite, triangle areas are nonzero, and normals agree with triangle winding.
+- Inspected texture-mapped orthographic silhouette previews at 0°, 45°, 90° and 135°. These are software previews, not Godot screenshots or lighting validation.
+- Near binary is the exact former LOD2 blob; textures and original import UIDs/settings are retained. Godot should regenerate import caches after pulling.
 
-## Active visual source
-
-The stable PineTree002.tscn now uses this folder's Models/pine_tree_002_a_LOD1.gltf and LOD2.gltf with pine_needles_photo_detail_2k.png. Removed the _v4 suffix from both model/buffer filenames, imported node/mesh/scene names and import source/cache paths; import UIDs and binary/texture data are preserved. PineTree002_Fix remains untouched for the owner to remove later; the active prefab no longer depends on it. Native 70/280 m ranges and shared trunk collision remain in place.
-
-Source metadata/references were checked; compilation, Godot reimport, appearance and collision fit await local validation.
+Godot/.NET are unavailable here. Pull, let Godot reimport, restart test.tscn, then use F1 forced LOD1/LOD2 from the same view and inspect the automatic 70 m transition. Check foliage fullness, alpha edges, branch-tier continuity, roots, shadow transitions and collision. Compare uncapped FPS after placement settles; no measured performance gain is claimed. Fewer triangles do not by themselves remove foliage overdraw or shadow costs.
