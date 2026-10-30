@@ -8,6 +8,10 @@ uniform sampler2D forest_roughness : filter_linear_mipmap_anisotropic, repeat_en
 uniform sampler2D grass_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D grass_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D grass_roughness : filter_linear_mipmap_anisotropic, repeat_enable;
+// Muted, intermittent forest-ground grass; avoids bright GrassGround islands under pine foliage.
+uniform sampler2D forest_sparse_grass_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform float forest_sparse_grass_mix : hint_range(0.0, 0.7) = 0.27;
+uniform vec3 forest_sparse_grass_tint : source_color = vec3(0.74, 0.78, 0.71);
 uniform sampler2D rock_color : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D rock_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D rock_roughness : filter_linear_mipmap_anisotropic, repeat_enable;
@@ -117,24 +121,37 @@ void fragment() {
     float grass = smoothstep(1.0 - grass_coverage - 0.16, 1.0 - grass_coverage + 0.16, patch);
     float rock = smoothstep(rock_slope_start, max(rock_slope_start + 0.01, rock_slope_end), 1.0 - surface_up + (patch - 0.5) * 0.08);
     vec2 forest_delta = (world_position.xz - leaf_area_center) / max(leaf_area_radii, vec2(1.0));
-    float forest_area = 1.0 - smoothstep(0.98, 1.02, length(forest_delta));
+    float forest_distance = length(forest_delta);
+    // Suppress bright open-field GrassGround within the woodland; keep a broad, soft perimeter.
+    float forest_area = 1.0 - smoothstep(0.78, 1.04, forest_distance);
     float grass_patch = forest_grass_patch(world_position.xz)
         * smoothstep(forest_patch_min_up - 0.02, forest_patch_min_up + 0.02, surface_up);
-    if (forest_patch_spacing > 0.0) grass = mix(grass, grass_patch, forest_area);
+    grass *= 1.0 - forest_area;
     vec3 fc = triplanar_color(forest_color, ground_weights, ux, uy, uz);
     vec3 gc = triplanar_color(grass_color, ground_weights, ux, uy, uz);
     vec3 rc = triplanar_color(rock_color, weights, ux, uy, uz);
     float macro = patch_noise(world_position.xz / 37.0 + vec2(43.0));
-    ALBEDO = mix(mix(fc, gc, grass), rc, rock) * mix(1.0 - macro_variation, 1.0 + macro_variation, macro);
-    vec2 leaf_delta = (world_position.xz - leaf_area_center) / max(leaf_area_radii, vec2(1.0));
-    float leaf_area = 1.0 - smoothstep(0.65, 1.05, length(leaf_delta));
+    float colour_macro = mix(1.0 - macro_variation, 1.0 + macro_variation, macro);
+    ALBEDO = mix(mix(fc, gc, grass), rc, rock) * colour_macro;
+    float level_ground = smoothstep(0.75, 0.95, surface_up);
+    // Subtle leafy-grass flecks mixed into the soil, across the whole forest, not bright circles
+    // painted at every tuft site. The tuft mask only adds a little local bias (max 20%).
+    if (forest_area > 0.001 && rock < 0.999 && forest_sparse_grass_mix > 0.001) {
+        float sparse_noise = patch_noise(world_position.xz / 11.0 + vec2(17.3, 29.1));
+        float sparse_blend = forest_area * (1.0 - rock) * level_ground * forest_sparse_grass_mix
+            * mix(0.5, 1.0, sparse_noise) * mix(0.8, 1.0, grass_patch);
+        vec3 sparse_grass = texture(forest_sparse_grass_color, uy).rgb * forest_sparse_grass_tint;
+        ALBEDO = mix(ALBEDO, sparse_grass * colour_macro, sparse_blend);
+    }
+    float leaf_area = 1.0 - smoothstep(0.65, 1.05, forest_distance);
     float leaf_patch = smoothstep(0.22, 0.7, patch_noise(world_position.xz / 9.0 + vec2(13.7, 8.1)));
-    float leaf_blend = leaf_area * (1.0 - grass_patch) * leaf_coverage * mix(0.45, 1.0, leaf_patch)
-        * (1.0 - rock) * smoothstep(0.75, 0.95, surface_up);
+    // Brown mud/leaf litter stays visible beneath the grass; avoid hollow bright-green footprints.
+    float leaf_blend = leaf_area * leaf_coverage * mix(0.38, 0.85, leaf_patch)
+        * (1.0 - 0.3 * grass_patch) * (1.0 - rock) * level_ground;
     if (leaf_blend > 0.001) {
         vec2 leaf_uv = ground_uv(vec2(world_position.x, -world_position.z) / max(leaf_tile_meters, 0.1));
         vec3 litter = texture(leaf_color, leaf_uv).rgb;
-        ALBEDO = mix(ALBEDO, litter * mix(1.0 - macro_variation, 1.0 + macro_variation, macro), leaf_blend);
+        ALBEDO = mix(ALBEDO, litter * colour_macro, leaf_blend);
     }
     float fr = triplanar_color(forest_roughness, ground_weights, ux, uy, uz).r;
     float gr = triplanar_color(grass_roughness, ground_weights, ux, uy, uz).r;
