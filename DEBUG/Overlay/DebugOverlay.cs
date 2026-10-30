@@ -14,6 +14,7 @@ public partial class DebugOverlay : CanvasLayer
     private GrassScatter? _grass;
     private Godot.Environment? _atmosphere;
     private WorldEnvironment? _sky;
+    private AtmosphereLighting? _lighting;
     private PlayerController _player = null!;
     private PanelContainer _panel = null!;
     private Label _metrics = null!, _results = null!, _progress = null!;
@@ -56,6 +57,7 @@ public partial class DebugOverlay : CanvasLayer
         _grass = GetNodeOrNull<GrassScatter>("../NatureRoot/Grass/GrassScatter");
         _sky = GetNodeOrNull<WorldEnvironment>("../Environment/Sky3D");
         _atmosphere = _sky?.Environment;
+        _lighting = GetNodeOrNull<AtmosphereLighting>("../Environment/AtmosphereLighting");
         _timer.WaitTime = Mathf.Max(0.1f, Settings.ReadoutInterval);
         BuildControls(GetNode<VBoxContainer>("Panel/Rows"));
         _initialized = true;
@@ -128,6 +130,7 @@ public partial class DebugOverlay : CanvasLayer
         scroll.AddChild(controls);
         AddSection(controls, "ENVIRONMENT");
         BuildTimeControls(controls);
+        BuildLightingControls(controls);
         if (_atmosphere != null)
         {
             AddToggle(controls, "Distant horizon haze", value => _atmosphere.FogEnabled = value, _atmosphere.FogEnabled);
@@ -214,6 +217,33 @@ public partial class DebugOverlay : CanvasLayer
     }
 
     // =========================================================
+    // Changes are input-driven and independent of the existing terrain/tree render presets.
+    private void BuildLightingControls(VBoxContainer rows)
+    {
+        if (_lighting != null)
+            AddValueSlider(rows, "Night ambient fill", 0, 4, 0.1, _lighting.NightAmbientEnergy,
+                value => _lighting.SetNightAmbientEnergy(value));
+        if (_atmosphere == null) return;
+        AddToggle(rows, "Sun bloom / glow", value => _atmosphere.GlowEnabled = value, _atmosphere.GlowEnabled);
+        AddValueSlider(rows, "Glow strength", 0, 1.5, 0.05, _atmosphere.GlowIntensity,
+            value => _atmosphere.GlowIntensity = value);
+        AddValueSlider(rows, "Glow highlight threshold", 1, 8, 0.1, _atmosphere.GlowHdrThreshold,
+            value => _atmosphere.GlowHdrThreshold = value);
+    }
+
+    // =========================================================
+    // Build slider/readout once; no sampling, timer or repeated hierarchy lookup is needed.
+    private static void AddValueSlider(VBoxContainer rows, string title, double min, double max,
+        double step, double initial, Action<float> set)
+    {
+        var label = new Label { Text = $"{title}: {initial:F2}" };
+        var slider = new HSlider { MinValue = min, MaxValue = max, Step = step, Value = initial,
+            Scrollable = false, CustomMinimumSize = new Vector2(360, 24), FocusMode = Control.FocusModeEnum.None };
+        rows.AddChild(label); rows.AddChild(slider);
+        slider.ValueChanged += value => { set((float)value); label.Text = $"{title}: {value:F2}"; };
+    }
+
+    // =========================================================
     // Named sections are built once and remain inside the existing scrollable panel.
     private static void AddSection(VBoxContainer rows, string title)
     {
@@ -284,6 +314,7 @@ public partial class DebugOverlay : CanvasLayer
         _report.AppendLine($"Godot {Engine.GetVersionInfo()["string"]}; viewport {GetViewport().GetVisibleRect().Size}; VSync {DisplayServer.WindowGetVsyncMode()}; MaxFPS {Engine.MaxFps}");
         _report.AppendLine($"Frame graph visible: {GetNodeOrNull<FrameTimeGraph>("FrameTimeGraph")?.Visible ?? false}");
         _report.AppendLine($"Sky3D time (hours): {_sky?.Get("current_time").AsDouble() ?? 0.0:F3}; held across all five cases.");
+        _report.AppendLine($"Glow: {_atmosphere?.GlowEnabled ?? false}; intensity: {_atmosphere?.GlowIntensity ?? 0:F2}; threshold: {_atmosphere?.GlowHdrThreshold ?? 0:F2}; night fill: {_lighting?.NightAmbientEnergy ?? 0:F2}");
         _report.AppendLine($"Horizon haze: {_atmosphere?.FogEnabled ?? false}; volumetric fog: {_atmosphere?.VolumetricFogEnabled ?? false}; held across all five cases.");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");

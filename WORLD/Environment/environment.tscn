@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 [ext_resource type="Script" path="res://addons/sky_3d/src/Sky3D.gd" id="1"]
 [ext_resource type="Script" path="res://addons/sky_3d/src/SkyDome.gd" id="2"]
 [ext_resource type="Script" path="res://addons/sky_3d/src/TimeOfDay.gd" id="3"]
+[ext_resource type="Script" path="res://WORLD/Environment/AtmosphereLighting.cs" id="4"]
 [sub_resource type="Environment" id="Environment"]
 resource_local_to_scene = true
 background_mode = 2
@@ -9,6 +10,12 @@ ambient_light_source = 2
 ambient_light_sky_contribution = 0.7
 ambient_light_energy = 1.15
 tonemap_mode = 3
+glow_enabled = true
+glow_intensity = 0.55
+glow_strength = 0.8
+glow_bloom = 0.0
+glow_hdr_threshold = 1.5
+glow_hdr_scale = 1.0
 fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0.65, 0.73, 0.8, 1)
@@ -41,7 +48,7 @@ current_time = 16.0
 sky_contribution = 0.7
 ambient_energy = 1.15
 night_ambient_boost = true
-night_sky_contribution = 0.2
+night_sky_contribution = 0.0
 moon_energy = 0.8
 wind_speed = 0.25
 fog_enabled = false
@@ -58,6 +65,7 @@ sun_light_path = NodePath("../SunLight")
 moon_light_path = NodePath("../MoonLight")
 fog_visible = false
 sun_light_color = Color(1, 0.95, 0.86, 1)
+sun_disk_intensity = 30.0
 moon_light_energy = 0.8
 atm_night_tint = Color(0.22, 0.28, 0.4, 1)
 clouds_night_color = Color(0.14, 0.17, 0.23, 1)
@@ -68,3 +76,8 @@ dome_path = NodePath("../SkyDome")
 editor_time_enabled = false
 game_time_enabled = false
 current_time = 16.0
+
+[node name="AtmosphereLighting" type="Node" parent="."]
+script = ExtResource("4")
+NightAmbientEnergy = 2.0
+NightAmbientColor = Color(0.48, 0.6, 0.8, 1)
