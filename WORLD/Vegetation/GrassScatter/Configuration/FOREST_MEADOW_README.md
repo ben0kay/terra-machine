@@ -56,3 +56,10 @@ Within each patch, `TuftsPerSquareMeter` decreases from 0.75 to **0.65** candida
 The **85% short** (scale 0.75–0.95) and **15% tall** (1.30–1.65) height mix, grass models, near/far LODs, forest footprint, GPU wind, seed and render-distance settings are unchanged. The spawn-only Meadow002 and Bermuda configurations are also unchanged.
 
 Restart `test.tscn` after pulling so all relevant 8 m scatter tiles regenerate. Inspect both local separation and how evenly small patches cover the forest; if their footprints still appear too circular, later consider changing the patch-mask shape separately. This was a configuration-only pass; engine rendering and performance were not tested here.
+
+
+## Terrain colour decoupling from grass clumps (October 2026)
+
+ForestGrass001 uses the **same** deterministic positions, density, patch shapes and grass LODs as before. The terrain no longer paints the **bright open-meadow GrassGround texture** under each tuft patch. Instead `WORLD/Terrain/Integration/ground.gdshader` suppresses that bright source inside the forest and blends `ForestGround06` soil, a muted amount of the existing `leafy_grass_diff_1k.jpg` as a sparse-grass colour, and lower-coverage brown mud/leaves. The old world-space patch recipe remains for small variation, not for large bright circles; the forest boundary is softly feathered. Tune `WORLD/Terrain/Configuration/GroundMaterial.tres` (`forest_sparse_grass_mix`, `forest_sparse_grass_tint`, `leaf_coverage`).
+
+No vegetation placement file, seed, area or LOD parameter changed in this pass. The shader has one added colour texture read where forest soil mixing is active, so check F2 performance at the same location in addition to midday/dusk colour and cross-biome transitions.
