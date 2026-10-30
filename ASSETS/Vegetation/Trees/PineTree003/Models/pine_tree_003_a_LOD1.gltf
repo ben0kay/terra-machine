@@ -114,7 +114,7 @@
     },
     {
       "name": "pine_needles_atlas_1k",
-      "uri": "../Textures/pine_needles_dark_fir_atlas_1k.png",
+      "uri": "../Textures/pine_needles_atlas_1k.png",
       "mimeType": "image/png"
     }
   ],
@@ -249,7 +249,7 @@
   "buffers": [
     {
       "byteLength": 1231800,
-      "uri": "pine_tree_003_v2_a_LOD1.bin"
+      "uri": "pine_tree_003_a_LOD1.bin"
     }
   ]
 }
