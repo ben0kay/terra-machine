@@ -264,7 +264,7 @@ public partial class GrassScatter : Node3D
                 {
                     int variant = tile.Random.RandiRange(0, _meshes.Count - 1);
                     // Default grass uses the original scale range; forest meadow can keep rare tall accents.
-                    bool tall = tile.Random.Randf() < Mathf.Clamp(Settings.TallTuftChance, 0f, 1f);
+                    bool tall = Settings.TallTuftChance > 0f && tile.Random.Randf() < Mathf.Clamp(Settings.TallTuftChance, 0f, 1f);
                     float low = tall ? Settings.TallMinimumScale : Settings.MinimumScale;
                     float high = tall ? Settings.TallMaximumScale : Settings.MaximumScale;
                     float scale = tile.Random.RandfRange(Mathf.Max(0.1f, low), Mathf.Max(low, high));
