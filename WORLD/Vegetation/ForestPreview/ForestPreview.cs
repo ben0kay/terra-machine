@@ -12,7 +12,7 @@ public partial class ForestPreview : Node3D
         public float Spacing, Scale, Yaw;
         public ulong RetryAt;
         public int Misses;
-        public bool Complete;
+        public bool Complete, UseTall;
     }
     private readonly List<TreeSpot> _spots = new();
     private ITerrainSurfaceService? _terrain;
@@ -86,6 +86,14 @@ public partial class ForestPreview : Node3D
             _spots.Add(new TreeSpot { Position = point, Spacing = spacing,
                 Scale = random.RandfRange(Mathf.Max(0.4f, Settings.MinimumScale),
                     Mathf.Max(Settings.MinimumScale, Settings.MaximumScale)), Yaw = random.Randf() * Mathf.Tau });
+        }
+        // Mix tall variants into the nearest planned sites without changing layout or RNG state.
+        if (Settings.TallPineTree != null && Settings.TallTreeCount > 0)
+        {
+            var nearest = new List<TreeSpot>(_spots);
+            nearest.Sort((a, b) => a.Position.DistanceSquaredTo(spawn).CompareTo(b.Position.DistanceSquaredTo(spawn)));
+            int tallCount = Mathf.Clamp(Settings.TallTreeCount, 0, nearest.Count);
+            for (int i = 0; i < tallCount; i++) nearest[i].UseTall = true;
         }
         if (_spots.Count < target)
             GD.PushWarning($"Forest preview planned {_spots.Count}/{target} trees; spacing or radius limits further placement.");
@@ -190,7 +198,8 @@ public partial class ForestPreview : Node3D
     {
         Node3D wrapper = new() { Name = $"ForestPine_{PlacedCount + 1:000}" };
         AddChild(wrapper);
-        Node3D model = Settings.PineTree!.Instantiate<Node3D>();
+        PackedScene scene = spot.UseTall && Settings.TallPineTree != null ? Settings.TallPineTree : Settings.PineTree!;
+        Node3D model = scene.Instantiate<Node3D>();
         wrapper.AddChild(model);
         MeshInstance3D? first = FindFirstMesh(model);
         if (first != null) model.Position -= wrapper.ToLocal(first.GlobalPosition);

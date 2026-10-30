@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://WORLD/Vegetation/LOD/AuthoredTreeLod.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree003/Models/pine_tree_003_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree003/Models/pine_tree_003_a_LOD2.gltf" id="3"]
+
+[ext_resource type="Script" path="res://PHYSICS/StaticCollision/StaticCollisionInstance.cs" id="4"]
+[ext_resource type="Resource" path="res://ASSETS/Vegetation/Trees/PineTree003/TrunkCollision.tres" id="5"]
+
+[node name="PineTree003" type="Node3D"]
+script = ExtResource("1")
+NearModel = ExtResource("2")
+FarModel = ExtResource("3")
+SwitchDistance = 70.0
+CullDistance = 280.0
+HysteresisMargin = 3.0
+
+[node name="TrunkCollision" type="Node3D" parent="."]
+script = ExtResource("4")
+Profile = ExtResource("5")

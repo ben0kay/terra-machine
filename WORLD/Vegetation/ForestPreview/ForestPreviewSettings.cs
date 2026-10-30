@@ -6,6 +6,8 @@ public partial class ForestPreviewSettings : Resource
 {
     [ExportGroup("Tree asset")]
     [Export] public PackedScene? PineTree { get; set; }
+    [Export] public PackedScene? TallPineTree { get; set; }
+    [Export] public int TallTreeCount { get; set; } = 8;
     [ExportGroup("Footprint")]
     [Export] public int Seed { get; set; } = 20261029;
     [Export] public Vector2 CenterOffset { get; set; } = new(18f, 118f);

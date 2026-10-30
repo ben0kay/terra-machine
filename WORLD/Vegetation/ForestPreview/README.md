@@ -17,3 +17,13 @@ Trees now opt into the shared PHYSICS/StaticCollision construction. PineTree002.
 All four original pines and the forest's PineTree002 instances inherit collision from the same asset prefab. No duplicate collider per LOD, full-canopy hull, per-tree ray or tick was added. Layer 4 / mask 0 preserves player contact and terrain-only placement queries. Shape resources are shared; bodies are per tree. Hiding/culling visuals does not disable collision; actual parent unload frees the body. Existing finite resident-world limitation remains.
 
 Local: build, run test.tscn, enable Debug → Visible Collision Shapes, approach pine/fir trunks from several angles, walk through foliage gaps and inspect scaled/rotated instances. Check B/C roots align, F4 doesn't duplicate bodies, changing LOD keeps the same collision and boulders/grass still ground on terrain. Disable an asset profile with Mode None and restart to opt out. Source references/scene layout reviewed; compilation, contact fit and FPS remain unverified here.
+
+## Dark pine replacement and tall variants — awaiting local validation
+
+The stable PineTree002.tscn now points both authored LODs at the pushed PineTree002_Fix exports, preserving its 70/280 m native ranges, shared trunk capsule and original four preview instances. The original model files stay available but are not used by that wrapper.
+
+ForestMaster now supplies PineTree003.tscn and TallTreeCount = 8. At layout generation, the nearest eight planned sites to spawn are marked tall; no new RNG draws or placement sites are introduced. The forest remains 115 planned trees, with the original spacing/path/grass and boulder reservations unchanged. If fewer valid tall sites can ground, fewer will appear. Existing shadow handling applies equally to both variants.
+
+PineTree003 source bounds span about 28.84 m, with foliage starting around 10 m. Its LOD1/LOD2 have 23,002/6,780 triangles, cutout needles, matching pivots and shared texture URIs. Its own capsule profile is radius 0.34 m, height 21 m; placement scale affects both visuals and collision. It uses the same native 70/280 m ranges and a single collider outside both visual LODs.
+
+Checks: parsed both LOD pairs, compared origins/bounds/materials/triangle counts and texture/buffer references, reviewed new loops and resource wiring. C# compilation/import/runtime appearance/contact fit and FPS remain local. Build/run, turn toward the flat +Z forest entrance, inspect dark Pine002 needles and taller bare-trunk Pine003, then walk through LOD boundaries and around each trunk. Check F4 doesn't duplicate trees and F1 forest visibility still behaves as before. No per-frame work added; variant selection runs once at generation.
