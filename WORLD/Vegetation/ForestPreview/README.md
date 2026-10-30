@@ -1,3 +1,9 @@
+# Current forest density reduction
+
+Forest footprint stays at radii 100.4 × 105.3 m, centre offset (18, +137.3). Mature tree target is now 156 (previously 195), including 10 tall Pine003 variants; fir sapling target is 41 (previously 51). Combined target falls from 246 to 197, approximately 20% fewer forest trees over the same area. Original 16 preview trees, grass/floor-layer settings, tree sizes, native LODs, shadows and collision settings remain unchanged. Seeded generation reruns on scene restart; sapling sites may change because their placement depends on nearby mature pines.
+
+Validation: reviewed matching resource/C# defaults and preserved footprint/placement budgets. Restart the test scene after pulling; inspect density and compare uncapped frame times. Runtime/performance acceptance remains local. Sections below describe earlier passes.
+
 # Current forest expansion
 
 The forest ellipse is approximately 50% larger in area: radii 100.4 × 105.3 m instead of 82 × 86 m. Its centre moves to (18, +137.3) m relative to spawn to keep the entrance at the previous +32 m edge while expanding outward. Targets rise proportionally from 130 to 195 mature trees (12 tall Pine003 within that total) and from 34 to 51 fir saplings. Counts remain targets subject to existing spacing and terrain rejection. Tree dimensions, yaw/scale variation, trunk collision, native LOD ranges and four-ray grounding budget remain unchanged. Ground cover and terrain floor masks that consume the forest ellipse follow the expanded footprint. Finite moss/fern/branch counts remain unchanged.
