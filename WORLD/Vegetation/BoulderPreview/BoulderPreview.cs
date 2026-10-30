@@ -18,7 +18,7 @@ public partial class BoulderPreview : Node3D
     private ITerrainSurfaceService? _terrain;
     private Node3D? _player;
     private Timer _timer = null!;
-    private ConvexPolygonShape3D? _collision;
+    private Shape3D? _collision;
     private int _cursor, _remaining;
     private float _top, _bottom;
     private bool _started;
@@ -48,7 +48,8 @@ public partial class BoulderPreview : Node3D
         _top = Mathf.Max(probeTop, Settings.ProbeTop); _bottom = probeBottom;
         Node3D source = Settings.Model.Instantiate<Node3D>();
         Mesh? mesh = FindFirstMesh(source)?.Mesh;
-        if (mesh != null && Settings.EnableCollision) _collision = mesh.CreateConvexShape();
+        if (mesh != null && Settings.EnableCollision)
+            _collision = StaticCollisionBuilder.Prepare(Settings.Collision, mesh);
         source.Free();
         if (mesh == null) { GD.PushWarning("Boulder preview: imported mesh not found."); return; }
         Generate(forest, spawn);
@@ -177,13 +178,8 @@ public partial class BoulderPreview : Node3D
             mesh.CastShadow = Settings.CastShadows
                 ? GeometryInstance3D.ShadowCastingSetting.On
                 : GeometryInstance3D.ShadowCastingSetting.Off;
-            if (_collision != null)
-            {
-                var body = new StaticBody3D { Name = "Collision", CollisionLayer = 4, CollisionMask = 0 };
-                wrapper.AddChild(body);
-                body.GlobalTransform = mesh.GlobalTransform;
-                body.AddChild(new CollisionShape3D { Shape = _collision });
-            }
+            StaticCollisionBuilder.Attach(wrapper, Settings.Collision, _collision,
+                wrapper.GlobalTransform.AffineInverse() * mesh.GlobalTransform);
         }
         wrapper.Scale = Vector3.One * rock.Scale;
         wrapper.Rotation = new Vector3(0f, rock.Yaw, 0f);

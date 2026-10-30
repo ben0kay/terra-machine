@@ -19,6 +19,7 @@ public partial class BoulderPreviewSettings : Resource
     [Export] public float DrawDistance { get; set; } = 190f;
     [Export] public bool CastShadows { get; set; } = true;
     [Export] public bool EnableCollision { get; set; } = true;
+    [Export] public StaticCollisionProfile Collision { get; set; } = new() { Mode = StaticCollisionMode.ConvexMesh };
     [ExportGroup("Loading")]
     [Export] public float ProbeTop { get; set; } = 192f;
     [Export] public float PlacementRange { get; set; } = 140f;

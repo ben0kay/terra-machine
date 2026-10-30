@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BoulderPreviewSettings" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="BoulderPreviewSettings" load_steps=4 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/BoulderPreview/BoulderPreviewSettings.cs" id="1"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Rocks/Boulder001/Models/Boulder001_A_LOD1.gltf" id="2"]
+[ext_resource type="Resource" path="res://ASSETS/Vegetation/Rocks/Boulder001/BoulderCollision.tres" id="3"]
 [resource]
 script = ExtResource("1")
 Model = ExtResource("2")
@@ -15,6 +16,7 @@ MaximumSlopeDegrees = 22.0
 DrawDistance = 190.0
 CastShadows = true
 EnableCollision = true
+Collision = ExtResource("3")
 ProbeTop = 192.0
 PlacementRange = 140.0
 QueriesPerPhysicsTick = 3
