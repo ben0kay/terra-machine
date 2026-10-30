@@ -16,4 +16,6 @@ Local: build, run test.tscn, enable Debug → Visible Collision Shapes, approach
 
 ## Active visual source
 
-PineTree002.tscn now uses PineTree002_Fix/Models/pine_tree_002_v3_a_LOD1.gltf and LOD2.gltf, with the darker DeepFir cutout atlas. Both retain 23,644/6,972 triangles and matching origins/bounds, so the stable wrapper, existing trunk collision and 70/280 m visibility ranges are retained. The original exports remain for reference. Current checks cover metadata/source wiring; local Godot import, appearance, collision and performance acceptance are pending.
+The stable PineTree002.tscn now uses this folder's Models/pine_tree_002_a_LOD1.gltf and LOD2.gltf with pine_needles_photo_detail_2k.png. Removed the _v4 suffix from both model/buffer filenames, imported node/mesh/scene names and import source/cache paths; import UIDs and binary/texture data are preserved. PineTree002_Fix remains untouched for the owner to remove later; the active prefab no longer depends on it. Native 70/280 m ranges and shared trunk collision remain in place.
+
+Source metadata/references were checked; compilation, Godot reimport, appearance and collision fit await local validation.

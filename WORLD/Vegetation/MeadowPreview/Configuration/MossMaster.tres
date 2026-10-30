@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=3 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Grass/Moss001/Models/moss_01_1k.gltf" id="2"]
+[resource]
+script = ExtResource("1")
+Variants = Array[PackedScene]([ExtResource("2")])
+CollectAllMeshes = true
+Seed = 493
+SiteCount = 9
+SiteSpacing = 12.0
+SamplesPerTree = 160
+PatchRadius = 0.5
+ClumpsPerSite = 1
+ClumpRadius = 0.38
+TrunkClearance = 0.0
+MinimumScale = 3.5
+MaximumScale = 4.5
+GroundSink = 0.002
+DrawDistance = 55.0
+MaximumSlopeDegrees = 28.0
+QueriesPerPhysicsTick = 16
+LoadingTimeoutSeconds = 20.0

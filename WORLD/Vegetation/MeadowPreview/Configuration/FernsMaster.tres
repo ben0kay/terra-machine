@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=3 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Plants/Ferns001/Models/ferns00`.gltf" id="2"]
+[resource]
+script = ExtResource("1")
+Variants = Array[PackedScene]([ExtResource("2")])
+CollectAllMeshes = true
+Seed = 735
+SiteCount = 22
+SiteSpacing = 6.0
+SamplesPerTree = 5
+PatchRadius = 2
+ClumpsPerSite = 1
+ClumpRadius = 1.2
+TrunkClearance = 0.0
+MinimumScale = 0.9
+MaximumScale = 1.2
+GroundSink = 0.01
+DrawDistance = 90.0
+MaximumSlopeDegrees = 28.0
+QueriesPerPhysicsTick = 16
+LoadingTimeoutSeconds = 20.0

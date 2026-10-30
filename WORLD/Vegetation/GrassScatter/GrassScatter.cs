@@ -230,7 +230,7 @@ public partial class GrassScatter : Node3D
             float x = origin.X + (cell % _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             float z = origin.Y + (cell / _gridSide + tile.Random.Randf()) * (_size / _gridSide);
             tile.Cursor++;
-            if (_areaEnabled && !InsideArea(new Vector2(x, z)))
+            if ((_areaEnabled && !InsideArea(new Vector2(x, z))) || !InsidePatch(new Vector2(x, z)))
             {
                 // Even a rejected final sample must retire its tile before the next tick.
                 if (tile.Cursor >= _candidates) { CompleteTile(tile, origin); _jobs.Dequeue(); }
@@ -256,6 +256,34 @@ public partial class GrassScatter : Node3D
             CompleteTile(tile, origin); _jobs.Dequeue();
         }
         if (_jobs.Count == 0) SetPhysicsProcess(false);
+    }
+
+    // =========================================================
+    // World-anchored, jittered patch centres stay continuous across streamed tile edges.
+    // Disabled by default so the Bermuda base retains its existing coverage.
+    private bool InsidePatch(Vector2 point)
+    {
+        if (Settings.PatchSpacing <= 0f) return true;
+        float spacing = Mathf.Max(2f, Settings.PatchSpacing);
+        int cx = Mathf.FloorToInt(point.X / spacing), cz = Mathf.FloorToInt(point.Y / spacing);
+        for (int z = cz - 1; z <= cz + 1; z++)
+        for (int x = cx - 1; x <= cx + 1; x++)
+        {
+            uint hash = unchecked((uint)(x * 73856093 ^ z * 19349663 ^ Settings.Seed));
+            float jx = PatchRandom(hash), jz = PatchRandom(hash + 1u);
+            Vector2 center = new((x + 0.15f + jx * 0.7f) * spacing, (z + 0.15f + jz * 0.7f) * spacing);
+            float radius = Mathf.Clamp(Settings.PatchRadius, 0.2f, spacing * 0.45f) * Mathf.Lerp(0.75f, 1.2f, PatchRandom(hash + 2u));
+            if (point.DistanceSquaredTo(center) <= radius * radius) return true;
+        }
+        return false;
+    }
+
+    // =========================================================
+    // Stateless integer mixing avoids resource allocations or RNG reseeding per sample.
+    private static float PatchRandom(uint value)
+    {
+        unchecked { value ^= value >> 16; value *= 0x7feb352du; value ^= value >> 15; value *= 0x846ca68bu; value ^= value >> 16; }
+        return (value & 0x00ffffffu) / 16777216f;
     }
 
     // =========================================================

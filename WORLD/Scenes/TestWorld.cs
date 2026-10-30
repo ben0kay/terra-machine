@@ -94,6 +94,15 @@ public partial class TestWorld : Node3D
             _forestMeadow?.Initialize(_terrain as ITerrainSurfaceService, _player,
                 Settings.SpawnXZ + footprint.CenterOffset, new Vector2(footprint.RadiusX, footprint.RadiusZ));
         }
+        if (_forest != null)
+        {
+            ForestPreviewSettings footprint = _forest.Settings;
+            foreach (string name in new[] { "Moss", "Ferns", "Branches" })
+                GetNodeOrNull<MeadowPreview>($"NatureRoot/Floor/{name}")?.InitializeArea(
+                    _terrain as ITerrainSurfaceService, Settings.SpawnXZ, footprint.CenterOffset * 0.65f,
+                    new Vector2(footprint.RadiusX, footprint.RadiusZ) * 0.7f,
+                    Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
+        }
         _boulders?.Initialize(_terrain as ITerrainSurfaceService, _player, _forest,
             Settings.SpawnXZ, Settings.SpawnProbeTop, Settings.SpawnProbeBottom);
         _debug?.Initialize(_terrain as ITerrainRenderDebug, _trees, _player);

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="MeadowPreviewSettings" load_steps=4 format=3]
+[ext_resource type="Script" path="res://WORLD/Vegetation/MeadowPreview/MeadowPreviewSettings.cs" id="1"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/Branches/Branches001/Models/dry_branches_medium_variants.gltf" id="2"]
+[ext_resource type="Resource" path="res://ASSETS/Vegetation/Trees/Branches/Branches001/BranchCollision.tres" id="3"]
+[resource]
+script = ExtResource("1")
+Variants = Array[PackedScene]([ExtResource("2")])
+CollectAllMeshes = true
+Collision = ExtResource("3")
+GroundAtMeshBottom = true
+Seed = 824
+SiteCount = 8
+SiteSpacing = 12.0
+SamplesPerTree = 1
+PatchRadius = 0.25
+ClumpsPerSite = 1
+ClumpRadius = 0.1
+TrunkClearance = 0.0
+MinimumScale = 0.9
+MaximumScale = 1.15
+GroundSink = 0.025
+DrawDistance = 110.0
+MaximumSlopeDegrees = 18.0
+QueriesPerPhysicsTick = 16
+LoadingTimeoutSeconds = 20.0

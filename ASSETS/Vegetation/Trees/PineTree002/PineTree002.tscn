@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://WORLD/Vegetation/LOD/AuthoredTreeLod.cs" id="1"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002_Fix/Models/pine_tree_002_v3_a_LOD1.gltf" id="2"]
-[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002_Fix/Models/pine_tree_002_v3_a_LOD2.gltf" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/Models/pine_tree_002_a_LOD1.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/Models/pine_tree_002_a_LOD2.gltf" id="3"]
 
 [ext_resource type="Script" path="res://PHYSICS/StaticCollision/StaticCollisionInstance.cs" id="4"]
 [ext_resource type="Resource" path="res://ASSETS/Vegetation/Trees/PineTree002/TrunkCollision.tres" id="5"]

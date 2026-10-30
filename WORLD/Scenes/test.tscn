@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=16 format=3]
 [ext_resource type="PackedScene" path="res://WORLD/Terrain/terrain.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://WORLD/Environment/environment.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://PLAYER/player.tscn" id="3"]
@@ -11,6 +11,9 @@
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/ForestPreview/ForestPreview.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://WORLD/Vegetation/BoulderPreview/BoulderPreview.tscn" id="11"]
 [ext_resource type="Resource" path="res://WORLD/Vegetation/GrassScatter/Configuration/ForestMeadowMaster.tres" id="12"]
+[ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/MossMaster.tres" id="13"]
+[ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/FernsMaster.tres" id="14"]
+[ext_resource type="Resource" path="res://WORLD/Vegetation/MeadowPreview/Configuration/BranchesMaster.tres" id="15"]
 [node name="Test" type="Node3D"]
 script = ExtResource("4")
 Settings = ExtResource("5")
@@ -49,7 +52,7 @@ mouse_filter = 2
 wait_time = 0.25
 autostart = true
 [node name="DebugOverlay" parent="." instance=ExtResource("7")]
-ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/MeadowPreview"), NodePath("../NatureRoot/Grass/ForestMeadowScatter"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview")])
+ExtraVisualRoots = Array[NodePath]([NodePath("../NatureRoot/Grass/MeadowPreview"), NodePath("../NatureRoot/Grass/ForestMeadowScatter"), NodePath("../NatureRoot/Trees/ForestPreview"), NodePath("../NatureRoot/Rocks/BoulderPreview"), NodePath("../NatureRoot/Floor/Moss"), NodePath("../NatureRoot/Floor/Ferns"), NodePath("../NatureRoot/Floor/Branches")])
 [node name="Grass" type="Node3D" parent="NatureRoot"]
 [node name="GrassScatter" parent="NatureRoot/Grass" instance=ExtResource("8")]
 
@@ -59,3 +62,11 @@ Settings = ExtResource("12")
 [node name="ForestPreview" parent="NatureRoot/Trees" instance=ExtResource("10")]
 [node name="Rocks" type="Node3D" parent="NatureRoot"]
 [node name="BoulderPreview" parent="NatureRoot/Rocks" instance=ExtResource("11")]
+
+[node name="Floor" type="Node3D" parent="NatureRoot"]
+[node name="Moss" parent="NatureRoot/Floor" instance=ExtResource("9")]
+Settings = ExtResource("13")
+[node name="Ferns" parent="NatureRoot/Floor" instance=ExtResource("9")]
+Settings = ExtResource("14")
+[node name="Branches" parent="NatureRoot/Floor" instance=ExtResource("9")]
+Settings = ExtResource("15")

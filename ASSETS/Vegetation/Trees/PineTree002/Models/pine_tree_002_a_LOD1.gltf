@@ -1,12 +1,12 @@
 {
   "asset": {
     "version": "2.0",
-    "generator": "Terra Machine PineTree002 V4 Detailed Fir \u2014 V3 unmodified mesh + photo-derived twig needle atlas"
+    "generator": "Terra Machine PineTree002 V4 Detailed Fir — V3 unmodified mesh + photo-derived twig needle atlas"
   },
   "scene": 0,
   "scenes": [
     {
-      "name": "PineTree002_V4_DetailedFir",
+      "name": "PineTree002",
       "nodes": [
         0
       ]
@@ -14,13 +14,13 @@
   ],
   "nodes": [
     {
-      "name": "pine_tree_002_v4_a_LOD2",
+      "name": "pine_tree_002_a_LOD1",
       "mesh": 0
     }
   ],
   "meshes": [
     {
-      "name": "pine_tree_002_v4_a_LOD2",
+      "name": "pine_tree_002_a_LOD1",
       "primitives": [
         {
           "attributes": {
@@ -130,89 +130,89 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 2610,
+      "count": 10272,
       "type": "VEC3",
       "min": [
-        -3.084066390991211,
+        -3.089775562286377,
         -0.1899999976158142,
-        -2.476693630218506
+        -3.3437674045562744
       ],
       "max": [
-        3.1638028621673584,
+        3.334881067276001,
         22.400911331176758,
-        3.5015435218811035
+        3.2339556217193604
       ]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
-      "count": 2610,
+      "count": 10272,
       "type": "VEC3",
       "min": [
-        -1.0,
-        -0.9989521503448486,
-        -0.9750986695289612
+        -1,
+        -0.999983549118042,
+        -0.9999995827674866
       ],
       "max": [
-        1.0,
-        0.9993630051612854,
-        0.999890148639679
+        1,
+        0.999983549118042,
+        0.9997326731681824
       ]
     },
     {
       "bufferView": 2,
       "componentType": 5126,
-      "count": 2610,
+      "count": 10272,
       "type": "VEC2"
     },
     {
       "bufferView": 3,
       "componentType": 5125,
-      "count": 11412,
+      "count": 39612,
       "type": "SCALAR"
     },
     {
       "bufferView": 4,
       "componentType": 5126,
-      "count": 6336,
+      "count": 20880,
       "type": "VEC3",
       "min": [
-        -4.063109397888184,
-        3.775254487991333,
-        -3.3298494815826416
+        -4.085265636444092,
+        3.7099435329437256,
+        -4.1652021408081055
       ],
       "max": [
-        4.071749210357666,
-        22.38958168029785,
-        4.36193323135376
+        4.2261834144592285,
+        22.546518325805664,
+        4.146563529968262
       ]
     },
     {
       "bufferView": 5,
       "componentType": 5126,
-      "count": 6336,
+      "count": 20880,
       "type": "VEC3",
       "min": [
-        -0.9268795847892761,
-        0.3272464871406555,
-        -0.9242827296257019
+        -0.9247949123382568,
+        0.3068007230758667,
+        -0.936892032623291
       ],
       "max": [
-        0.9240227341651917,
-        1.0,
-        0.9283747673034668
+        0.9288282990455627,
+        1,
+        0.9282701015472412
       ]
     },
     {
       "bufferView": 6,
       "componentType": 5126,
-      "count": 6336,
+      "count": 20880,
       "type": "VEC2"
     },
     {
       "bufferView": 7,
       "componentType": 5125,
-      "count": 9504,
+      "count": 31320,
       "type": "SCALAR"
     }
   ],
@@ -220,56 +220,56 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 31320,
+      "byteLength": 123264,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 31320,
-      "byteLength": 31320,
+      "byteOffset": 123264,
+      "byteLength": 123264,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 62640,
-      "byteLength": 20880,
+      "byteOffset": 246528,
+      "byteLength": 82176,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 83520,
-      "byteLength": 45648,
+      "byteOffset": 328704,
+      "byteLength": 158448,
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteOffset": 129168,
-      "byteLength": 76032,
+      "byteOffset": 487152,
+      "byteLength": 250560,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 205200,
-      "byteLength": 76032,
+      "byteOffset": 737712,
+      "byteLength": 250560,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 281232,
-      "byteLength": 50688,
+      "byteOffset": 988272,
+      "byteLength": 167040,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteOffset": 331920,
-      "byteLength": 38016,
+      "byteOffset": 1155312,
+      "byteLength": 125280,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 369936,
-      "uri": "pine_tree_002_v4_a_LOD2.bin"
+      "byteLength": 1280592,
+      "uri": "pine_tree_002_a_LOD1.bin"
     }
   ]
 }
