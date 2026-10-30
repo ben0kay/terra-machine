@@ -1,8 +1,5 @@
 shader_type spatial;
 render_mode cull_disabled;
-#include "res://WORLD/Vegetation/Wind/vegetation_wind.gdshaderinc"
-uniform float wind_response = 0.65;
-uniform float wind_plant_height = 0.10;
 // Shared card material: independent alpha mask, no alpha blending/sorting.
 uniform sampler2D grass_color : source_color, filter_linear_mipmap_anisotropic;
 uniform sampler2D grass_alpha : filter_linear_mipmap_anisotropic;
@@ -16,7 +13,6 @@ void vertex() {
     vec3 root = MODEL_MATRIX[3].xyz;
     float distance_to_camera = length(root.xz - CAMERA_POSITION_WORLD.xz);
     grass_presence = 1.0 - smoothstep(sparse_distance, end_distance, distance_to_camera);
-    VERTEX = vegetation_bend(VERTEX, MODEL_MATRIX, TIME, wind_plant_height, wind_response);
     VERTEX.y *= grass_presence;
 }
 void fragment() {
