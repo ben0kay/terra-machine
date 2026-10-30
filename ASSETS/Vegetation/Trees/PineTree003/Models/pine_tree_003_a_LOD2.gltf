@@ -1,0 +1,255 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Terra Machine PineTree003 (PineTree002 geometry based northern conifer variant)"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "PineTree001",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "PineTree003_A_LOD2",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "pine_tree_003_a_LOD2",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Pine_Bark_PBR",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.92,
+        "metallicRoughnessTexture": {
+          "index": 2
+        }
+      },
+      "normalTexture": {
+        "index": 1,
+        "scale": 0.8
+      },
+      "doubleSided": false
+    },
+    {
+      "name": "Pine_Needles_Cutout",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 3
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.9
+      },
+      "alphaMode": "MASK",
+      "alphaCutoff": 0.39,
+      "doubleSided": true
+    }
+  ],
+  "textures": [
+    {
+      "source": 0,
+      "sampler": 0
+    },
+    {
+      "source": 1,
+      "sampler": 0
+    },
+    {
+      "source": 2,
+      "sampler": 0
+    },
+    {
+      "source": 3,
+      "sampler": 0
+    }
+  ],
+  "images": [
+    {
+      "name": "pine_bark_diff_1k",
+      "uri": "../Textures/pine_bark_diff_1k.png",
+      "mimeType": "image/png"
+    },
+    {
+      "name": "pine_bark_nor_gl_1k",
+      "uri": "../Textures/pine_bark_nor_gl_1k.png",
+      "mimeType": "image/png"
+    },
+    {
+      "name": "pine_bark_rough_1k",
+      "uri": "../Textures/pine_bark_rough_1k.png",
+      "mimeType": "image/png"
+    },
+    {
+      "name": "pine_needles_atlas_1k",
+      "uri": "../Textures/pine_needles_atlas_1k.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 2610,
+      "type": "VEC3",
+      "min": [
+        -2.973501205444336,
+        -0.1899999976158142,
+        -2.564586639404297
+      ],
+      "max": [
+        3.43266224861145,
+        28.43305778503418,
+        3.4524710178375244
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2610,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2610,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5125,
+      "count": 11412,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 5952,
+      "type": "VEC3",
+      "min": [
+        -4.0622735023498535,
+        10.015995979309082,
+        -3.587643623352051
+      ],
+      "max": [
+        4.176296234130859,
+        28.461488723754883,
+        4.253150939941406
+      ]
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 5952,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 5952,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5125,
+      "count": 8928,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 31320,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 31320,
+      "byteLength": 31320,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 62640,
+      "byteLength": 20880,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 83520,
+      "byteLength": 45648,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 129168,
+      "byteLength": 71424,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 200592,
+      "byteLength": 71424,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 272016,
+      "byteLength": 47616,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 319632,
+      "byteLength": 35712,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 355344,
+      "uri": "pine_tree_003_a_LOD2.bin"
+    }
+  ]
+}
