@@ -61,3 +61,11 @@ The natural scene nodes are nested beneath `NatureRoot/Trees`, `NatureRoot/Grass
 
 
 F1 → OTHER MODELS includes `ForestMeadowScatter` as its own visibility toggle; hiding it also stops its 4 Hz tile timer and placement. Original Bermuda grass retains its dedicated FOLIAGE toggle and 20–80 m thinning/fade, while forest meadow uses separate 13–40–65 m density/fade and native authored near/far mesh LODs. For a fair foliage comparison keep the same camera view and let tile placement settle before measuring.
+
+## Night fill and glow controls — awaiting local validation
+
+F1 → ENVIRONMENT now includes **Night ambient fill**, **Sun bloom / glow**, **Glow strength** and **Glow highlight threshold**. Night fill talks to the environment's event-driven AtmosphereLighting component; the glow controls write native scene-local Environment properties. Night fill blends by sun elevation and preserves daytime lighting; use the time slider to inspect it. The sliders apply on value changes only, have wheel scrolling disabled so the panel can scroll normally, and introduce no sampling/timer.
+
+Glow strength controls GlowIntensity; the native spread/strength setting remains authored at 0.8. Threshold 1.5 targets HDR highlights; whole-image bloom stays zero. The five-case comparison preserves these independent settings and records them in Copy results. Baseline/Full/Restore full scene still affect terrain/tree choices only. Close/reopen preserves adjustments for the run; restart resets them.
+
+Source/property/signal/reference checks only. Build/runtime/UI/night appearance/sun halo and frame-time validation remain local; see WORLD/Environment/README.md. Glow is an added GPU post effect, not a claim of zero FPS cost or a lens-flare implementation.
