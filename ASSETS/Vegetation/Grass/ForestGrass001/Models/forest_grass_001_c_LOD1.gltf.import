@@ -4,11 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://b7u18d0rbip1k"
-valid=false
+path="res://.godot/imported/forest_grass_001_c_LOD1.gltf-388b1a3582bb0c4b5704bc7b71af289f.scn"
 
 [deps]
 
 source_file="res://ASSETS/Vegetation/Grass/ForestGrass001/Models/forest_grass_001_c_LOD1.gltf"
+dest_files=["res://.godot/imported/forest_grass_001_c_LOD1.gltf-388b1a3582bb0c4b5704bc7b71af289f.scn"]
 
 [params]
 
