@@ -63,6 +63,10 @@ Natural caves, pre-existing mines or other openings can provide deeper explorati
 
 **Core technical requirements when authorized:** Real voxel removal, proper refreshed collision, stable save/reload of modified terrain, material-aware edits, configurable excavation resistance, and minimal localized update cost. Natural caves and authored mine entrances can still provide **deep exploration** without deep player excavation. Prioritize a beautiful test landscape first.
 
+### Excavation implementation handoff
+
+The **documentation-only DG0 folder foundation** and a future **DG1–DG4 shovel/excavation plan** live at [WORLD/Terrain/Excavation/EXCAVATION_IMPLEMENTATION_PLAN.md](WORLD/Terrain/Excavation/EXCAVATION_IMPLEMENTATION_PLAN.md). Code is **not implemented** by the scaffolding commit. Future Codex work should preserve the existing native adapter boundary and begin with one shallow fake-shovel test (`1` to equip; LMB to dig) only when separately authorized.
+
 ### Practical sequencing and guardrails
 
 1. **ENV0 — Visual terrain baseline:** refine hill/valley shape, terrain materials and scale using current working test scene; verify voxel/collision stability.
