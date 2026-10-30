@@ -1,18 +1,31 @@
-[gd_resource type="Resource" script_class="ForestPreviewSettings" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ForestPreviewSettings" load_steps=7 format=3]
 [ext_resource type="Script" path="res://WORLD/Vegetation/ForestPreview/ForestPreviewSettings.cs" id="1"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree002/PineTree002.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/PineTree003/PineTree003.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_A.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_B.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://ASSETS/Vegetation/Trees/FirSaplingMedium_1K/FirSaplingMedium_C.tscn" id="6"]
 [resource]
 script = ExtResource("1")
 PineTree = ExtResource("2")
 TallPineTree = ExtResource("3")
 TallTreeCount = 8
+SaplingVariants = Array[PackedScene]([ExtResource("4"), ExtResource("5"), ExtResource("6")])
+SaplingCount = 34
+SaplingCoreRadiusFraction = 0.76
+SaplingToPineClearance = 2.9
+SaplingSpacing = 5.5
+SaplingNearPineRange = 12.0
+SaplingMinimumScale = 0.85
+SaplingMaximumScale = 1.14
+SaplingShadows = false
+SaplingCullDistance = 125.0
 Seed = 20261029
 CenterOffset = Vector2(18, 118)
 RadiusX = 82.0
 RadiusZ = 86.0
-TreeCount = 115
-CenterSpacing = 7.5
+TreeCount = 130
+CenterSpacing = 6.4
 EdgeSpacing = 14.0
 OriginalTreeClearance = 8.0
 TrailHalfWidth = 3.0

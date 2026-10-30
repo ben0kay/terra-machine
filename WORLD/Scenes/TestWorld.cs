@@ -136,7 +136,7 @@ public partial class TestWorld : Node3D
             _waiting ? "Loading terrain collision..." : "Terrain ready";
         string trees = _trees == null ? "" : $" | Trees: {_trees.PlacedCount}";
         string meadow = _meadow == null ? "" : $" | Meadow: {_meadow.PlacedCount}";
-        string forest = _forest == null ? "" : $" | Forest: {_forest.PlacedCount}/{_forest.PlannedCount}";
+        string forest = _forest == null ? "" : $" | Forest: {_forest.PlacedCount}/{_forest.PlannedCount} | Fir saplings: {_forest.SaplingsPlaced}/{_forest.SaplingsPlanned}";
         string rocks = _boulders == null ? "" : $" | Boulders: {_boulders.PlacedCount}/{_boulders.PlannedCount}";
         string floor = $" | Moss: {_floorLayers[0]?.PlacedCount ?? 0} | Ferns: {_floorLayers[1]?.PlacedCount ?? 0} | Branches: {_floorLayers[2]?.PlacedCount ?? 0}";
         _readout.Text = $"TERRA MACHINE — terrain test\n{status} | {Engine.GetFramesPerSecond()} FPS{trees}{meadow}{forest}{rocks}{floor}\n" +

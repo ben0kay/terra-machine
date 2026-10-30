@@ -8,14 +8,25 @@ public partial class ForestPreviewSettings : Resource
     [Export] public PackedScene? PineTree { get; set; }
     [Export] public PackedScene? TallPineTree { get; set; }
     [Export] public int TallTreeCount { get; set; } = 8;
+    [ExportGroup("Fir sapling understory")]
+    [Export] public Godot.Collections.Array<PackedScene> SaplingVariants { get; set; } = new();
+    [Export] public int SaplingCount { get; set; } = 34;
+    [Export] public float SaplingCoreRadiusFraction { get; set; } = 0.76f;
+    [Export] public float SaplingToPineClearance { get; set; } = 2.9f;
+    [Export] public float SaplingSpacing { get; set; } = 5.5f;
+    [Export] public float SaplingNearPineRange { get; set; } = 12f;
+    [Export] public float SaplingMinimumScale { get; set; } = 0.85f;
+    [Export] public float SaplingMaximumScale { get; set; } = 1.14f;
+    [Export] public bool SaplingShadows { get; set; } = false;
+    [Export] public float SaplingCullDistance { get; set; } = 125f;
     [ExportGroup("Footprint")]
     [Export] public int Seed { get; set; } = 20261029;
     [Export] public Vector2 CenterOffset { get; set; } = new(18f, 118f);
     [Export] public float RadiusX { get; set; } = 82f;
     [Export] public float RadiusZ { get; set; } = 86f;
-    [Export] public int TreeCount { get; set; } = 115;
+    [Export] public int TreeCount { get; set; } = 130;
     [ExportGroup("Forest composition")]
-    [Export] public float CenterSpacing { get; set; } = 7.5f;
+    [Export] public float CenterSpacing { get; set; } = 6.4f;
     [Export] public float EdgeSpacing { get; set; } = 14f;
     [Export] public float OriginalTreeClearance { get; set; } = 8f;
     [Export] public float TrailHalfWidth { get; set; } = 3f;

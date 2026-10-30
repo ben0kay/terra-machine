@@ -12,7 +12,8 @@ public partial class ForestPreview : Node3D
         public float Spacing, Scale, Yaw;
         public ulong RetryAt;
         public int Misses;
-        public bool Complete, UseTall;
+        public bool Complete, UseTall, IsSapling;
+        public int SaplingVariant;
     }
     private readonly List<TreeSpot> _spots = new();
     private ITerrainSurfaceService? _terrain;
@@ -23,6 +24,8 @@ public partial class ForestPreview : Node3D
     private bool _started;
     public int PlacedCount { get; private set; }
     public int PlannedCount => _spots.Count;
+    public int SaplingsPlaced { get; private set; }
+    public int SaplingsPlanned { get; private set; }
     public bool IsPlacing => _started && _remaining > 0;
 
     #region Startup
@@ -96,7 +99,54 @@ public partial class ForestPreview : Node3D
             for (int i = 0; i < tallCount; i++) nearest[i].UseTall = true;
         }
         if (_spots.Count < target)
-            GD.PushWarning($"Forest preview planned {_spots.Count}/{target} trees; spacing or radius limits further placement.");
+            GD.PushWarning($"Forest preview planned {_spots.Count}/{target} mature trees; spacing or radius limits further placement.");
+        GenerateSaplings(randomSeed: unchecked((uint)Settings.Seed ^ 0x5F3759DFu), center, radius, spawn);
+    }
+
+    // =========================================================
+    // Seed a smaller understory between mature trunks, biased toward the forest interior.
+    // A separate RNG leaves the pine layout and existing tall-tree selection independent.
+    private void GenerateSaplings(uint randomSeed, Vector2 center, Vector2 radius, Vector2 spawn)
+    {
+        if (Settings.SaplingVariants.Count == 0 || Settings.SaplingCount <= 0) return;
+        var random = new RandomNumberGenerator { Seed = randomSeed };
+        int target = Mathf.Clamp(Settings.SaplingCount, 0, 100);
+        float innerRadius = Mathf.Clamp(Settings.SaplingCoreRadiusFraction, 0.2f, 0.95f);
+        float pineClearanceSq = Mathf.Pow(Mathf.Max(1.5f, Settings.SaplingToPineClearance), 2f);
+        float saplingSpacingSq = Mathf.Pow(Mathf.Max(2.5f, Settings.SaplingSpacing), 2f);
+        float nearbyPineSq = Mathf.Pow(Mathf.Max(Settings.SaplingToPineClearance + 1f,
+            Settings.SaplingNearPineRange), 2f);
+        for (int attempt = 0; attempt < target * 120 && SaplingsPlanned < target; attempt++)
+        {
+            float r = Mathf.Sqrt(random.Randf()) * innerRadius;
+            float angle = random.Randf() * Mathf.Tau;
+            Vector2 point = center + new Vector2(Mathf.Cos(angle) * radius.X * r,
+                Mathf.Sin(angle) * radius.Y * r);
+            if (IsPathReserved(point, spawn, 1.4f)) continue;
+            bool hasPineNearby = false, blocked = false;
+            foreach (TreeSpot existing in _spots)
+            {
+                float d = existing.Position.DistanceSquaredTo(point);
+                if (existing.IsSapling)
+                {
+                    if (d < saplingSpacingSq) { blocked = true; break; }
+                }
+                else
+                {
+                    if (d < pineClearanceSq) { blocked = true; break; }
+                    if (d < nearbyPineSq) hasPineNearby = true;
+                }
+            }
+            if (blocked || !hasPineNearby) continue;
+            _spots.Add(new TreeSpot { Position = point, IsSapling = true,
+                SaplingVariant = random.RandiRange(0, Settings.SaplingVariants.Count - 1),
+                Scale = random.RandfRange(Mathf.Max(0.25f, Settings.SaplingMinimumScale),
+                    Mathf.Max(Settings.SaplingMinimumScale, Settings.SaplingMaximumScale)),
+                Yaw = random.Randf() * Mathf.Tau });
+            SaplingsPlanned++;
+        }
+        if (SaplingsPlanned < target)
+            GD.PushWarning($"Forest understory planned {SaplingsPlanned}/{target} fir saplings after spacing exclusions.");
     }
 
     // =========================================================
@@ -114,11 +164,18 @@ public partial class ForestPreview : Node3D
         float clearanceSq = clearance * clearance;
         foreach (TreeSpot spot in _spots)
             if (spot.Position.DistanceSquaredTo(position) < clearanceSq) return true;
+        return IsPathReserved(position, spawn, clearance);
+    }
+
+    // =========================================================
+    // Keep paths clear for both boulder placement and new understory saplings.
+    private bool IsPathReserved(Vector2 position, Vector2 spawn, float padding)
+    {
         float direction = Settings.CenterOffset.Y >= 0f ? 1f : -1f;
         float forward = (position.Y - spawn.Y) * direction;
         float progress = Mathf.Clamp((forward - 25f) / 150f, 0f, 1f);
         float trailX = spawn.X + 9f + 14f * progress + 5f * Mathf.Sin(forward * 0.047f);
-        return Mathf.Abs(position.X - trailX) < Settings.TrailHalfWidth + clearance;
+        return Mathf.Abs(position.X - trailX) < Settings.TrailHalfWidth + padding;
     }
     #endregion
 
@@ -196,30 +253,39 @@ public partial class ForestPreview : Node3D
     // Reuse PineTree002's existing authored near/far LOD scene; no per-tree distance script.
     private void AddTree(TreeSpot spot, Vector3 ground)
     {
-        Node3D wrapper = new() { Name = $"ForestPine_{PlacedCount + 1:000}" };
+        Node3D wrapper = new() {
+            Name = spot.IsSapling ? $"ForestFir_{SaplingsPlaced + 1:000}" : $"ForestPine_{PlacedCount - SaplingsPlaced + 1:000}"
+        };
         AddChild(wrapper);
-        PackedScene scene = spot.UseTall && Settings.TallPineTree != null ? Settings.TallPineTree : Settings.PineTree!;
+        PackedScene scene = spot.IsSapling ? Settings.SaplingVariants[spot.SaplingVariant] :
+            spot.UseTall && Settings.TallPineTree != null ? Settings.TallPineTree : Settings.PineTree!;
         Node3D model = scene.Instantiate<Node3D>();
         wrapper.AddChild(model);
+        // Fir A/B/C prefabs already cancel their Blender display offsets and align trunk collision.
+        // Keep their prefab root intact; the existing mature pine pivot correction stays unchanged.
         MeshInstance3D? first = FindFirstMesh(model);
-        if (first != null) model.Position -= wrapper.ToLocal(first.GlobalPosition);
-        ApplyShadows(model, false);
+        if (!spot.IsSapling && first != null) model.Position -= wrapper.ToLocal(first.GlobalPosition);
+        ApplyShadows(model, false, spot.IsSapling);
         wrapper.Scale = Vector3.One * spot.Scale;
         wrapper.Rotation = new Vector3(0f, spot.Yaw, 0f);
         wrapper.GlobalPosition = ground - Vector3.Up * Settings.GroundSink;
         PlacedCount++;
+        if (spot.IsSapling) SaplingsPlaced++;
     }
 
     // =========================================================
     // Keep canopy shadows near the player; skip distant LOD2 shadow drawing.
-    private void ApplyShadows(Node node, bool far)
+    private void ApplyShadows(Node node, bool far, bool sapling)
     {
         if (node.Name == "LOD2") far = true;
         if (node is MeshInstance3D mesh)
-            mesh.CastShadow = far || !Settings.NearShadows
+        {
+            mesh.CastShadow = far || !Settings.NearShadows || (sapling && !Settings.SaplingShadows)
                 ? GeometryInstance3D.ShadowCastingSetting.Off
                 : GeometryInstance3D.ShadowCastingSetting.On;
-        foreach (Node child in node.GetChildren()) ApplyShadows(child, far);
+            if (sapling) mesh.VisibilityRangeEnd = Mathf.Max(25f, Settings.SaplingCullDistance);
+        }
+        foreach (Node child in node.GetChildren()) ApplyShadows(child, far, sapling);
     }
 
     // =========================================================
