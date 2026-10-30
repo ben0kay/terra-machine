@@ -1,3 +1,9 @@
+# Current forest expansion
+
+The forest ellipse is approximately 50% larger in area: radii 100.4 × 105.3 m instead of 82 × 86 m. Its centre moves to (18, +137.3) m relative to spawn to keep the entrance at the previous +32 m edge while expanding outward. Targets rise proportionally from 130 to 195 mature trees (12 tall Pine003 within that total) and from 34 to 51 fir saplings. Counts remain targets subject to existing spacing and terrain rejection. Tree dimensions, yaw/scale variation, trunk collision, native LOD ranges and four-ray grounding budget remain unchanged. Ground cover and terrain floor masks that consume the forest ellipse follow the expanded footprint. Finite moss/fern/branch counts remain unchanged.
+
+More resident trees and a larger grass footprint can increase memory and render cost despite unchanged per-tick placement budgets. Source checks only; build/run locally, walk deeper into the grove to load distant sites, inspect roots/patches and compare F2 frame times after placement settles. Earlier sections describe previous passes.
+
 # Forest density benchmark — implementation awaiting local validation
 
 `ForestPreview.tscn` adds a bounded pine-forest area to `WORLD/Scenes/test.tscn`. It lies on the flatter side of spawn opposite the uphill existing 16-tree preview, without modifying those trees. Default footprint: an ellipse centred roughly (18, +118) m from spawn, radii 82 × 86 m (positive Z, away from the mountain shoulder). The preview produces up to 115 deterministic tree sites. Their spacing grows from a nominal 7.5 m in the inner grove to 14 m around the edges; acceptance frequency also decreases outward. A 3 m half-width winding gap makes it easier to walk through. It reserves 8 m around the original 16 authored trees. A patch can feel denser near its heart without having one perfect ring or grid.

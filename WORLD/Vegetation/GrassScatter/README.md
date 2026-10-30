@@ -1,3 +1,9 @@
+# Current Bermuda patch layout
+
+Bermuda now uses 4 candidate tufts/m² (previously 8), a world-space patch mask with 7.5 m spacing and 2.6 m nominal radius, and 0.35 minimum density acceptance. Patch centres jitter within cells and radii vary from 75–120%, leaving irregular open gaps rather than uniform floor coverage. Existing per-tuft cell jitter, random yaw/scale and mixed meshes remain. The mask spans tile boundaries; existing distance thinning, excavation removal and placement budgets remain. Bermuda alone no longer includes or evaluates vegetation wind: its diffuse, alpha, normal and roughness textures and distance fade remain active. Meadow grass, ferns and other plants retain wind. These current settings supersede the historical density passes below.
+
+Source/resource checks only; visual patch spacing and FPS require a local Godot run.
+
 # Current forest grass update
 
 The forest now uses the substantially lighter GrassMeadow002 A/B/C LOD1/LOD2 scenes in broad clumps, slightly enlarged with per-instance variation, with matching grassy ground and leaf litter in gaps. The old anchored MeadowPreview instance is absent from the test scene, while the separate SpawnMeadow002 layer remains enabled near the original firs. See Configuration/FOREST_MEADOW_README.md for current forest defaults/validation. Bermuda settings below remain independent.
