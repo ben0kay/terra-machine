@@ -52,3 +52,8 @@ A later runtime integration pass should support three authored LODs while retain
 - Tested the glTF in a desktop offscreen renderer from four directions; comparison images are **not Godot screenshots** and do **not** establish correct runtime performance or full lighting acceptance.
 - Validated local binary buffer lengths and texture paths. Bark PNG reused unchanged; the macro-foliage atlas is newly constructed for this distant-only mesh.
 - No changes to gameplay, world population, camera, density, shadow parameters, placement or run-time scripts.
+
+
+## Runtime integration update — 2026-10-30
+
+The above **asset-only** stage was superseded by a separate runtime integration. `PineTree002.tscn` now references this LOD3 as its optional `DistantModel`, with LOD2→LOD3 at 280 m and a final cull at 600 m. Native distance ranges and cached F1 diagnostics manage all three levels without per-tree C# updates. The original LOD1/LOD2 files, trunk collider and placement scripts are unchanged; the 120-triangle model uses its own macro foliage atlas and has distant shadow casting disabled. See `WORLD/Vegetation/LOD/README.md`. Godot compile, import and renderer acceptance still need an in-game test.

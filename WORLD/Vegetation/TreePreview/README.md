@@ -39,3 +39,8 @@ Trees now opt into the shared PHYSICS/StaticCollision construction. PineTree002.
 All four original pines and the forest's PineTree002 instances inherit collision from the same asset prefab. No duplicate collider per LOD, full-canopy hull, per-tree ray or tick was added. Layer 4 / mask 0 preserves player contact and terrain-only placement queries. Shape resources are shared; bodies are per tree. Hiding/culling visuals does not disable collision; actual parent unload frees the body. Existing finite resident-world limitation remains.
 
 Local: build, run test.tscn, enable Debug → Visible Collision Shapes, approach pine/fir trunks from several angles, walk through foliage gaps and inspect scaled/rotated instances. Check B/C roots align, F4 doesn't duplicate bodies, changing LOD keeps the same collision and boulders/grass still ground on terrain. Disable an asset profile with Mode None and restart to opt out. Source references/scene layout reviewed; compilation, contact fit and FPS remain unverified here.
+
+
+## PineTree002 LOD3
+
+The original preview pines now inherit the optional third 120-triangle model through `PineTree002.tscn`. The four authored pine offsets, ground alignment, scale, rotation and trunk collision remain unchanged. F1 adds a 280 m LOD2→LOD3 slider and Force LOD3; fir variants stay as before. See `../LOD/README.md` for distance ranges and acceptance checks.

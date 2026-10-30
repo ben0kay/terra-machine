@@ -87,3 +87,8 @@ Source/property/signal/reference checks only. Build/runtime/UI/night appearance/
 ## EXCAVATION debug controls
 
 F1 includes an EXCAVATION category when the test scene has an ExcavationService. Dig amount defaults to 1.0 with 0.25–6 range; it scales the next scoop's cap depth, with existing radius/reach/cooldown bounds. 1.0 is the new substantially smaller default, not the old large scoop or a volume in m³. Controls update the service on ValueChanged only and do not mutate resources, poll input, or run extra timers. Restart resets the session multiplier. Current intended behaviour/checks: ../../WORLD/Terrain/Excavation/DG1_VALIDATION.md.
+
+
+## Three-level pine LOD control — 2026-10-30
+
+The F1 FOLIAGE panel now provides two **session-only** split sliders: LOD1→LOD2 (initially 70 m) and new **LOD2→LOD3** (initially 280 m). The pine LOD dropdown adds **Force ultra-distant LOD3**. PineTree002 uses LOD1 0–70, LOD2 70–280 and LOD3 280–600 m. PineTree003 remains two levels at 0–70/70–280 and falls back to its LOD2 under Force LOD3; fir saplings remain unaffected. TreeRenderDiagnostics caches level availability, native range margins and shadow state when each tree is placed; no frame callbacks are introduced. Return to Auto to restore native distance switching. The five-case comparison logs both split distances and override mode. Validate transitions, any canopy alpha popping and scene FPS in Godot; these UI changes were checked at source level only.

@@ -18,3 +18,8 @@ The shared trunk capsule remains radius 0.32 m, height 16 m, centred 8 m above t
 - Near binary is the exact former LOD2 blob; textures and original import UIDs/settings are retained. Godot should regenerate import caches after pulling.
 
 Godot/.NET are unavailable here. Pull, let Godot reimport, restart test.tscn, then use F1 forced LOD1/LOD2 from the same view and inspect the automatic 70 m transition. Check foliage fullness, alpha edges, branch-tier continuity, roots, shadow transitions and collision. Compare uncapped FPS after placement settles; no measured performance gain is claimed. Fewer triangles do not by themselves remove foliage overdraw or shadow costs.
+
+
+## Three-stage authored LOD — integrated 2026-10-30
+
+`PineTree002.tscn` now includes the supplied `Models/pine_tree_002_a_LOD3.gltf`, configured through the optional third slot in `AuthoredTreeLod`. Native ranges: **LOD1 0–70 m**, **LOD2 70–280 m**, **LOD3 280–600 m**, then cull. LOD3 is 120 triangles and casts no shadows. The prior 280 m final-cull description above is historical; no geometry, materials, collision, rotation, tree size, placement counts, forest settings or source files changed. F1 provides a second split slider and Force LOD3 for both original and forest pines. See `WORLD/Vegetation/LOD/README.md`; local import/visual performance verification is still required.

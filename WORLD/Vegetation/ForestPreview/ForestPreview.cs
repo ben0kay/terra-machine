@@ -251,10 +251,10 @@ public partial class ForestPreview : Node3D
 
     // =========================================================
     // The global tree diagnostic includes this grove and newly placed saplings.
-    public void SetDebugRendering(bool visible, bool shadows, bool unshaded, float split = 70f, int lod = 0)
+    public void SetDebugRendering(bool visible, bool shadows, bool unshaded, float split = 70f, int lod = 0, float farSplit = 280f)
     {
         Visible = visible;
-        _diagnostics.Set(shadows, unshaded, split, lod);
+        _diagnostics.Set(shadows, unshaded, split, lod, farSplit);
     }
 
     #region Visuals
@@ -287,7 +287,7 @@ public partial class ForestPreview : Node3D
     // Keep canopy shadows near the player; skip distant LOD2 shadow drawing.
     private void ApplyShadows(Node node, bool far, bool sapling)
     {
-        if (node.Name == "LOD2") far = true;
+        if (node.Name == "LOD2" || node.Name == "LOD3") far = true;
         if (node is MeshInstance3D mesh)
         {
             mesh.CastShadow = far || !Settings.NearShadows || (sapling && !Settings.SaplingShadows)

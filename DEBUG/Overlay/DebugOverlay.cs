@@ -13,7 +13,7 @@ public partial class DebugOverlay : CanvasLayer
     private TreePreview? _trees;
     private ForestPreview? _forest;
     private DirectionalLight3D? _sun;
-    private float _treeSplit = 70f;
+    private float _treeSplit = 70f, _treeFarSplit = 280f;
     private int _treeLod;
     private GrassScatter? _grass;
     private Godot.Environment? _atmosphere;
@@ -158,15 +158,18 @@ public partial class DebugOverlay : CanvasLayer
         _shadows = AddToggle(controls, "Tree shadow casting", value => _shadowsOn = value);
         AddValueSlider(controls, "Pine LOD1 → LOD2 distance (m)", 5, 140, 5, _treeSplit,
             value => { if (_stage >= 0) return; _treeSplit = value; ApplyRendering(); });
+        AddValueSlider(controls, "Pine LOD2 → LOD3 distance (m)", 160, 550, 10, _treeFarSplit,
+            value => { if (_stage >= 0) return; _treeFarSplit = value; ApplyRendering(); });
         var lod = new OptionButton { FocusMode = Control.FocusModeEnum.None };
         lod.AddItem("Pine LOD: Auto"); lod.AddItem("Pine LOD: Force detailed LOD1");
         lod.AddItem("Pine LOD: Force simplified LOD2");
+        lod.AddItem("Pine LOD: Force ultra-distant LOD3");
         controls.AddChild(lod);
         lod.ItemSelected += index => { if (_stage >= 0) return; _treeLod = (int)index; ApplyRendering(); };
         if (_sun != null)
             AddValueSlider(controls, "Sun shadow distance (m, ALL scenery)", 10, 300, 5,
                 _sun.DirectionalShadowMaxDistance, value => _sun.DirectionalShadowMaxDistance = value);
-        controls.AddChild(new Label { Text = "LOD override affects paired pines; firs keep their native range.\nShadows on restores authored policy (far pine/fir shadows may stay off)." });
+        controls.AddChild(new Label { Text = "LOD3 applies to PineTree002; 2-level PineTree003 falls back to LOD2.\nFirs keep native range; distant shadows remain off where authored." });
         _unshaded = AddToggle(controls, "Trees unshaded (lighting diagnostic)", value => _unshadedOn = value, false);
         if (_grass != null)
         {
@@ -303,8 +306,8 @@ public partial class DebugOverlay : CanvasLayer
     private void ApplyRendering()
     {
         _terrain?.SetDebugRendering(_groundOn, _texturesOn, _normalsOn);
-        _trees?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod);
-        _forest?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod);
+        _trees?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod, _treeFarSplit);
+        _forest?.SetDebugRendering(_treesOn, _shadowsOn, _unshadedOn, _treeSplit, _treeLod, _treeFarSplit);
         _ground.SetPressedNoSignal(_groundOn); _textures.SetPressedNoSignal(_texturesOn);
         _normals.SetPressedNoSignal(_normalsOn); _models.SetPressedNoSignal(_treesOn);
         _shadows.SetPressedNoSignal(_shadowsOn); _unshaded.SetPressedNoSignal(_unshadedOn);
@@ -344,7 +347,7 @@ public partial class DebugOverlay : CanvasLayer
         _report.AppendLine($"Horizon haze: {_atmosphere?.FogEnabled ?? false}; volumetric fog: {_atmosphere?.VolumetricFogEnabled ?? false}; held across all five cases.");
         _report.AppendLine($"Grass visible: {_grass?.Visible ?? false}; grass state is held across all five cases.");
         _report.AppendLine($"Camera: {GetViewport().GetCamera3D()?.GlobalTransform}; trees: {_trees?.PlacedCount ?? 0}");
-        _report.AppendLine($"Forest: {_forest?.PlacedCount ?? 0}; pine split: {_treeSplit:F0} m; LOD mode: {_treeLod}; sun shadow distance: {_sun?.DirectionalShadowMaxDistance ?? 0:F0} m; held across cases.");
+        _report.AppendLine($"Forest: {_forest?.PlacedCount ?? 0}; pine splits: {_treeSplit:F0}/{_treeFarSplit:F0} m; LOD mode: {_treeLod}; sun shadow distance: {_sun?.DirectionalShadowMaxDistance ?? 0:F0} m; held across cases.");
         _report.AppendLine("Elapsed frame time, not GPU timing. Fixed world/sky/streaming; 2D panel hidden equally in all cases.");
         _stage = 0;
         BeginCase();

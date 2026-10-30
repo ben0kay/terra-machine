@@ -104,10 +104,10 @@ public partial class TreePreview : Node3D
 
     // =========================================================
     // Debug visibility is render-only. Cached handles avoid repeated scene-tree searches.
-    public void SetDebugRendering(bool visible, bool shadows, bool unshaded, float split = 70f, int lod = 0)
+    public void SetDebugRendering(bool visible, bool shadows, bool unshaded, float split = 70f, int lod = 0, float farSplit = 280f)
     {
         Visible = visible;
-        _diagnostics.Set(shadows, unshaded, split, lod);
+        _diagnostics.Set(shadows, unshaded, split, lod, farSplit);
     }
 
     // =========================================================
